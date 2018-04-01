@@ -17,10 +17,9 @@ class LogsController < ApplicationController
 
   # POST /logs
   def create
-    logs = JSON.parse(log_params)
+    logs = log_params
 
     logs.each do |log|
-      # puts log_params
       Log.new(log).save!
     end
 
@@ -40,6 +39,6 @@ class LogsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def log_params
-      params.permit(:logs).require(:logs)
+      params.permit(logs: { content: [:name, :action, :user, :is_dir, :dir_path, :time] }).require(:logs)
     end
 end
