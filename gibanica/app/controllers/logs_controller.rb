@@ -1,3 +1,5 @@
+require 'json'
+
 class LogsController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :disable_json, except: [:create]
@@ -15,15 +17,20 @@ class LogsController < ApplicationController
 
   # POST /logs
   def create
-    Log.new(log_params).save!
+    logs = JSON.parse(log_params)
+
+    logs.each do |log|
+      # puts log_params
+      Log.new(log).save!
+    end
+
     head :ok
   end
 
   private
+
     def disable_json
-      if request.format == 'application/json'
-        head :not_found
-      end
+      head :not_found if request.format == 'application/json'
     end
 
     # Use callbacks to share common setup or constraints between actions.
@@ -33,6 +40,6 @@ class LogsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def log_params
-      params.require(:log).permit(:name, :is_dir, :dir_path, :user, :agent)
+      params.permit(:logs).require(:logs)
     end
 end

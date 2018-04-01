@@ -18,12 +18,12 @@ export default class LogView extends React.Component {
                 </p>
 
                 <p>
-                <strong>Is dir:</strong>
-                { log.is_dir }
+                <strong>Is Directory:</strong>
+                { log.is_dir ? 'True' : 'False' }
                 </p>
 
                 <p>
-                <strong>Dir path:</strong>
+                <strong>Directory path:</strong>
                 { log.dir_path }
                 </p>
 
