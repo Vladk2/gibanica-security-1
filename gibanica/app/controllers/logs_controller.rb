@@ -41,14 +41,19 @@ class LogsController < ApplicationController
       # check for agents sending logs. based on agent, allow different params
       case params[:agent]
       when 'vladk'
-        params.permit(:agent, logs: { content: %i[port isOpen] }).require(:logs)
+        params.permit(logs: { content: %i[port isOpen] }).require(:logs)
       when 'file_checker'
-        params.permit(:agent, logs:
+        params.permit(logs:
            {
              content: %i[name user time is_dir dir_path action]
            }).require(:logs)
       when 'dragan'
-        params.permit(logs: {content: [:username, :method]}).require(:logs)
+        params.permit(logs: {content: %i[username method]}).require(:logs)
+      when 'stanija'
+        params.permit(logs:
+          {
+            content: %i[frequency time temperature memory swap]
+          }).require(:logs)
       else
         puts 'Agent not recognized'
       end
