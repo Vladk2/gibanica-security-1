@@ -47,6 +47,8 @@ class LogsController < ApplicationController
            {
              content: %i[name user time is_dir dir_path action]
            }).require(:logs)
+      when 'dragan'
+        params.permit(logs: {content: [:username, :method]}).require(:logs)
       else
         puts 'Agent not recognized'
       end
