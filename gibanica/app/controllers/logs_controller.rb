@@ -1,8 +1,7 @@
-require 'json'
-
 class LogsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  before_action :disable_json, except: [:create]
+  before_action :disable_json, only: [:index]
+  before_action :allow_json_only, only: [:create]
   before_action :set_log, only: [:show]
 
   # GET /logs
@@ -17,11 +16,7 @@ class LogsController < ApplicationController
 
   # POST /logs
   def create
-    logs = log_params
-
-    logs.each do |log|
-      Log.new(log).save!
-    end
+    Log.batch_save!(log_params)
 
     head :ok
   end
@@ -29,7 +24,11 @@ class LogsController < ApplicationController
   private
 
     def disable_json
-      head :not_found if request.format == 'application/json'
+      head :not_found if request.headers['Content-Type'] == 'application/json'
+    end
+
+    def allow_json_only
+      head :not_found unless request.headers['Content-Type'] == 'application/json'
     end
 
     # Use callbacks to share common setup or constraints between actions.
@@ -39,6 +38,17 @@ class LogsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def log_params
-      params.permit(logs: { content: [:name, :action, :user, :is_dir, :dir_path, :time] }).require(:logs)
+      # check for agents sending logs. based on agent, allow different params
+      case params[:agent]
+      when 'vladk'
+        params.permit(:agent, logs: { content: %i[port isOpen] }).require(:logs)
+      when 'file_checker'
+        params.permit(:agent, logs:
+           {
+             content: %i[name user time is_dir dir_path action]
+           }).require(:logs)
+      else
+        puts 'Agent not recognized'
+      end
     end
 end
