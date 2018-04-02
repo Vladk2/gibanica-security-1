@@ -1,4 +1,4 @@
-import os, time, sys, json, requests
+import os, time, sys, requests
 from datetime import datetime
 from threading import Thread
 from pwd import getpwuid
@@ -62,6 +62,10 @@ if __name__ == '__main__':
 
     logs = []
 
+    url = "http://localhost:3000/logs" if not len(sys.argv) > 1 else sys.argv[1]
+
+    headers = {'Content-type': 'application/json'}
+
     def sendLogs(flag):
         while True:
             time.sleep(5)
@@ -69,7 +73,8 @@ if __name__ == '__main__':
                 received_logs = list(logs)
                 flag = True
                 logs.clear()
-                r = requests.post("http://localhost:3000/logs", data={'logs': json.dumps(received_logs)})
+                r = requests.post(url, json={"logs": received_logs}, headers=headers)
+                print(r.headers)
                 if r.status_code == 200:
                     flag = False
 
