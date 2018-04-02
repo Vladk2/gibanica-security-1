@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     port_list = []
 
-    url = "http://localhost:3000/logs" if not len(sys.argv) > 1 else sys.argv[1]
+    url = "http://localhost:3000/logs" if not len(sys.argv) == 2 else sys.argv[1]
 
     headers = {'Content-Type': 'application/json'}
 
