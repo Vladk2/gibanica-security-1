@@ -48,7 +48,7 @@ def checkChanges(files, newScan, logs, flag):
                              'message': file
                             })
         else:
-            if file['time'] != old_found[0]['time']:
+            if file['lastChangedTime'] != old_found[0]['lastChangedTime']:
                 while flag:
                     pass
                 old_found[0]['action'] = 'edit'
