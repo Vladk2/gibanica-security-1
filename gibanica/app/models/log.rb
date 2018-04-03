@@ -3,6 +3,7 @@ class Log
   # include Mongoid::Timestamps
 
   field :logged_time, type: DateTime
+  field :severity, type: String
   field :host, type: String
   field :process, type: String
   field :message, type: Hash
