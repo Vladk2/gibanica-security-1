@@ -1,8 +1,11 @@
 class Log
   include Mongoid::Document
-  include Mongoid::Timestamps
+  # include Mongoid::Timestamps
 
-  field :content, type: Hash
+  field :logged_time, type: DateTime
+  field :host, type: String
+  field :process, type: String
+  field :message, type: Hash
 
   def self.batch_save!(logs)
     batch = []

@@ -1,5 +1,5 @@
 import time
-import psutil
+import psutil, socket
 from datetime import datetime
 import requests, sys
 from threading import Thread
@@ -19,6 +19,10 @@ def parseMemory():
 def parseSwap():
 	log = psutil.swap_memory().used
 	return '%s MB' % str(int(log)/1024*1024)
+
+def parseProcessInfo():
+	processDict = psutil.Process().as_dict(attrs=['pid', 'name'])
+	return '{}[{}]'.format(processDict['name'], processDict['pid'])
 
 if __name__ == "__main__":
 
@@ -45,10 +49,12 @@ if __name__ == "__main__":
 		log = {}
 		stats = {}
 		stats['frequency'] = parseCPU()
-		stats['time'] = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
 		stats['temperature'] = parseTemp()
 		stats['memory'] = parseMemory()
 		stats['swap'] = parseSwap()
-		log["content"] = stats
+		log["message"] = stats
+		log["logged_time"] = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
+		log["host"] = socket.gethostname()
+		log["process"] = parseProcessInfo()
 		logs.append(log)
 		time.sleep(3)

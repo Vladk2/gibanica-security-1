@@ -2,6 +2,7 @@ import os, time, sys, requests
 from datetime import datetime
 from threading import Thread
 from pwd import getpwuid
+import psutil, socket
 
 def find_owner(filename):
     return getpwuid(os.stat(filename).st_uid).pw_name
@@ -19,13 +20,17 @@ def scanFiles(path):
             tmp['dir_path'] = path
             tmp['is_dir'] = True if os.path.isdir('%s/%s' % (path, file)) else False
             tmp['user'] = find_owner('%s/%s' % (path, file))
-            tmp['time'] = get_modification_time('%s/%s' % (path, file))
+            tmp['lastChangedTime'] = get_modification_time('%s/%s' % (path, file))
 
             files.append(tmp)
         except Exception:
             continue
 
     return files
+
+def parseProcessInfo():
+	processDict = psutil.Process().as_dict(attrs=['pid', 'name'])
+	return '{}[{}]'.format(processDict['name'], processDict['pid'])
 
 def checkChanges(files, newScan, logs, flag):
     for file in files:
@@ -37,15 +42,22 @@ def checkChanges(files, newScan, logs, flag):
                 pass
             # file removed. send to siem
             file['action'] = 'delete'
-            file['time'] = datetime.now().strftime('%m/%d/%Y %H:%M:%S')
-            logs.append({'content': file})
+            logs.append({'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+                             'host': socket.gethostname(),
+                             'process': parseProcessInfo(),
+                             'message': file
+                            })
         else:
             if file['time'] != old_found[0]['time']:
                 while flag:
                     pass
                 old_found[0]['action'] = 'edit'
                 # file modified. send found[0] to siem
-                logs.append({'content': old_found[0]})
+                logs.append({'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+                             'host': socket.gethostname(),
+                             'process': parseProcessInfo(),
+                             'message': old_found[0]
+                            })
 
     for file in newScan:
         new_found = list(filter(lambda f: f['name'] == file['name'], files))
@@ -54,7 +66,11 @@ def checkChanges(files, newScan, logs, flag):
                 pass
             # file created. send to siem
             file['action'] = 'create'
-            logs.append({'content': file})
+            logs.append({'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+                             'host': socket.gethostname(),
+                             'process': parseProcessInfo(),
+                             'message': file
+                            })
 
 if __name__ == '__main__':
     # indicator that thread received all saved logs

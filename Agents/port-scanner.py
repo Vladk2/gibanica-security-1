@@ -2,9 +2,12 @@ import threading, sys
 import requests
 from queue import Queue
 import time
-import socket
+import socket, psutil
 from datetime import datetime
 
+def parseProcessInfo():
+	processDict = psutil.Process().as_dict(attrs=['pid', 'name'])
+	return '{}[{}]'.format(processDict['name'], processDict['pid'])
 
 def portscan(port, sleepTime):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,10 +17,16 @@ def portscan(port, sleepTime):
         with print_lock:
             #print(threading.currentThread().getName())
             if(con == 0):
-                port_status = {"content": {"port": port, "isOpen": True}}
+                port_status = {'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+                               'host': socket.gethostname(),
+                               'process': parseProcessInfo(),
+                               'message': {'port': port, 'isOpen': True}}
                 port_list.append(port_status)
             else:
-                port_status = {"content": {"port": port, "isOpen": False}}
+                port_status = {'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
+                               'host': socket.gethostname(),
+                               'process': parseProcessInfo(),
+                               'message': {'port': port, 'isOpen': False}}
                 port_list.append(port_status)
 
         con.close()
