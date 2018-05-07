@@ -1,2 +1,2 @@
-web: rails s -b 'ssl://localhost:3000?key=/home/stefan/GitHub/gibanica-security/gibanica/cert.key&cert=/home/stefan/GitHub/gibanica-security/gibanica/cert.pem'
+web: rails s -b 'ssl://localhost:3000?key=cert.key&cert=cert.pem'
 client: sh -c 'rm app/assets/webpack/* || true && cd client && bundle exec rake react_on_rails:locale && yarn run build:development'
