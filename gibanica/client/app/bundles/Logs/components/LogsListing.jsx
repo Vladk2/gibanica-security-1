@@ -98,9 +98,11 @@ export default class LogsListing extends React.Component {
                 <div className="row" style={{ marginTop: '5%' }}>
                     <div style={{ borderWidth: '1px', borderStyle: 'solid', borderColor: 'black' }}>
                         {
-                            logs.map(log => {
+                            logs.map((log, key) => {
                                 return (
-                                    <p>{ log }</p>
+                                    <div key={key}>
+                                        <p>{JSON.stringify(log)}</p>
+                                    </div>
                                 );
                             })
                         }

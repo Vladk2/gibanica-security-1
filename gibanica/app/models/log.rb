@@ -9,7 +9,8 @@ class Log
   field :message, type: Hash
 
   scope :by_field, lambda { |field, pattern|
-    pattern = Regexp.new('.*' + pattern + '.*')
+    pattern = /.*#{pattern}.*/i
+
     case field.downcase
     when 'severity'
       where(severity: pattern)

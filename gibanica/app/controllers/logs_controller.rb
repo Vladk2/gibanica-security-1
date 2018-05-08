@@ -6,13 +6,10 @@ class LogsController < ApplicationController
 
   # GET /logs
   def index
-    filter_by = params[:filterBy]
-    search_by = params[:searchBy]
-
-    @logs = if filter_by.nil?
+    @logs = if params[:filterBy].nil?
               { logs: Log.all }
             else
-              { logs: Log.search(filter_by, search_by) }
+              { logs: Log.search(params[:filterBy], params[:searchBy]) }
             end
   end
 
