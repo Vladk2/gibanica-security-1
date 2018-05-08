@@ -6,10 +6,14 @@ import { DropdownButton, MenuItem } from 'react-bootstrap';
 export default class LogsListing extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             logs: this.props.logs,
             filterMenu: { eventKey: 0, value: 'Filter By' },
         }
+
+        this.filterBy = '';
+        this.searchBy = '';
 
         this.filters = [
             {
@@ -40,15 +44,26 @@ export default class LogsListing extends React.Component {
     }
 
     search = () => {
+        const { filterMenu } = this.state;
 
+        fetch(`https://localhost:3000/logs?filterBy=${filterMenu.value}&searchBy=${this.searchBy}`, {
+            headers : {
+                Accept: 'application/json'
+            },
+            method: 'GET',
+        }).then((response) => {
+            console.log(response);
+            response.json();
+        }).then(logs => {
+            console.log(logs);
+            //this.setState({ logs });
+        }).catch(error =>
+            console.log(error)
+        );
     }
 
     filter = (filter) => {
-        this.search();
-    }
 
-    toggleMenu = () => {
-        this.setState({ showFilterMenu: !this.state.showFilterMenu });
     }
 
     dropdownSelect = (eventKey) => {
@@ -86,7 +101,12 @@ export default class LogsListing extends React.Component {
                                 </DropdownButton>
                             </div>
                             <input type="hidden" name="search_param" value="all" id="search_param" />
-                            <input type="text" className="form-control" name="x" placeholder="Search term..." />
+                            <input
+                                onChange={(e) => this.searchBy = e.target.value}
+                                type="text"
+                                className="form-control"
+                                name="x"
+                                placeholder="Search term..." />
                             <span className="input-group-btn">
                                 <button className="btn btn-default" type="button" onClick={this.search}>
                                     <span className="glyphicon glyphicon-search"></span>
