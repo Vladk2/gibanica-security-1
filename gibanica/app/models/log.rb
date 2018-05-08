@@ -8,6 +8,10 @@ class Log
   field :process, type: String
   field :message, type: Hash
 
+  scope :by_field, lambda { |field, pattern|
+    where(host: Regexp.new('.*' + pattern + '.*'))
+  }
+
   def self.batch_save!(logs)
     batch = []
 
@@ -16,5 +20,9 @@ class Log
     end
 
     Log.collection.insert_many batch
+  end
+
+  def self.search(filter_by, search_by)
+    Log.by_field(filter_by, search_by)
   end
 end
