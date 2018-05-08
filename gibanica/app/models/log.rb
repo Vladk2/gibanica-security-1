@@ -9,7 +9,21 @@ class Log
   field :message, type: Hash
 
   scope :by_field, lambda { |field, pattern|
-    where(host: Regexp.new('.*' + pattern + '.*'))
+    pattern = Regexp.new('.*' + pattern + '.*')
+    case field.downcase
+    when 'severity'
+      where(severity: pattern)
+    when 'logged_time'
+      where(logged_time: pattern)
+    when 'host'
+      where(host: pattern)
+    when 'process'
+      where(process: pattern)
+    when 'message'
+      where(message: pattern)
+    else
+      all
+    end
   }
 
   def self.batch_save!(logs)
