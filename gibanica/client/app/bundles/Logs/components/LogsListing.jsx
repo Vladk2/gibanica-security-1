@@ -1,6 +1,7 @@
 import React from 'react';
 import { Router, Link } from 'react-router-dom';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
+import Log from './Log';
 
 
 export default class LogsListing extends React.Component {
@@ -114,9 +115,7 @@ export default class LogsListing extends React.Component {
                         {
                             logs.map((log, key) => {
                                 return (
-                                    <div key={key}>
-                                        <p>{JSON.stringify(log)}</p>
-                                    </div>
+                                    <Log key={key} log={JSON.stringify(log)}/>
                                 );
                             })
                         }
