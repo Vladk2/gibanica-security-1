@@ -11,6 +11,14 @@ class LogsController < ApplicationController
             else
               { logs: Log.search(params[:filterBy], params[:searchBy]) }
             end
+
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: @logs, 
+        status: @logs[:logs] != nil ? :ok : :not_found 
+      }
+    end
   end
 
   # GET /logs/1

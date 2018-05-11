@@ -7,9 +7,11 @@ export default class LogsListing extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            logs: this.props.logs,
+            logs: this.props.logs.logs,
             filterMenu: { eventKey: 0, value: 'Filter By' },
         }
+
+        this.searchBy = '';
 
         this.filters = [
             {
@@ -40,15 +42,21 @@ export default class LogsListing extends React.Component {
     }
 
     search = () => {
-
-    }
-
-    filter = (filter) => {
-        this.search();
-    }
-
-    toggleMenu = () => {
-        this.setState({ showFilterMenu: !this.state.showFilterMenu });
+        fetch(`https://localhost:3000/logs?`
+            + `filterBy=${this.state.filterMenu.value}`
+            + `&searchBy=${this.searchBy}`,
+            { 
+                headers: {
+                    Accept: 'application/json'
+                },
+            }
+        ).then(
+            res => res.json()
+        ).then(
+            res => this.setState({ logs: res.logs })
+        ).catch(
+            err => console.error(err)
+        );
     }
 
     dropdownSelect = (eventKey) => {
@@ -86,7 +94,12 @@ export default class LogsListing extends React.Component {
                                 </DropdownButton>
                             </div>
                             <input type="hidden" name="search_param" value="all" id="search_param" />
-                            <input type="text" className="form-control" name="x" placeholder="Search term..." />
+                            <input 
+                                onChange={e => this.searchBy = e.target.value}
+                                type="text" 
+                                className="form-control" 
+                                name="x" 
+                                placeholder="Search term..." />
                             <span className="input-group-btn">
                                 <button className="btn btn-default" type="button" onClick={this.search}>
                                     <span className="glyphicon glyphicon-search"></span>

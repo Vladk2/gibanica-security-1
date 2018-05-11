@@ -9,22 +9,7 @@ class Log
   field :message, type: Hash
 
   scope :by_field, lambda { |field, pattern|
-    pattern = /.*#{pattern}.*/i
-
-    case field.downcase
-    when 'severity'
-      where(severity: pattern)
-    when 'logged_time'
-      where(logged_time: pattern)
-    when 'host'
-      where(host: pattern)
-    when 'process'
-      where(process: pattern)
-    when 'message'
-      where(message: pattern)
-    else
-      all
-    end
+    where("#{field}": pattern)
   }
 
   def self.batch_save!(logs)
@@ -34,10 +19,27 @@ class Log
       batch.push(Log.new(log).attributes)
     end
 
-    Log.collection.insert_many batch
+    Log.collection.insert_many(batch)
   end
 
   def self.search(filter_by, search_by)
-    Log.by_field(filter_by, search_by)
+    filter = filter_by.downcase
+    search_text = /.*#{search_by}.*/i
+
+    return nil unless self.filter_valid?(filter)
+
+    Log.by_field(filter, search_text)
+  end
+
+  private
+
+  def self.filter_valid?(filter_by)
+    %w(
+      severity
+      logged_time
+      process" 
+      host 
+      message
+    ).include?(filter_by)
   end
 end
