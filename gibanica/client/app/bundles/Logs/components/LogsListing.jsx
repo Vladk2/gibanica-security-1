@@ -6,6 +6,7 @@ import { DropdownButton, MenuItem } from 'react-bootstrap';
 export default class LogsListing extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             logs: this.props.logs.logs,
             filterMenu: { eventKey: 0, value: 'Filter By' },
