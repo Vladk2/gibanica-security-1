@@ -6,7 +6,7 @@ class Log
   field :severity, type: String
   field :host, type: String
   field :process, type: String
-  field :message, type: Hash
+  field :message, type: String
 
   scope :by_field, lambda { |field, pattern|
     where("#{field}": pattern)

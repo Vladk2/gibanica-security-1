@@ -7,16 +7,16 @@ class LogsController < ApplicationController
   # GET /logs
   def index
     @logs = if params[:filterBy].nil?
-              { logs: Log.all }
+              Log.all
             else
-              { logs: Log.search(params[:filterBy], params[:searchBy]) }
+              Log.search(params[:filterBy], params[:searchBy])
             end
 
     respond_to do |format|
       format.html
       format.json {
-        render json: @logs, 
-        status: @logs[:logs] != nil ? :ok : :not_found 
+        render json: @logs,
+        status: @logs != nil ? :ok : :not_found
       }
     end
   end
