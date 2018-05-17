@@ -6,17 +6,28 @@ class LogsController < ApplicationController
 
   # GET /logs
   def index
-    @logs = if params[:filterBy].nil?
-              Log.all
-            else
-              Log.search(params[:filterBy], params[:searchBy])
-            end
+    logs = if params[:filterBy].nil?
+             {
+               data: Log.page(params[:page]),
+               count: (Log.count / 20.0).ceil,
+               page: params[:page]
+             }
+           else
+            # add pagination for query. first finish query lang
+             Log.search(
+                    params[:filterBy],
+                    params[:searchBy],
+                    params[:page],
+                    params[:page_size]
+                )
+           end
 
     respond_to do |format|
       format.html
       format.json {
-        render json: @logs,
-        status: @logs != nil ? :ok : :not_found
+        render json: logs,
+          status: logs != nil ? :ok : :not_found,
+          except: %w[_id]
       }
     end
   end

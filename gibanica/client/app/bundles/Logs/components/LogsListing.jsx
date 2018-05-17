@@ -1,20 +1,22 @@
 import React from "react";
 import { Router, Link } from "react-router-dom";
-import { DropdownButton, MenuItem, Button, Pagination } from "react-bootstrap";
+import { DropdownButton, MenuItem, Button } from "react-bootstrap";
 import LogsTableView from "./LogsTableView";
 import LogsJsonView from "./LogsJsonView";
+import { getLogsPerPage } from "../util/LogsApi";
+import Pages from "./Pages";
 
 export default class LogsListing extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      logs: this.props.logs,
+      logs: [],
+      pagesCount: 0,
+      currentPage: 1,
       filterMenu: { eventKey: 0, value: "Filter By" },
       tableView: true
     };
-
-    this.currentPage = 1;
 
     this.searchBy = "";
 
@@ -42,9 +44,12 @@ export default class LogsListing extends React.Component {
     ];
   }
 
-  componentWillMount() {}
+  componentWillMount() {
+    this.fetchLogs(this.state.currentPage);
+  }
 
   search = () => {
+    // will be changed
     fetch(
       `https://localhost:3000/logs?` +
         `filterBy=${this.state.filterMenu.value}` +
@@ -70,13 +75,29 @@ export default class LogsListing extends React.Component {
     this.setState({ tableView: !this.state.tableView });
   };
 
-  getLogs = page => {
-    // fetch logs by page from server
-    console.log(`fetching for page ${page}`);
+  checkPage = page => {
+    if (page < 1) {
+      return 1;
+    } else if (page > this.state.pagesCount) {
+      return this.state.pagesCount;
+    }
+
+    return page;
+  };
+
+  fetchLogs = page => {
+    getLogsPerPage(this.checkPage(page)).then(res => {
+      this.setState({
+        logs: res.data,
+        pagesCount: res.count,
+        currentPage: res.page
+      });
+    });
   };
 
   render() {
-    const { logs, filterMenu, tableView } = this.state;
+    const { logs, pagesCount, currentPage, filterMenu, tableView } = this.state;
+
     return (
       <div className="container" style={{ marginTop: "3%" }}>
         <div className="row">
@@ -144,25 +165,12 @@ export default class LogsListing extends React.Component {
             <LogsJsonView logs={logs} />
           )}
         </div>
-        <Pagination>
-          <Pagination.First />
-          {this.currentPage !== 1 ? <Pagination.Prev /> : null}
-          <Pagination.Item>{1}</Pagination.Item>
-          <Pagination.Ellipsis />
-
-          <Pagination.Item onClick={() => this.getLogs(10 - 1)}>
-            {10}
-          </Pagination.Item>
-          <Pagination.Item>{11}</Pagination.Item>
-          <Pagination.Item active>{12}</Pagination.Item>
-          <Pagination.Item>{13}</Pagination.Item>
-          <Pagination.Item disabled>{14}</Pagination.Item>
-
-          <Pagination.Ellipsis />
-          <Pagination.Item>{20}</Pagination.Item>
-          <Pagination.Next />
-          <Pagination.Last />
-        </Pagination>
+        <Pages
+          logs={logs}
+          pagesCount={pagesCount}
+          currentPage={currentPage}
+          loadLogs={this.fetchLogs}
+        />
       </div>
     );
   }
