@@ -1,7 +1,14 @@
  - Install ruby, ruby-bundler, mongodb, yarn
  - gem install rails, foreman (add gems directory to path)
- - Run this in project directory: bundle install --path vendor/bundle && yarn --ignore-engines; openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem
- - RUN SERVER: foreman start -f Procfile.dev
+ - Run this in project directory: 
+    
+    > bundle install --path vendor/bundle
+    > cd client
+    > yarn --ignore-engines
+    > openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem
+ 
+ - RUN SERVER:
+    > foreman start -f Procfile.dev
  
  Configure MongoDB user: 
  
