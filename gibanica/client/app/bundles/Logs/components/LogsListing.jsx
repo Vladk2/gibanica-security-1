@@ -1,6 +1,6 @@
 import React from "react";
 import { Router, Link } from "react-router-dom";
-import { DropdownButton, MenuItem, Button } from "react-bootstrap";
+import { DropdownButton, MenuItem, Button, Pagination } from "react-bootstrap";
 import LogsTableView from "./LogsTableView";
 import LogsJsonView from "./LogsJsonView";
 
@@ -13,6 +13,8 @@ export default class LogsListing extends React.Component {
       filterMenu: { eventKey: 0, value: "Filter By" },
       tableView: true
     };
+
+    this.currentPage = 1;
 
     this.searchBy = "";
 
@@ -66,6 +68,11 @@ export default class LogsListing extends React.Component {
 
   toggleView = () => {
     this.setState({ tableView: !this.state.tableView });
+  };
+
+  getLogs = page => {
+    // fetch logs by page from server
+    console.log(`fetching for page ${page}`);
   };
 
   render() {
@@ -123,7 +130,7 @@ export default class LogsListing extends React.Component {
             className="row"
             style={{
               marginVertical: "5px",
-              marginLeft: "90%"
+              marginLeft: "93%"
             }}
           >
             <Button bsSize="small" onClick={this.toggleView}>
@@ -137,6 +144,25 @@ export default class LogsListing extends React.Component {
             <LogsJsonView logs={logs} />
           )}
         </div>
+        <Pagination>
+          <Pagination.First />
+          {this.currentPage !== 1 ? <Pagination.Prev /> : null}
+          <Pagination.Item>{1}</Pagination.Item>
+          <Pagination.Ellipsis />
+
+          <Pagination.Item onClick={() => this.getLogs(10 - 1)}>
+            {10}
+          </Pagination.Item>
+          <Pagination.Item>{11}</Pagination.Item>
+          <Pagination.Item active>{12}</Pagination.Item>
+          <Pagination.Item>{13}</Pagination.Item>
+          <Pagination.Item disabled>{14}</Pagination.Item>
+
+          <Pagination.Ellipsis />
+          <Pagination.Item>{20}</Pagination.Item>
+          <Pagination.Next />
+          <Pagination.Last />
+        </Pagination>
       </div>
     );
   }
