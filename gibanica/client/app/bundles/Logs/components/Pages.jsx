@@ -26,6 +26,7 @@ export default class Pages extends React.Component {
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li
+            style={{ cursor: "pointer" }}
             className="page-item"
             onClick={() => loadLogs(parseInt(currentPage, 10) - 1)}
           >
@@ -34,7 +35,20 @@ export default class Pages extends React.Component {
               <span className="sr-only">Previous</span>
             </a>
           </li>
+          {Array.from({ length: pagesCount }, (v, k) => k + 1).map((i, k) => {
+            return (
+              <li
+                style={{ cursor: "pointer" }}
+                className="page-item"
+                key={k}
+                onClick={() => loadLogs(parseInt(i, 10))}
+              >
+                <a className="page-link">{i}</a>
+              </li>
+            );
+          })}
           <li
+            style={{ cursor: "pointer" }}
             className="page-item"
             onClick={() => loadLogs(parseInt(currentPage, 10) + 1)}
           >
@@ -48,20 +62,3 @@ export default class Pages extends React.Component {
     );
   }
 }
-
-/* 
-        <Pagination>
-        {currentPage !== 1 ? (
-          <Pagination.First onClick={() => loadLogs(1)} />
-        ) : null}
-        {currentPage !== 1 ? (
-          <Pagination.Prev onClick={() => loadLogs(currentPage - 1)} />
-        ) : null}
-        {currentPage !== pagesCount ? (
-          <Pagination.Next onClick={() => loadLogs(currentPage + 1)} />
-        ) : null}
-        {currentPage !== pagesCount ? (
-          <Pagination.Last onClick={() => loadLogs(pagesCount)} />
-        ) : null}
-      </Pagination>
-*/

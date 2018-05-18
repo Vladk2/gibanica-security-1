@@ -75,17 +75,6 @@ GEM
     jbuilder (2.7.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
-    kaminari (1.1.1)
-      activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.1.1)
-      kaminari-activerecord (= 1.1.1)
-      kaminari-core (= 1.1.1)
-    kaminari-actionview (1.1.1)
-      actionview
-      kaminari-core (= 1.1.1)
-    kaminari-activerecord (1.1.1)
-      activerecord
-      kaminari-core (= 1.1.1)
     kaminari-core (1.1.1)
     kaminari-mongoid (1.0.1)
       kaminari-core (~> 1.0)
@@ -117,6 +106,8 @@ GEM
       mini_portile2 (~> 2.3.0)
     public_suffix (3.0.2)
     puma (3.11.3)
+    pundit (1.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.4)
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
@@ -214,12 +205,12 @@ DEPENDENCIES
   capybara (~> 2.13)
   coffee-rails (~> 4.2)
   jbuilder (~> 2.5)
-  kaminari
   kaminari-mongoid
   listen (>= 3.0.5, < 3.2)
   mini_racer
   mongoid (~> 6.1.0)
   puma (~> 3.7)
+  pundit
   rails (~> 5.1.6)
   react_on_rails (~> 6)
   sass-rails (~> 5.0)
