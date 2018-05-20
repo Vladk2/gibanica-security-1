@@ -27,7 +27,7 @@ export default class Index extends React.Component {
             </Jumbotron>
           </div>
           <div className="col-md-3">
-            <LoginForm csrf={this.props.token} />
+            <LoginForm />
           </div>
         </div>
       </div>

@@ -10,15 +10,15 @@ export default class LoginForm extends React.Component {
 
   signIn = e => {
     e.preventDefault();
-    let headers = { "Content-Type": "application/json" };
+    //let headers = { "Content-Type": "application/json" };
 
     const formData = new URLSearchParams();
 
     formData.append("email", "g@g.com");
     formData.append("password", "123");
-    //formData.append("authenticity_token", ReactOnRails.authenticityToken());
+    formData.append("authenticity_token", ReactOnRails.authenticityToken());
 
-    login(formData, ReactOnRails.authenticityHeaders(headers)).then(status =>
+    login(formData, ReactOnRails.authenticityHeaders()).then(status =>
       console.log(status)
     );
   };

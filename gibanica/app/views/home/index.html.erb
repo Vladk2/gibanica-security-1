@@ -1,8 +1,1 @@
-<% csrf = form_authenticity_token %>
-<%= react_component("Index", props: {token: csrf}, prerender: false, trace: nil) %>
-
-<%= form_tag('user/login', method: :post, remote: true, authenticity_token: csrf) do %>
-  <%= text_field_tag :email %>
-  <%= password_field_tag :password %>
-  <%= submit_tag %>
-<% end %>
+<%= react_component("Index", prerender: false, trace: nil) %>
