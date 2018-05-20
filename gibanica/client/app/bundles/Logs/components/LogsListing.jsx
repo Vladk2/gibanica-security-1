@@ -14,7 +14,7 @@ export default class LogsListing extends React.Component {
       logs: [],
       pagesCount: 0,
       currentPage: 1,
-      filterMenu: { eventKey: 0, value: "Filter By" },
+      filterMenu: { eventKey: 0, value: "All Time" },
       tableView: true
     };
 
@@ -23,23 +23,27 @@ export default class LogsListing extends React.Component {
     this.filters = [
       {
         eventKey: 1,
-        value: "Severity"
+        value: "Last Hour"
       },
       {
         eventKey: 2,
-        value: "Time"
+        value: "Today"
       },
       {
         eventKey: 3,
-        value: "Process"
+        value: "Last 7 Days"
       },
       {
         eventKey: 4,
-        value: "Message"
+        value: "Last Month"
       },
       {
         eventKey: 5,
-        value: "Host"
+        value: "Last Year"
+      },
+      {
+        eventKey: 6,
+        value: "Date Range"
       }
     ];
   }
@@ -100,8 +104,8 @@ export default class LogsListing extends React.Component {
 
     return (
       <div className="container" style={{ marginTop: "3%" }}>
-        <div className="row">
-          <div className="col-xs-8 col-xs-offset-2">
+        <div className="row" style={{}}>
+          <div className="col-md-12">
             <div className="input-group">
               <div className="input-group-btn search-panel">
                 <DropdownButton
@@ -116,8 +120,8 @@ export default class LogsListing extends React.Component {
                     </MenuItem>
                   ))}
                   <MenuItem divider />
-                  <MenuItem eventKey="6" active>
-                    Anything
+                  <MenuItem eventKey="0" active>
+                    All Time
                   </MenuItem>
                 </DropdownButton>
               </div>
