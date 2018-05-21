@@ -11,8 +11,8 @@ export default class LoginForm extends React.Component {
   signIn = e => {
     e.preventDefault();
     let headers = {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": ReactOnRails.authenticityToken()
+      "Content-Type": "application/json"
+      //"X-CSRF-Token": ReactOnRails.authenticityToken()
     };
 
     const formData = new URLSearchParams();
@@ -21,7 +21,9 @@ export default class LoginForm extends React.Component {
     formData.append("password", "123");
     formData.append("authenticity_token", ReactOnRails.authenticityToken());
 
-    login(formData, headers).then(status => console.log(status));
+    login(formData, ReactOnRails.authenticityHeaders(headers)).then(status =>
+      console.log(status)
+    );
   };
 
   render() {
