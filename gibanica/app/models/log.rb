@@ -67,6 +67,7 @@ class Log
   end
 
   def self.split_query(query)
+    # good, maybe? (or?[ ]*\[({[ ]*[severity|host|process|message]+[ ]*:[ ]*'[^']*'})*[ ]*,[ ]*)|([ ]*{[ ]*[severity|host|process|message]+[ ]*:[ ]*'[^']*'})
     pattern_or = /\[[ ]*{[ ]*[severity|host|process|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*,[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*\]/
 
     tokens = query.partition(pattern_or)

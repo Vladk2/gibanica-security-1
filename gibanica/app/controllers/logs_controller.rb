@@ -1,5 +1,5 @@
 class LogsController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  #skip_before_action :verify_authenticity_token
   before_action :disable_json, only: [:index]
   before_action :allow_json_only, only: [:create]
   before_action :set_log, only: [:show]

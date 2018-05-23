@@ -1,19 +1,18 @@
 //var React = require("react-on-rails");
+import axios from "axios";
 
 const host = "localhost:3000";
 const USER_API_URL = `https://${host}/user`;
 
 function login(formData, headers) {
-  return fetch(`${USER_API_URL}/login`, {
+  return axios({
+    method: "POST",
     headers: headers,
-    body: JSON.stringify({
-      email: "g@g.com",
-      password: "123"
-    }),
-    method: "POST"
+    data: formData,
+    url: `${USER_API_URL}/login`
   })
-    .then(res => res.status)
-    .catch(err => console.error(err));
+    .then(res => res)
+    .catch(err => console.err(err));
 }
 
 export { login };

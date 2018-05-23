@@ -11,15 +11,19 @@ export default class Index extends React.Component {
   render() {
     return (
       <div>
-        <NavBar />
         <div className="row" style={{ width: "90%", marginTop: "10%" }}>
           <div className="col-md-1" />
           <div className="col-md-8">
             <Jumbotron>
-              <h1>Hello, world!</h1>
+              <h1>Gibanica Mental Facility</h1>
               <p>
-                This is a simple hero unit, a simple jumbotron-style component
-                for calling extra attention to featured content or information.
+                Ah ah ay, corazón espinado Cómo duele, me duele no amar Ah ah
+                ay, cómo me duele el amor
+              </p>
+              <p>
+                Y cómo duele, cómo duele el corazón Cuando uno es bien entregado
+                Pero no olvides mujer que algún día dirás Ay ay ay, cómo me
+                duele el amor
               </p>
               <p>
                 <Button bsStyle="primary">Learn more</Button>

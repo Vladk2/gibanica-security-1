@@ -33,7 +33,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'mongoid', '~> 6.1.0'
 gem 'kaminari-mongoid'
 gem 'pundit'
-gem 'json'
+gem 'jwt'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

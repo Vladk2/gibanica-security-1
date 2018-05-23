@@ -1,29 +1,31 @@
 import React from "react";
 import ReactOnRails from "react-on-rails";
+import axios from "axios";
 
 import { login } from "../../util/UserApi";
 
 export default class LoginForm extends React.Component {
   constructor(props) {
     super(props);
+
+    this.email = "";
+    this.password = "";
   }
 
-  signIn = e => {
-    e.preventDefault();
-    let headers = {
-      "Content-Type": "application/json"
-      //"X-CSRF-Token": ReactOnRails.authenticityToken()
-    };
-
+  signIn = () => {
     const formData = new URLSearchParams();
-    /* not used */
-    formData.append("email", "g@g.com");
-    formData.append("password", "123");
-    formData.append("authenticity_token", ReactOnRails.authenticityToken());
 
-    login(formData, ReactOnRails.authenticityHeaders(headers)).then(status =>
-      console.log(status)
-    );
+    formData.append("email", this.email);
+    formData.append("password", this.password);
+
+    login(formData, ReactOnRails.authenticityHeaders()).then(res => {
+      if (res.status === 200) {
+        // set to local storage
+        localStorage.setItem("token", res.data);
+      } else {
+        // show wrong login alert
+      }
+    });
   };
 
   render() {
@@ -33,16 +35,13 @@ export default class LoginForm extends React.Component {
           <h3 className="panel-title">Please sign in</h3>
         </div>
         <div className="panel-body">
-          <form
-            acceptCharset="UTF-8"
-            role="form"
-            onSubmit={e => this.signIn(e)}
-          >
+          <form acceptCharset="UTF-8" role="form">
             <fieldset>
               <div className="form-group">
                 <input
                   className="form-control"
                   placeholder="E-mail"
+                  onChange={e => (this.email = e.target.value)}
                   name="email"
                   type="text"
                 />
@@ -51,6 +50,7 @@ export default class LoginForm extends React.Component {
                 <input
                   className="form-control"
                   placeholder="Password"
+                  onChange={e => (this.password = e.target.value)}
                   name="password"
                   type="password"
                 />
@@ -60,11 +60,13 @@ export default class LoginForm extends React.Component {
                   value={this.props.csrf}
                 />
               </div>
-              <input
+              <button
                 className="btn btn-lg btn-success btn-block"
-                type="submit"
-                value="Login"
-              />
+                type="button"
+                onClick={() => this.signIn()}
+              >
+                Login
+              </button>
             </fieldset>
           </form>
         </div>

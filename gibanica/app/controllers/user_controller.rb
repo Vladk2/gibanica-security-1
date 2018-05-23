@@ -1,18 +1,20 @@
+require_relative '../util/jwt_util'
+
 class UserController < ApplicationController
+  skip_before_action :authenticate_user, only: %w[login]
+
   def login
-    puts request.headers['Content-Type']
-    puts request.headers['X-CSRF-Token']
-    puts form_authenticity_token
-    puts session[:_csrf_token]
     user = User.where(email: params[:email]).first
 
+    if user.nil?
+      head :unauthorized
+      return
+    end
+
     if user.password_valid?(params[:password])
-      head :ok # send jwt
+      render json: JwtUtil.encode(user), status: :ok
     else
       head :unauthorized
     end
-
-    rescue NoMethodError
-      head :unauthorized
   end
 end
