@@ -6,11 +6,18 @@ class LogsController < ApplicationController
 
   # GET /logs
   def index
+    unless params[:home].nil?
+      respond_to do |format|
+        format.html { redirect_to logs_url }
+      end
+    end
+
     logs = if params[:filterBy].nil?
+             page = params[:page].nil? ? 1 : params[:page]
              {
-               data: Log.page(params[:page]),
+               data: Log.page(page),
                count: (Log.count / 20.0).ceil,
-               page: params[:page]
+               page: page
              }
            else
             # add pagination for query. first finish query lang
@@ -26,8 +33,8 @@ class LogsController < ApplicationController
       format.html
       format.json {
         render json: logs,
-          status: logs != nil ? :ok : :not_found,
-          except: %w[_id]
+        status: !logs.nil? ? :ok : :not_found,
+        except: %w[_id]
       }
     end
   end

@@ -1,8 +1,8 @@
 import React from "react";
 import ReactOnRails from "react-on-rails";
-import axios from "axios";
 
 import { login } from "../../util/UserApi";
+import { getLogsPageAfterLogin } from "../../util/LogsApi";
 
 export default class LoginForm extends React.Component {
   constructor(props) {
@@ -22,6 +22,7 @@ export default class LoginForm extends React.Component {
       if (res.status === 200) {
         // set to local storage
         localStorage.setItem("token", res.data);
+        return;
       } else {
         // show wrong login alert
       }

@@ -12,7 +12,8 @@ class UserController < ApplicationController
     end
 
     if user.password_valid?(params[:password])
-      render json: JwtUtil.encode(user), status: :ok
+      redirect_to logs_path
+      #render json: JwtUtil.encode(user), status: :ok
     else
       head :unauthorized
     end
