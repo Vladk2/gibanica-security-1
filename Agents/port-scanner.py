@@ -4,6 +4,10 @@ from queue import Queue
 import time
 import socket, psutil
 from datetime import datetime
+import logging
+
+logging.basicConfig(filename = "logs.log", level=logging.INFO,
+                    format = '%(asctime)s : %(name)s : %(module)s : %(levelname)s : %(message)s')
 
 def parseProcessInfo():
 	processDict = psutil.Process().as_dict(attrs=['pid', 'name'])
@@ -22,12 +26,14 @@ def portscan(port, sleepTime):
                                'process': parseProcessInfo(),
                                'message': {'port': port, 'isOpen': True}}
                 port_list.append(port_status)
+                logging.info(port_status.get('message'))
             else:
                 port_status = {'logged_time': datetime.now().strftime('%m/%d/%Y %H:%M:%S'),
                                'host': socket.gethostname(),
                                'process': parseProcessInfo(),
                                'message': {'port': port, 'isOpen': False}}
                 port_list.append(port_status)
+                #logging.warning(port_status.get('message'))
 
         con.close()
 
@@ -49,7 +55,6 @@ def threader(sleepTime):
         # completed with the job
         q.task_done()
 
-
 if __name__ == '__main__':
 
     port_list = []
@@ -59,7 +64,7 @@ if __name__ == '__main__':
     headers = {'Content-Type': 'application/json'}
 
     while True:
-
+        print("Port scanner started...")
         print_lock = threading.Lock()
 
         host = 'localhost'
@@ -89,7 +94,7 @@ if __name__ == '__main__':
         total =  t2 - t1
         # Printing the information to screen
         print ('Scanning Completed in: ', total)
-        r = requests.post(url, json={"agent": "vladk", "logs": port_list}, headers=headers)
-        if r.status_code == 200:
-            port_list.clear()
-        time.sleep(5)
+       # r = requests.post(url, json={"agent": "vladk", "logs": port_list}, headers=headers)
+        #if r.status_code == 200:
+       #     port_list.clear()
+       # time.sleep(5)
