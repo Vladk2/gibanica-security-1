@@ -8,8 +8,11 @@
     > yarn --ignore-engines
     > openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem
  
- - RUN SERVER (gibanica directory):
-    > foreman start -f Procfile.dev
+ - RUN SERVER API (gibanica directory):
+    > bundle exec rails s -b 'ssl://localhost:3000?key=cert.key&cert=cert.pem'
+    
+ - RUN FRONTEND (gibanica/client/ directory):
+ 	> yarn start   
  
  Configure MongoDB user: 
  

@@ -1,8 +1,8 @@
 import React from "react";
 import ReactOnRails from "react-on-rails";
 
-import { login } from "../../util/UserApi";
-import { getLogsPageAfterLogin } from "../../util/LogsApi";
+import {login} from "../../util/UserApi";
+import {getLogsPageAfterLogin} from "../../util/LogsApi";
 
 export default class LoginForm extends React.Component {
   constructor(props) {
@@ -21,7 +21,12 @@ export default class LoginForm extends React.Component {
     login(formData, ReactOnRails.authenticityHeaders()).then(res => {
       if (res.status === 200) {
         // set to local storage
-        localStorage.setItem("token", res.data);
+        localStorage.setItem("token", res.data.token);
+
+        window
+          .location
+          .assign('/logs');
+
         return;
       } else {
         // show wrong login alert
@@ -44,8 +49,7 @@ export default class LoginForm extends React.Component {
                   placeholder="E-mail"
                   onChange={e => (this.email = e.target.value)}
                   name="email"
-                  type="text"
-                />
+                  type="text"/>
               </div>
               <div className="form-group">
                 <input
@@ -53,19 +57,13 @@ export default class LoginForm extends React.Component {
                   placeholder="Password"
                   onChange={e => (this.password = e.target.value)}
                   name="password"
-                  type="password"
-                />
-                <input
-                  name="authenticity_token"
-                  type="hidden"
-                  value={this.props.csrf}
-                />
+                  type="password"/>
+                <input name="authenticity_token" type="hidden" value={this.props.csrf}/>
               </div>
               <button
                 className="btn btn-lg btn-success btn-block"
                 type="button"
-                onClick={() => this.signIn()}
-              >
+                onClick={() => this.signIn()}>
                 Login
               </button>
             </fieldset>

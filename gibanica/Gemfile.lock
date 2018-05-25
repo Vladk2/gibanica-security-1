@@ -97,6 +97,7 @@ GEM
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (2.0.4)
+    rack-cors (1.0.2)
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
     rails (5.1.6)
@@ -172,6 +173,7 @@ DEPENDENCIES
   mongoid (~> 6.1.0)
   puma (~> 3.7)
   pundit
+  rack-cors
   rails (~> 5.1.6)
   selenium-webdriver
   spring

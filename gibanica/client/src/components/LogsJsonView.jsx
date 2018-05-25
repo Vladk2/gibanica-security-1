@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import SyntaxHighlighter from "react-syntax-highlighter/prism";
-import { dark, light } from "react-syntax-highlighter/styles/prism";
+import {dark, light} from "react-syntax-highlighter/styles/prism";
 
 export default class LogsJsonView extends React.Component {
   constructor(props) {
@@ -14,7 +14,7 @@ export default class LogsJsonView extends React.Component {
   };
 
   render() {
-    const { logs } = this.props;
+    const {logs} = this.props;
     return (
       <div>
         {logs.map((log, key) => (
@@ -22,13 +22,12 @@ export default class LogsJsonView extends React.Component {
             <div
               className="row"
               style={{
-                borderWidth: 1,
-                borderRadius: 15,
-                borderColor: "gray",
-                borderStyle: "solid",
-                padding: 15
-              }}
-            >
+              borderWidth: 1,
+              borderRadius: 15,
+              borderColor: "gray",
+              borderStyle: "solid",
+              padding: 15
+            }}>
               <div className="col-md-2">
                 <div className="row">
                   <Button bsSize="xsmall">-</Button>
@@ -43,7 +42,7 @@ export default class LogsJsonView extends React.Component {
                 </SyntaxHighlighter>
               </div>
             </div>
-            <br />
+            <br/>
           </div>
         ))}
       </div>

@@ -6,7 +6,7 @@ export default class LogsTableView extends React.Component {
   }
 
   render() {
-    const { logs } = this.props;
+    const {logs} = this.props;
     return (
       <table className="table table-striped">
         <thead>
