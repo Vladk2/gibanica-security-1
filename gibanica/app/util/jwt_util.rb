@@ -2,7 +2,9 @@ require 'jwt'
 
 class JwtUtil
   def self.encode(obj)
-    JWT.encode user_data(obj), ENV['GIBANICA_SECRET'], 'HS256'
+    {
+      token: JWT.encode(user_data(obj), ENV['GIBANICA_SECRET'], 'HS256')
+    }
   end
 
   def self.decode(header_token)

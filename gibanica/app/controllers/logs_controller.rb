@@ -1,17 +1,10 @@
 class LogsController < ApplicationController
-  #skip_before_action :verify_authenticity_token
-  before_action :disable_json, only: [:index]
-  before_action :allow_json_only, only: [:create]
+  before_action :accept_json_only, only: [:index]
+  before_action :content_type_json_only, only: [:create]
   before_action :set_log, only: [:show]
 
   # GET /logs
   def index
-    unless params[:home].nil?
-      respond_to do |format|
-        format.html { redirect_to logs_url }
-      end
-    end
-
     logs = if params[:filterBy].nil?
              page = params[:page].nil? ? 1 : params[:page]
              {
@@ -24,19 +17,14 @@ class LogsController < ApplicationController
              Log.search(
                     params[:filterBy],
                     params[:searchBy],
-                    params[:page],
+                    page,
                     params[:page_size]
                 )
            end
 
-    respond_to do |format|
-      format.html
-      format.json {
-        render json: logs,
-        status: !logs.nil? ? :ok : :not_found,
-        except: %w[_id]
-      }
-    end
+    render json: logs,
+           status: !logs.nil? ? :ok : :not_found,
+           except: %w[_id]
   end
 
   # GET /logs/1
@@ -53,12 +41,12 @@ class LogsController < ApplicationController
 
   private
 
-    def disable_json
-      head :not_found if request.headers['Content-Type'] == 'application/json'
+    def accept_json_only
+      head :not_acceptable unless request.headers['Accept'] == 'application/json'
     end
 
-    def allow_json_only
-      head :not_found unless request.headers['Content-Type'] == 'application/json'
+    def content_type_json_only
+      head :not_acceptable unless request.headers['Content-Type'] == 'application/json'
     end
 
     # Use callbacks to share common setup or constraints between actions.

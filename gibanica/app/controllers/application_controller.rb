@@ -1,15 +1,7 @@
 require_relative '../util/jwt_util'
 
-class ApplicationController < ActionController::Base
+class ApplicationController < ActionController::API
   before_action :authenticate_user
-  protect_from_forgery # unless: -> { request.format.json? }
-
-  # Overload handle_unverified_request to ensure that
-  # exception is raised each time a request does not
-  # pass validation.
-  def handle_unverified_request
-    head :not_acceptable
-  end
 
   private
 
