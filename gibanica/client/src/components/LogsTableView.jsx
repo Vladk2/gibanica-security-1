@@ -1,27 +1,31 @@
 import React from "react";
+import { Table } from "react-bootstrap";
 
 export default class LogsTableView extends React.Component {
   constructor(props) {
     super(props);
   }
 
+  parseDate = date => new Date(date).toUTCString();
+
   render() {
-    const {logs} = this.props;
+    const { logs } = this.props;
+
     return (
-      <table className="table table-striped">
+      <Table striped hover>
         <thead>
           <tr>
-            <th>Time</th>
-            <th>Host</th>
-            <th>Process</th>
-            <th>Severity</th>
-            <th>Message</th>
+            <th className="text-center">Time</th>
+            <th className="text-center">Host</th>
+            <th className="text-center">Process</th>
+            <th className="text-center">Severity</th>
+            <th className="text-center">Message</th>
           </tr>
         </thead>
         <tbody>
           {logs.map((log, key) => (
             <tr key={key}>
-              <td>{log.logged_time}</td>
+              <td>{this.parseDate(log.logged_time)}</td>
               <td>{log.host}</td>
               <td>{log.process}</td>
               <td>{log.severity}</td>
@@ -29,7 +33,7 @@ export default class LogsTableView extends React.Component {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     );
   }
 }

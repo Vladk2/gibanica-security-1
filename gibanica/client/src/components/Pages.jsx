@@ -1,11 +1,6 @@
 import React from "react";
-import { Pagination } from "react-bootstrap";
 
 export default class Pages extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   pageNumbers = pagesCount => {
     let pages = [];
 
@@ -21,12 +16,15 @@ export default class Pages extends React.Component {
   };
 
   render() {
-    const { logs, pagesCount, currentPage, loadLogs } = this.props;
+    const { pagesCount, currentPage, loadLogs } = this.props;
+
     return (
       <nav aria-label="Page navigation example">
         <ul className="pagination">
           <li
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: "pointer"
+            }}
             className="page-item"
             onClick={() => loadLogs(parseInt(currentPage, 10) - 1)}
           >
@@ -35,10 +33,17 @@ export default class Pages extends React.Component {
               <span className="sr-only">Previous</span>
             </a>
           </li>
-          {Array.from({ length: pagesCount }, (v, k) => k + 1).map((i, k) => {
+          {Array.from(
+            {
+              length: pagesCount
+            },
+            (v, k) => k + 1
+          ).map((i, k) => {
             return (
               <li
-                style={{ cursor: "pointer" }}
+                style={{
+                  cursor: "pointer"
+                }}
                 className="page-item"
                 key={k}
                 onClick={() => loadLogs(parseInt(i, 10))}
@@ -48,7 +53,9 @@ export default class Pages extends React.Component {
             );
           })}
           <li
-            style={{ cursor: "pointer" }}
+            style={{
+              cursor: "pointer"
+            }}
             className="page-item"
             onClick={() => loadLogs(parseInt(currentPage, 10) + 1)}
           >

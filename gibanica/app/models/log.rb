@@ -8,8 +8,16 @@ class Log
   field :process, type: String
   field :message, type: String
 
+  index({ logged_time: 1, host: 1 }, { unique: false })
+  index({ logged_time: 1, severity: 1 }, { unique: false })
+  index({ logged_time: 1 }, { unique: false })
+
   scope :by_field, lambda { |field, pattern|
     where("#{field}": pattern)
+  }
+
+  scope :last_30_days, lambda {
+    where(logged_time: (Time.now - 30.days..Time.now))
   }
 
   def self.batch_save!(logs)
@@ -31,6 +39,23 @@ class Log
     Log.by_field(filter, search_text)
   end
 
+  def self.last_month
+    data = {
+      labels: (Date.today - 30.days..Date.today).to_a,
+      data: []
+    }
+
+    logs =  Log.last_30_days
+
+    data[:labels].each do |date|
+      data[:data].push(
+        logs.count{ |d| d.logged_time.to_date == date }
+      )
+    end
+
+    data
+  end
+
   private
 
   def self.field_valid?(filter_by)
@@ -45,7 +70,7 @@ class Log
 
   def self.validate_query()
     w = String.new("{host: 'pc|stefan'}")
-    q = String.new("or [{message: 'ab+c'},{severity: 'error|info'},   {host:'stefan-notebook'}, {process: 'kojuma'} ],or [{message: 'ab+c'},{severity: 'error|info'},   {host:'stefan-notebook'}, {process: 'kojuma'} ], { process: 'pYthOn' }")
+    q = String.new("or [{message: 'ab+c'},{severity: 'error|info'}, {host:'stefan-notebook'}, {process: 'kojuma'} ], { process: 'pYthOn' }")
     q = q.delete(' ')
 
     if query_valid?(q)
@@ -53,7 +78,7 @@ class Log
 
       if search_terms[:or_conditions].nil?
         Log.where('$and': search_terms[:and_conditions])
-      else 
+      else
         Log.where('$and': search_terms[:and_conditions])
            .where('$or': search_terms[:or_conditions])
       end
@@ -62,7 +87,7 @@ class Log
 
   def self.query_valid?(query)
     pattern = /or[ ]*\[[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*,[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*\]/
-    
+
     query.match?(pattern)
   end
 
@@ -96,7 +121,7 @@ class Log
           and_terms.each do |and_term|
             unless and_term.blank?
               t = t.delete_prefix(',').delete_suffix(',')
-              and_conditions.push(regexify_search_terms(t)) 
+              and_conditions.push(regexify_search_terms(t))
             end
           end
         end

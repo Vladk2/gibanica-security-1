@@ -1,0 +1,13 @@
+user = User.new(email: 'g@g.com', name: 'admin', last_name: 'admin')
+user.hash_password('123')
+user.save!
+
+for i in 1..1000 do
+  Log.new(
+    logged_time: Time.now,
+    severity: (i.odd? ? 'INFO' : 'WARNING'),
+    host: (i.odd? ? 'stefan-notebook' : 'stefan-pc'),
+    process: i,
+    message: (i.odd? ? 'CPU is burning... NOT': 'Something is happening. I warn you it`s bad')
+  ).save!
+end
