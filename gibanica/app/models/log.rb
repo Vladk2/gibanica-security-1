@@ -2,7 +2,8 @@ class Log
   include Mongoid::Document
   # include Mongoid::Timestamps
 
-  field :logged_time, type: DateTime
+  field :logged_date, type: Date
+  field :logged_time, type: Time
   field :severity, type: String
   field :host, type: String
   field :process, type: String
@@ -14,10 +15,6 @@ class Log
 
   scope :by_field, lambda { |field, pattern|
     where("#{field}": pattern)
-  }
-
-  scope :last_30_days, lambda {
-    where(logged_time: (Time.now - 30.days..Time.now))
   }
 
   def self.batch_save!(logs)
@@ -40,23 +37,39 @@ class Log
   end
 
   def self.last_month
-    data = {
-      labels: (Date.today - 30.days..Date.today).to_a,
-      data: []
-    }
+    # (Date.today - 30.days..Date.today).to_a
+    data = []
 
-    logs =  Log.last_30_days
-
-    data[:labels].each do |date|
-      data[:data].push(
-        logs.count{ |d| d.logged_time.to_date == date }
-      )
+    self.inserted_last_30_days.each do |c|
+      data.push(c)
     end
 
     data
   end
 
   private
+
+  def self.inserted_last_30_days
+    Log.collection.aggregate(
+      [
+        {
+          "$match": {
+            logged_date: {
+              "$gte": Date.today - 30.days, "$lte": Date.today
+            }
+          },
+        },
+        {
+          "$group":{
+            _id: "$logged_date",
+            count: {
+              "$sum": 1
+            }
+          }
+        }
+      ]
+    )
+  end
 
   def self.field_valid?(filter_by)
     %w(

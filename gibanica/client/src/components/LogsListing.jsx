@@ -1,10 +1,11 @@
 import React from "react";
 import { DropdownButton, MenuItem, Button } from "react-bootstrap";
-import { Bar, HorizontalBar, Radar, Line } from "react-chartjs-2";
+import moment from "moment";
+import { Bar } from "react-chartjs-2";
 import LogsTableView from "./LogsTableView";
 import LogsJsonView from "./LogsJsonView";
 import NavBar from "./navbar/NavBar";
-import { getLogsPerPage } from "../util/LogsApi";
+import { getLogsPerPage, getNumberOfLogsInserted } from "../util/LogsApi";
 import Pages from "./Pages";
 
 export default class LogsListing extends React.Component {
@@ -12,30 +13,27 @@ export default class LogsListing extends React.Component {
     super(props);
 
     this.data = {
-      labels: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July"
-      ],
+      labels: this.last_month_dates(),
       datasets: [
         {
           label: "Number of logs submitted",
           backgroundColor: "#669999",
           borderColor: "#ffffff",
-          data: [65, 59, 80, 81, 56, 55, 3, 65, 59, 80, 81, 56, 55, 40]
+          data: Array(30).fill(0)
         }
       ]
+    };
+
+    this.options = {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              display: false
+            }
+          }
+        ]
+      }
     };
 
     this.state = {
@@ -83,9 +81,37 @@ export default class LogsListing extends React.Component {
     if (!localStorage.getItem("token")) {
       window.location.assign("/");
     } else {
-      this.fetchLogs(this.state.currentPage);
+      getNumberOfLogsInserted(30).then(res => {
+        this.parseGraphData(res.data);
+        this.fetchLogs(this.state.currentPage);
+      });
     }
   }
+
+  parseGraphData = data => {
+    this.data.labels.forEach((e, i) => {
+      const found = data.find(c => moment(c._id).format("DD-MM-YYYY") === e);
+
+      if (found) {
+        this.data.datasets[0].data[i] = found.count;
+      }
+    });
+  };
+
+  last_month_dates = () => {
+    const startDate = moment().subtract(30, "days");
+    const endDate = moment();
+
+    const days = [];
+    let day = startDate;
+
+    while (day <= endDate) {
+      days.push(day.format("DD-MM-YYYY"));
+      day = day.add(1, "days");
+    }
+
+    return days;
+  };
 
   search = () => {
     // will be changed
@@ -194,7 +220,7 @@ export default class LogsListing extends React.Component {
           </div>
         </div>
         <br />
-        <Bar data={this.data} height={30} />
+        <Bar data={this.data} height={35} options={this.options} />
         <div
           className="row"
           style={{

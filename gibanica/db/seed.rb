@@ -2,8 +2,9 @@ user = User.new(email: 'g@g.com', name: 'admin', last_name: 'admin')
 user.hash_password('123')
 user.save!
 
-for i in 1..1000 do
+for i in 1..400 do
   Log.new(
+    logged_date: Date.today - 45.days,
     logged_time: Time.now,
     severity: (i.odd? ? 'INFO' : 'WARNING'),
     host: (i.odd? ? 'stefan-notebook' : 'stefan-pc'),
