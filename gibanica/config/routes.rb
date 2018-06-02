@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   root to: proc { [404, {}, []] }
 
-  post 'user/login'
+  resources :users, only: %i[] do
+    collection do
+      post :login
+      post :email_valid
+    end
+  end
 
   resources :logs, only: %i[index create] do
     collection do

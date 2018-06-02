@@ -19,6 +19,7 @@ export default class CarouselGraph extends React.Component {
     return (
       <div
         style={{
+          boxShadow: "0 0 0 4px rgba(255, 255, 255, 0.51)",
           background:
             "linear-gradient(to top, #CBCBCB, #CBCBCB, #E7E7E7, #F5F5F5, white, white, white)"
         }}

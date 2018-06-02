@@ -1,9 +1,8 @@
 require 'test_helper'
 
-class UserControllerTest < ActionDispatch::IntegrationTest
+class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should get login" do
-    get user_login_url
+    get login_user
     assert_response :success
   end
-
 end

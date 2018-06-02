@@ -71,6 +71,8 @@ export default class LoginForm extends React.Component {
               </button>
             </fieldset>
           </form>
+          <br />
+          <a href="/forgot_password">Forgot your password?</a>
         </div>
       </div>
     );

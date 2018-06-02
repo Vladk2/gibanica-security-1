@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const host = "localhost:3000";
-const USER_API_URL = `https://${host}/user`;
+const USER_API_URL = `https://${host}/users`;
 
 function login(formData, headers) {
   return axios({
@@ -19,4 +19,32 @@ function logout() {
   localStorage.removeItem("token");
 }
 
-export { login, logout };
+function checkUserEmail(email) {
+  return axios({
+    url: `${USER_API_URL}/email_valid`,
+    method: "POST",
+    data: {
+      email: email
+    },
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    }
+  }).catch(err => console.log(err));
+}
+
+function sendResetLink(email) {
+  return axios({
+    url: `${USER_API_URL}/password_reset_link`,
+    method: "POST",
+    data: {
+      email: email
+    },
+    headers: {
+      Accept: "application/json",
+      ContentType: "application/json"
+    }
+  }).catch(err => console.log(err));
+}
+
+export { login, logout, checkUserEmail, sendResetLink };
