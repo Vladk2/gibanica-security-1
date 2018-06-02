@@ -7,7 +7,28 @@ import "../../App.css";
 export default class Index extends React.Component {
   loggedIn = () => {
     if (localStorage.getItem("token")) {
-      return <p>Hello User</p>;
+      return (
+        <div
+          onClick={() => window.location.replace("/logs")}
+          style={{
+            backgroundColor: "#669999",
+            borderRadius: 25,
+            height: 100,
+            cursor: "pointer",
+            display: "flex"
+          }}
+        >
+          <p
+            style={{
+              fontSize: 40,
+              margin: "auto",
+              color: "#ffffff"
+            }}
+          >
+            Enter
+          </p>
+        </div>
+      );
     } else {
       return <LoginForm />;
     }

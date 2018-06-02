@@ -1,42 +1,18 @@
 import React from "react";
-import { DropdownButton, MenuItem, Button } from "react-bootstrap";
-import moment from "moment";
-import { Bar } from "react-chartjs-2";
+import { DropdownButton, MenuItem } from "react-bootstrap";
+import CarouselGraph from "./CarouselGraph";
+import NavBar from "./navbar/NavBar";
 import LogsTableView from "./LogsTableView";
 import LogsJsonView from "./LogsJsonView";
-import NavBar from "./navbar/NavBar";
-import { getLogsPerPage, getNumberOfLogsInserted } from "../util/LogsApi";
+import { getLogsPerPage } from "../util/LogsApi";
 import Pages from "./Pages";
 
 export default class LogsListing extends React.Component {
   constructor(props) {
     super(props);
 
-    this.data = {
-      labels: this.last_month_dates(),
-      datasets: [
-        {
-          label: "Number of logs submitted",
-          backgroundColor: "#669999",
-          borderColor: "#ffffff",
-          data: Array(30).fill(0)
-        }
-      ]
-    };
-
-    this.options = {
-      scales: {
-        yAxes: [
-          {
-            ticks: {
-              display: false
-            }
-          }
-        ]
-      }
-    };
-
     this.state = {
+      userLogged: false,
       logs: [],
       pagesCount: 0,
       currentPage: 1,
@@ -79,39 +55,18 @@ export default class LogsListing extends React.Component {
 
   componentWillMount() {
     if (!localStorage.getItem("token")) {
-      window.location.assign("/");
+      window.location.replace("/");
     } else {
-      getNumberOfLogsInserted(30).then(res => {
-        this.parseGraphData(res.data);
-        this.fetchLogs(this.state.currentPage);
-      });
+      this.setState(
+        {
+          userLogged: true
+        },
+        () => {
+          this.fetchLogs(this.state.currentPage);
+        }
+      );
     }
   }
-
-  parseGraphData = data => {
-    this.data.labels.forEach((e, i) => {
-      const found = data.find(c => moment(c._id).format("DD-MM-YYYY") === e);
-
-      if (found) {
-        this.data.datasets[0].data[i] = found.count;
-      }
-    });
-  };
-
-  last_month_dates = () => {
-    const startDate = moment().subtract(30, "days");
-    const endDate = moment();
-
-    const days = [];
-    let day = startDate;
-
-    while (day <= endDate) {
-      days.push(day.format("DD-MM-YYYY"));
-      day = day.add(1, "days");
-    }
-
-    return days;
-  };
 
   search = () => {
     // will be changed
@@ -163,13 +118,23 @@ export default class LogsListing extends React.Component {
   };
 
   render() {
-    const { logs, pagesCount, currentPage, filterMenu, tableView } = this.state;
+    const {
+      logs,
+      pagesCount,
+      currentPage,
+      filterMenu,
+      tableView,
+      userLogged
+    } = this.state;
 
+    if (!userLogged) {
+      return null;
+    }
     return (
       <div
         className="container"
         style={{
-          marginTop: "3%"
+          marginTop: "1%"
         }}
       >
         <NavBar />
@@ -220,7 +185,8 @@ export default class LogsListing extends React.Component {
           </div>
         </div>
         <br />
-        <Bar data={this.data} height={35} options={this.options} />
+
+        <CarouselGraph />
         <div
           className="row"
           style={{
@@ -234,9 +200,10 @@ export default class LogsListing extends React.Component {
               marginLeft: "93%"
             }}
           >
-            <Button bsSize="small" onClick={this.toggleView}>
-              {tableView ? "JSON View" : "Table View"}
-            </Button>
+            <label className="switch">
+              <input type="checkbox" onClick={this.toggleView} />
+              <span className="slider round" />
+            </label>
           </div>
           <br />{" "}
           {tableView ? (

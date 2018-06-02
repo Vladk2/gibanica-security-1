@@ -29,7 +29,12 @@ class LogsController < ApplicationController
 
   # GET /logs/monthly_status
   def monthly_status
-    render json: Log.last_month, status: :ok
+    render json: Log.inserted_logs_status('days'), status: :ok
+  end
+
+  # GET /logs/host_status
+  def host_status
+    render json: Log.inserted_logs_status('host'), status: :ok
   end
 
   # POST /logs

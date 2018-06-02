@@ -36,18 +36,39 @@ class Log
     Log.by_field(filter, search_text)
   end
 
-  def self.last_month
+  def self.inserted_logs_status(filter)
     # (Date.today - 30.days..Date.today).to_a
     data = []
 
-    self.inserted_last_30_days.each do |c|
-      data.push(c)
+    if filter == 'days'
+      self.inserted_last_30_days.each do |c|
+        data.push(c)
+      end
+    else
+      self.inserted_per_host_machine.each do |c|
+        data.push(c)
+      end
     end
 
     data
   end
 
   private
+
+  def self.inserted_per_host_machine
+    Log.collection.aggregate(
+      [
+        {
+          "$group": {
+            _id: "$host",
+            count: {
+              "$sum": 1
+            }
+          }
+        }
+      ]
+    )
+  end
 
   def self.inserted_last_30_days
     Log.collection.aggregate(

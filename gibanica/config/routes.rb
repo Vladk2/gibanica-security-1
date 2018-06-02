@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :logs, only: %i[index create] do
     collection do
       get :monthly_status
+      get :host_status
     end
   end
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html

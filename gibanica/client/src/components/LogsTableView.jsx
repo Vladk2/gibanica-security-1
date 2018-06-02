@@ -2,10 +2,6 @@ import React from "react";
 import { Table } from "react-bootstrap";
 
 export default class LogsTableView extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   parseDate = date => new Date(date).toUTCString();
 
   render() {

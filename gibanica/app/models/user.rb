@@ -4,6 +4,8 @@ class User
   include BCrypt
   include Mongoid::Document
 
+  has_and_belongs_to_many :roles, inverse_of: nil
+
   field :email, type: String
   field :name, type: String
   field :last_name, type: String
