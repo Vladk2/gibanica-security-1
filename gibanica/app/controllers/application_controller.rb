@@ -1,6 +1,7 @@
 require_relative '../util/jwt_util'
 
 class ApplicationController < ActionController::API
+  include Pundit
   before_action :authenticate_user
 
   private

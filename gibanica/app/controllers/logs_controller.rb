@@ -9,7 +9,7 @@ class LogsController < ApplicationController
              page = params[:page].nil? ? 1 : params[:page]
              {
                data: Log.page(page),
-               count: (Log.count / 20.0).ceil,
+               count: Log.count,
                page: page
              }
            else
@@ -27,9 +27,14 @@ class LogsController < ApplicationController
            except: %w[_id]
   end
 
-  # GET /logs/1
-  def show
-    @log = { log: @log }
+  # GET /logs/monthly_status
+  def monthly_status
+    render json: Log.inserted_logs_status('days'), status: :ok
+  end
+
+  # GET /logs/host_status
+  def host_status
+    render json: Log.inserted_logs_status('host'), status: :ok
   end
 
   # POST /logs

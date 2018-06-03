@@ -27,7 +27,8 @@ class JwtUtil
       id: user[:_id],
       email: user[:email],
       name: user[:name],
-      last_name: user[:last_name]
+      last_name: user[:last_name],
+      roles: user.roles.map(&:name)
     }.to_json
   end
 end
