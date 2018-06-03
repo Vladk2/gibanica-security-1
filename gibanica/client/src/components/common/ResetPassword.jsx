@@ -52,7 +52,11 @@ export default class ResetPassword extends React.Component {
   };
 
   resetRequestCheckers = () => {
-    this.setState({ requestAlreadySubmitted: false, requestExpired: false });
+    this.setState({
+      requestAlreadySubmitted: false,
+      requestExpired: false,
+      passwordsDontMatch: false
+    });
   };
 
   passwordStrong = password => {
