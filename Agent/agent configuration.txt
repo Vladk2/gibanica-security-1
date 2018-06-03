@@ -1,0 +1,38 @@
+	CONFIGURATION FILE EXAMPLE:
+
+	{
+	"log_formats": [
+    				{"sample_format": <regex>},
+    				{"pacman_format": <regex>}
+    				],
+	"log_files": [
+					  { "path": PATH_TO_LOGFILE,"log_format": "sample_format", "filter_by": "ERROR|WARNING"} ,
+					  { "path": PATH_TO_OTHER_LOGFILE,"log_format": "pacman_format", "filter_by": "2018-06-03"}
+					  ],
+	"win_event_logs": {"read_event_logs": boolean, "log_type(s)": "system | application"}
+	"batch_size" : NUMBER,
+	"max_time" : NUMBER_OF_SECONDS 
+	}
+
+
+	EXPLANATION AND USAGE:
+
+	log_formats: Contains a list of log formats. Every format has its name as key, and a regular expression of log format as value.
+				 If you're defining a new format, make sure that you escape all special characters in regex (for example, replace "\" with "\\"). 
+				 Also make sure that you give provided names for groups in regex. Only groups with provided names can be parsed. 
+				 Provided names so far are: date, time, host, process, severity and message.
+				 Example of one log format: {"example_format": "(?P<date>[a-zA-Z0-9]+)\\s+(?P<host>\w*)}"
+
+	log_files: Contains a list of log files with its configuration.
+			path: Path to the logfile that you want to read from.
+			log_format: Format of your logs that you're reading - must be one from list in "log_formats"(object key is the name of the format).
+			filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file. 
+
+	win_event_logs: This field is only for Windows users.
+			read_event_logs: Boolean value. Agent will read system event logs only if it's True.
+			log_type(s): Choose what kind of system logs You want to read (system or application). If you leave an empty string, then it will read them both.
+			filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file.
+
+	batch_size: Max. number of logs that Agent can store before sending them to the SIEM.
+
+	max_time: Max. number of seconds that Agent can store logs before sending them to the SIEM.

@@ -7,7 +7,7 @@ from datetime import datetime
 import logging
 
 logging.basicConfig(filename = "logs.log", level=logging.INFO,
-                    format = '%(asctime)s : %(name)s : %(module)s : %(levelname)s : %(message)s')
+                    format = '%(asctime)s  %(name)s  %(module)s  %(levelname)s  %(message)s')
 
 def parseProcessInfo():
 	processDict = psutil.Process().as_dict(attrs=['pid', 'name'])
@@ -33,7 +33,7 @@ def portscan(port, sleepTime):
                                'process': parseProcessInfo(),
                                'message': {'port': port, 'isOpen': False}}
                 port_list.append(port_status)
-                #logging.warning(port_status.get('message'))
+                logging.warning(port_status.get('message'))
 
         con.close()
 
