@@ -177,13 +177,18 @@ def parseLog(log, log_format):
 	else:
 		log_json = {}
 		#time = match.group("time").split(",")[0]
-		datetime = match.group("date") + " " + match.group("time")
-		log_json["logged_date"] = match.group("date")
-		log_json["logged_time"] = datetime
-		log_json["host"] = match.group("host")
-		log_json["process"] = match.group("process")
-		log_json["severity"] = match.group("severity")
-		log_json["message"] = match.group("message")
+		if("date" in pattern.groupindex and "time" in pattern.groupindex):
+			datetime = match.group("date") + " " + match.group("time")
+			log_json["logged_date"] = match.group("date")
+			log_json["logged_time"] = datetime
+		if("host" in pattern.groupindex):
+			log_json["host"] = match.group("host")
+		if("process" in pattern.groupindex):
+			log_json["process"] = match.group("process")
+		if("severity" in pattern.groupindex):
+			log_json["severity"] = match.group("severity")
+		if("message" in pattern.groupindex):
+			log_json["message"] = match.group("message")
 
 		return log_json
 
