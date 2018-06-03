@@ -1,5 +1,6 @@
 class LogsController < ApplicationController
   before_action :accept_json_only, only: [:index]
+  before_action :admin?, only: %w[host_status monthly_status]
   before_action :content_type_json_only, only: [:create]
   before_action :set_log, only: [:show]
 
@@ -45,6 +46,10 @@ class LogsController < ApplicationController
   end
 
   private
+
+    def admin?
+      head :unauthorized unless current_user.admin?
+    end
 
     def accept_json_only
       head :not_acceptable unless request.headers['Accept'] == 'application/json'

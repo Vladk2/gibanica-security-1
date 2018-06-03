@@ -4,6 +4,8 @@ class ApplicationController < ActionController::API
   include Pundit
   before_action :authenticate_user
 
+  attr_reader :current_user
+
   private
 
   def authenticate_user

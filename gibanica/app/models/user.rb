@@ -26,6 +26,10 @@ class User
     false
   end
 
+  def admin?
+    roles.any? { |r| r.name == 'admin' }
+  end
+
   private
 
   def strong_password?(password)

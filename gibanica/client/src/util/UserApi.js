@@ -1,4 +1,3 @@
-//var React = require("react-on-rails");
 import axios from "axios";
 
 const host = "localhost:3000";

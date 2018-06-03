@@ -1,18 +1,33 @@
 import React from "react";
 import { Carousel } from "react-bootstrap";
+import {
+  getNumberOfLogsInsertedPerDay,
+  getNumberOfLogsInsertedPerHost
+} from "../util/LogsApi";
 import Graph from "./Graph";
 
 export default class CarouselGraph extends React.Component {
-  isAdmin = () => {
-    if (true) {
-      return true;
-    }
+  constructor(props) {
+    super(props);
 
-    return false;
-  };
+    this.state = {
+      dataDays: undefined,
+      dataHost: undefined
+    };
+  }
+
+  componentWillMount() {
+    getNumberOfLogsInsertedPerDay(30).then(res_days => {
+      getNumberOfLogsInsertedPerHost().then(res_host => {
+        this.setState({ dataDays: res_days, dataHost: res_host });
+      });
+    });
+  }
 
   render() {
-    if (!this.isAdmin()) {
+    const { dataDays, dataHost } = this.state;
+
+    if (!dataDays || !dataHost) {
       return null;
     }
 
@@ -26,10 +41,10 @@ export default class CarouselGraph extends React.Component {
       >
         <Carousel controls={false} interval={5000}>
           <Carousel.Item>
-            <Graph type="days" />
+            <Graph type="days" data={dataDays} />
           </Carousel.Item>
           <Carousel.Item>
-            <Graph type="host" />
+            <Graph type="host" data={dataHost} />
           </Carousel.Item>
         </Carousel>
       </div>

@@ -1,10 +1,6 @@
 import React from "react";
 import moment from "moment";
 import { Bar } from "react-chartjs-2";
-import {
-  getNumberOfLogsInsertedPerDay,
-  getNumberOfLogsInsertedPerHost
-} from "../util/LogsApi";
 
 export default class Graph extends React.Component {
   constructor(props) {
@@ -44,9 +40,7 @@ export default class Graph extends React.Component {
         ]
       };
 
-      getNumberOfLogsInsertedPerDay(30).then(res => {
-        this.parseGraphDataPerDay(res.data);
-      });
+      this.parseGraphDataPerDay(this.props.data.data);
     } else if (type === "host") {
       this.data = {
         labels: [],
@@ -59,9 +53,8 @@ export default class Graph extends React.Component {
           }
         ]
       };
-      getNumberOfLogsInsertedPerHost().then(res => {
-        this.parseGraphDataPerHost(res.data);
-      });
+
+      this.parseGraphDataPerHost(this.props.data.data);
     }
   }
 
