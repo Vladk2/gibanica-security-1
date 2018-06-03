@@ -22,6 +22,8 @@ module Gibanica
     config.load_defaults 5.1
     config.api_only = true
 
+    Mongoid::QueryCache.enabled = false
+
     # Rails 5
 
     config.middleware.insert_before 0, Rack::Cors do

@@ -39,7 +39,6 @@
     export MONGO_PASSWORD=123
     export MAIL_USERNAME=your_email@domain.com
     export MAIL_PASSWORD=your_password
-    export HOST=localhost:5000
 
  For efficient execution of commands, add these aliases to .bashrc too:
 
