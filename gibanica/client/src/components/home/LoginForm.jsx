@@ -5,6 +5,10 @@ export default class LoginForm extends React.Component {
   constructor(props) {
     super(props);
 
+    this.state = {
+      badLogin: false
+    };
+
     this.email = "";
     this.password = "";
   }
@@ -18,18 +22,18 @@ export default class LoginForm extends React.Component {
 
           window.location.assign("/logs");
           return;
-        } else {
-          // show wrong login alert
         }
       })
       .catch(err => {
         if (err.response.status === 401) {
-          alert("Wrong credentials");
+          this.setState({ badLogin: true });
         }
       });
   };
 
   render() {
+    const { badLogin } = this.state;
+
     return (
       <div className="panel panel-default">
         <div className="panel-heading">
@@ -61,6 +65,15 @@ export default class LoginForm extends React.Component {
                   value={this.props.csrf}
                 />
               </div>
+              {badLogin ? (
+                <label
+                  style={{
+                    color: "red"
+                  }}
+                >
+                  <b>Wrong credentials</b>
+                </label>
+              ) : null}
               <button
                 className="btn btn-lg btn-success btn-block"
                 type="button"

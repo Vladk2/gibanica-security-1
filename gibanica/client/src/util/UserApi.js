@@ -41,7 +41,8 @@ function sendResetLink(email) {
     url: `${USER_API_URL}/password_reset_link`,
     method: "POST",
     data: {
-      email: email
+      email: email,
+      host: "localhost:5000"
     },
     headers: {
       Accept: "application/json",
@@ -50,11 +51,12 @@ function sendResetLink(email) {
   });
 }
 
-function resetPassword(password) {
+function resetPassword(password, token) {
   return axios({
     url: `${USER_API_URL}/reset_password`,
     method: "POST",
     data: {
+      token: token,
       password: password
     },
     headers: {

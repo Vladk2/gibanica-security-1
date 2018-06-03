@@ -6,7 +6,10 @@ export default class ResetPassword extends React.Component {
     super(props);
 
     this.state = {
-      passwordValidationMessage: undefined
+      passwordValidationMessage: undefined,
+      passwordsDontMatch: false,
+      requestExpired: false,
+      requestAlreadySubmitted: false
     };
 
     this.password = "";
@@ -17,23 +20,49 @@ export default class ResetPassword extends React.Component {
     this.link = this.parseUrl();
   }
 
-  parseUrl = () => {};
+  parseUrl = () => {
+    const search_params = this.props.location.search;
+    if (search_params) {
+      const token = search_params.split("?link=")[1];
+      this.token = token;
+    }
+  };
 
   submit = () => {
     if (this.passwordsMatch()) {
-      resetPassword(this.password)
+      this.resetRequestCheckers();
+      resetPassword(this.password, this.token)
         .then(res => {
           if (res.status === 200) {
             window.location.replace("/");
+          } else if (res.status === 204) {
+            alert("Link from your email is not recognized");
           }
         })
-        .catch(err => console.log(err.response));
+        .catch(err => {
+          if (err.response.status === 406) {
+            this.setState({ requestExpired: true });
+          } else if (err.response.status === 423) {
+            this.setState({ requestAlreadySubmitted: true });
+          }
+        });
+    } else {
+      this.setState({ passwordsDontMatch: true });
     }
+  };
+
+  resetRequestCheckers = () => {
+    this.setState({ requestAlreadySubmitted: false, requestExpired: false });
   };
 
   passwordStrong = password => {
     if (password.length > 0) {
-      if (!/^.{8,}$/.test(password)) {
+      if (/(?=.*[\\])/.test(password)) {
+        // backslash is not allowed
+        this.setState({
+          passwordValidationMessage: "Backslash is not allowed"
+        });
+      } else if (!/^.{8,}$/.test(password)) {
         // at least 8 chars
         this.setState({
           passwordValidationMessage:
@@ -47,10 +76,22 @@ export default class ResetPassword extends React.Component {
       } else if (!/(?=.*[A-Z])/.test(password)) {
         // at least 1 capital letter
         this.setState({
-          passwordValidationMessage: "Password must contain at 1 capital letter"
+          passwordValidationMessage:
+            "Password must contain at least 1 uppercase letter"
         });
-      } else if (false) {
+      } else if (!/(?=.*[a-z])/.test(password)) {
         // at least 1 small letter
+        this.setState({
+          passwordValidationMessage:
+            "Password must contain at least 1 downcase letter"
+        });
+      } else if (!/(?=.*[ !@#$%^&*+=~.,:;/"'`?{}[\]<>()])/.test(password)) {
+        // at least 1 special character
+        this.setState({
+          passwordValidationMessage:
+            "Password must contain at 1 least special character \n ( !@#$%^&*+=~.,:;/\" '`?{}" +
+            "[]()<>)"
+        });
       } else {
         if (this.state.passwordValidationMessage) {
           this.setState({ passwordValidationMessage: undefined });
@@ -77,7 +118,12 @@ export default class ResetPassword extends React.Component {
   };
 
   render() {
-    const { passwordValidationMessage } = this.state;
+    const {
+      passwordValidationMessage,
+      passwordsDontMatch,
+      requestAlreadySubmitted,
+      requestExpired
+    } = this.state;
     return (
       <div>
         <div
@@ -109,8 +155,9 @@ export default class ResetPassword extends React.Component {
             <h2>
               <b>Reset your password</b>
             </h2>
+            <br />
             <p>
-              Strong passwords include numbers, letters, and punctuation marks.
+              Strong passwords include numbers, letters, and special characters.
             </p>
             <br />
             <label>
@@ -133,7 +180,14 @@ export default class ResetPassword extends React.Component {
                   color: "orange"
                 }}
               >
-                <b>{passwordValidationMessage}</b>
+                {passwordValidationMessage.includes("\n") ? (
+                  <b>
+                    {passwordValidationMessage.split("\n")[0]}
+                    <br /> {passwordValidationMessage.split("\n")[1]}
+                  </b>
+                ) : (
+                  <b>{passwordValidationMessage}</b>
+                )}
               </p>
             ) : null}
             <label>
@@ -150,8 +204,36 @@ export default class ResetPassword extends React.Component {
                 }}
               />
             </div>
+            {requestExpired ? (
+              <p
+                style={{
+                  color: "orange"
+                }}
+              >
+                This request has expired
+              </p>
+            ) : null}
+            {requestAlreadySubmitted ? (
+              <p
+                style={{
+                  color: "orange"
+                }}
+              >
+                This request has already been submitted
+              </p>
+            ) : null}
+            {passwordsDontMatch ? (
+              <label
+                style={{
+                  color: "red"
+                }}
+              >
+                <b>Passwords don`t match</b>
+              </label>
+            ) : null}
             <br />
             <button
+              onClick={this.submit}
               className="btn"
               type="button"
               style={{

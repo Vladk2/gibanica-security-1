@@ -1,12 +1,12 @@
 user = User.new(email: 'g@g.com', name: 'admin', last_name: 'admin')
-user.hash_password('123')
+user.hash_password('aaAA11##')
 user.save!
 
 Role.new(name: 'operater').save!
 Role.new(name: 'admin').save!
 
 u = User.first(email: "g@g.com")
-u.roles << Role.find_by(name: "admin")
+u.roles << Role.where(name: "admin")
 u.save!
 
 for i in 1..400 do
