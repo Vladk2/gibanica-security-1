@@ -9,7 +9,7 @@
 					  { "path": PATH_TO_LOGFILE,"log_format": "sample_format", "filter_by": "ERROR|WARNING"} ,
 					  { "path": PATH_TO_OTHER_LOGFILE,"log_format": "pacman_format", "filter_by": "2018-06-03"}
 					  ],
-	"win_event_logs": {"read_event_logs": boolean, "log_type(s)": "system | application"}
+	"win_event_logs": {"read_event_logs": boolean, "filter_by": "2018-06-03", "log_type(s)": "system | application"}
 	"batch_size" : NUMBER,
 	"max_time" : NUMBER_OF_SECONDS 
 	}
