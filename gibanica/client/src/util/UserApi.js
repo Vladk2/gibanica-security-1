@@ -4,14 +4,18 @@ import axios from "axios";
 const host = "localhost:3000";
 const USER_API_URL = `https://${host}/users`;
 
-function login(formData, headers) {
+function login(email, password) {
   return axios({
     method: "POST",
-    headers: headers,
-    data: formData,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    data: {
+      email: email,
+      password: password
+    },
     url: `${USER_API_URL}/login`
-  }).catch(err => {
-    console.log(JSON.stringify(err));
   });
 }
 
@@ -27,10 +31,9 @@ function checkUserEmail(email) {
       email: email
     },
     headers: {
-      Accept: "application/json",
       "Content-Type": "application/json"
     }
-  }).catch(err => console.log(err));
+  });
 }
 
 function sendResetLink(email) {
@@ -42,9 +45,22 @@ function sendResetLink(email) {
     },
     headers: {
       Accept: "application/json",
-      ContentType: "application/json"
+      "Content-Type": "application/json"
     }
-  }).catch(err => console.log(err));
+  });
 }
 
-export { login, logout, checkUserEmail, sendResetLink };
+function resetPassword(password) {
+  return axios({
+    url: `${USER_API_URL}/reset_password`,
+    method: "POST",
+    data: {
+      password: password
+    },
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+export { login, logout, checkUserEmail, sendResetLink, resetPassword };

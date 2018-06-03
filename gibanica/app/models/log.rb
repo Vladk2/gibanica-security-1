@@ -1,6 +1,5 @@
 class Log
   include Mongoid::Document
-  # include Mongoid::Timestamps
 
   field :logged_date, type: Date
   field :logged_time, type: Time

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     collection do
       post :login
       post :email_valid
+      post :password_reset_link
     end
   end
 

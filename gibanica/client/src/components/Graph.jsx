@@ -107,15 +107,19 @@ export default class Graph extends React.Component {
     return (
       <div>
         {loaded ? (
-          <div>
+          <div
+            style={{
+              paddingTop: "1%"
+            }}
+          >
             <Bar
               data={this.data}
-              height={window.innerHeight / 25}
+              height={window.innerHeight / 20}
               options={this.options}
             />
             <div
               style={{
-                paddingTop: "5%"
+                paddingTop: "7%"
               }}
             />
           </div>

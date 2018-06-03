@@ -1,6 +1,4 @@
 import React from "react";
-import ReactOnRails from "react-on-rails";
-
 import { login } from "../../util/UserApi";
 
 export default class LoginForm extends React.Component {
@@ -12,22 +10,23 @@ export default class LoginForm extends React.Component {
   }
 
   signIn = () => {
-    const formData = new URLSearchParams();
+    login(this.email, this.password)
+      .then(res => {
+        if (res.status === 200) {
+          // set to local storage
+          localStorage.setItem("token", res.data.token);
 
-    formData.append("email", this.email);
-    formData.append("password", this.password);
-
-    login(formData, ReactOnRails.authenticityHeaders()).then(res => {
-      if (res.status === 200) {
-        // set to local storage
-        localStorage.setItem("token", res.data.token);
-
-        window.location.assign("/logs");
-        return;
-      } else {
-        // show wrong login alert
-      }
-    });
+          window.location.assign("/logs");
+          return;
+        } else {
+          // show wrong login alert
+        }
+      })
+      .catch(err => {
+        if (err.response.status === 401) {
+          alert("Wrong credentials");
+        }
+      });
   };
 
   render() {

@@ -29,6 +29,10 @@ module Gibanica
         origins 'https://localhost:5000'
         resource '*', headers: :any, methods: %i[get post]
       end
+      allow do
+        origins '*'
+        resource '/logs', headers: :any, method: %i[create]
+      end
     end
 
     # Settings in config/environments/* take precedence over those specified here.

@@ -1,67 +1,83 @@
 import React from "react";
-import { Radio } from "react-bootstrap";
-import { sendResetLink } from "../../util/UserApi";
+import { resetPassword } from "../../util/UserApi";
 
 export default class ResetPassword extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      logged: false
+      passwordValidationMessage: undefined
     };
+
+    this.password = "";
+    this.password_repeat = "";
   }
 
   componentWillMount() {
-    if (localStorage.getItem("token")) {
-      this.setState(
-        {
-          logged: true
-        },
-        () => window.location.replace("/logs")
-      );
-    }
+    this.link = this.parseUrl();
   }
 
-  hideEmail = email => {
-    let hiddenEmail = email;
+  parseUrl = () => {};
 
-    const tokens = hiddenEmail.split("@");
-
-    const username = tokens[0];
-    const domain = tokens[1];
-
-    if (username.length > 1) {
-      hiddenEmail =
-        username[0] +
-        "*".repeat(username.length - 2) +
-        username[username.length - 1] +
-        "@" +
-        domain;
-    } else {
-      hiddenEmail = `${username}@${"*".repeat(domain.length)}`;
+  submit = () => {
+    if (this.passwordsMatch()) {
+      resetPassword(this.password)
+        .then(res => {
+          if (res.status === 200) {
+            window.location.replace("/");
+          }
+        })
+        .catch(err => console.log(err.response));
     }
-
-    return hiddenEmail;
   };
 
-  sendEmail = () => {
-    if (!this.props.email) {
-      return null;
+  passwordStrong = password => {
+    if (password.length > 0) {
+      if (!/^.{8,}$/.test(password)) {
+        // at least 8 chars
+        this.setState({
+          passwordValidationMessage:
+            "Password must be at least 8 characters long"
+        });
+      } else if (!/(?=(.*\d){2})/.test(password)) {
+        // at least 2 digits
+        this.setState({
+          passwordValidationMessage: "Password must contain at least 2 digits"
+        });
+      } else if (!/(?=.*[A-Z])/.test(password)) {
+        // at least 1 capital letter
+        this.setState({
+          passwordValidationMessage: "Password must contain at 1 capital letter"
+        });
+      } else if (false) {
+        // at least 1 small letter
+      } else {
+        if (this.state.passwordValidationMessage) {
+          this.setState({ passwordValidationMessage: undefined });
+        }
+      }
+    } else {
+      if (this.state.passwordValidationMessage) {
+        this.setState({ passwordValidationMessage: undefined });
+      }
+    }
+  };
+
+  passwordsMatch = () => {
+    if (this.password === this.password_repeat) {
+      return true;
     }
 
-    sendResetLink(this.props.email).then(res => {
-      console.log(res);
-    });
+    return false;
+  };
+
+  setPassword = password => {
+    this.password = password;
+    this.passwordStrong(this.password);
   };
 
   render() {
-    const { logged } = this.state;
-    const { email } = this.props;
-
-    if (logged) {
-      return null;
-    }
-
+    const { passwordValidationMessage } = this.state;
     return (
       <div>
         <div
@@ -84,22 +100,58 @@ export default class ResetPassword extends React.Component {
             margin: "auto"
           }}
         >
-          <h4>
-            We found the following information associated with your account.
-          </h4>
-          <br />
           <div
             style={{
               textAlign: "left",
               paddingLeft: "5%"
             }}
           >
-            <Radio checked readOnly>
-              {this.hideEmail(email)}
-            </Radio>
+            <h2>
+              <b>Reset your password</b>
+            </h2>
+            <p>
+              Strong passwords include numbers, letters, and punctuation marks.
+            </p>
+            <br />
+            <label>
+              <b>Type your new password</b>
+            </label>
+            <div className="input-group">
+              <input
+                onChange={e => this.setPassword(e.target.value)}
+                type="password"
+                className="form-control"
+                style={{
+                  borderRadius: 25,
+                  width: 300
+                }}
+              />
+            </div>
+            {passwordValidationMessage ? (
+              <p
+                style={{
+                  color: "orange"
+                }}
+              >
+                <b>{passwordValidationMessage}</b>
+              </p>
+            ) : null}
+            <label>
+              <b>Type your new password one more time</b>
+            </label>
+            <div className="input-group">
+              <input
+                onChange={e => (this.password_repeat = e.target.value)}
+                type="password"
+                className="form-control"
+                style={{
+                  borderRadius: 25,
+                  width: 300
+                }}
+              />
+            </div>
             <br />
             <button
-              onClick={this.sendEmail}
               className="btn"
               type="button"
               style={{
@@ -108,7 +160,7 @@ export default class ResetPassword extends React.Component {
                 borderRadius: 25
               }}
             >
-              Continue
+              Submit
             </button>
           </div>
         </div>

@@ -1,13 +1,15 @@
 import React from "react";
 import { checkUserEmail } from "../../util/UserApi";
-import ResetPassword from "./ResetPassword";
+import SendPasswordResetEmail from "./SendPasswordResetEmail";
 
 export default class ForgotPassword extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      logged: false
+      logged: false,
+      emailFound: undefined,
+      emailNotValid: false
     };
 
     this.email = "";
@@ -30,27 +32,34 @@ export default class ForgotPassword extends React.Component {
   };
 
   search = () => {
+    this.setCheckersToDefault();
+
     if (this.emailValidation(this.email)) {
       checkUserEmail(this.email).then(res => {
-        console.log(res);
         if (res.status === 200) {
           this.setState({ emailFound: true });
         } else {
-          console.log("Email not found");
+          this.setState({ emailFound: false });
         }
       });
+    } else {
+      this.setState({ emailNotValid: true });
     }
   };
 
+  setCheckersToDefault = () => {
+    this.setState({ emailFound: undefined, emailNotValid: false });
+  };
+
   render() {
-    const { logged, emailFound } = this.state;
+    const { logged, emailFound, emailNotValid } = this.state;
 
     if (logged) {
       return null;
     }
 
     if (emailFound) {
-      return <ResetPassword email={this.email} />;
+      return <SendPasswordResetEmail email={this.email} />;
     }
 
     return (
@@ -104,6 +113,24 @@ export default class ForgotPassword extends React.Component {
               </button>
             </div>
           </div>
+          {emailFound === false ? (
+            <p
+              style={{
+                color: "orange"
+              }}
+            >
+              <b>Email not found</b>
+            </p>
+          ) : null}
+          {emailNotValid ? (
+            <p
+              style={{
+                color: "red"
+              }}
+            >
+              <b>Email not valid</b>
+            </p>
+          ) : null}
         </div>
       </div>
     );
