@@ -1,5 +1,5 @@
 class UserMailer < ApplicationMailer
-  default from: 'password@gibanica-security.com'
+  default from: 'stefan.kikanovic@yahoo.com'
 
   def password_reset
     @name = params[:name]

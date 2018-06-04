@@ -1,11 +1,11 @@
-user = User.new(email: 'g@g.com', name: 'admin', last_name: 'admin')
+user = User.new(email: 'riggy.ruter@gmail.com', name: 'admin', last_name: 'admin')
 user.hash_password('aaAA11##')
 user.save!
 
 Role.new(name: 'operater').save!
 Role.new(name: 'admin').save!
 
-u = User.first(email: "g@g.com")
+u = User.where(email: "g@g.com").first
 u.roles << Role.where(name: "admin")
 u.save!
 

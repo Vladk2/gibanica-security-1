@@ -20,7 +20,10 @@ module Gibanica
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.1
+
     config.api_only = true
+
+    config.active_job.queue_adapter = :sidekiq
 
     Mongoid::QueryCache.enabled = false
 
