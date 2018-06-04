@@ -51,7 +51,7 @@ export default class Index extends React.Component {
           <div className="col-md-1" />
           <div className="col-md-7">
             <Jumbotron>
-              <h1>Gibanica Mental Facility</h1>
+              <h1>Gibanica Security</h1>
               <p>
                 Ah ah ay, corazón espinado Cómo duele, me duele no amar Ah ah
                 ay, cómo me duele el amor

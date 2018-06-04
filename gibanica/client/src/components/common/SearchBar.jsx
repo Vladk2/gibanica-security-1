@@ -48,7 +48,16 @@ export default class SearchBar extends React.Component {
   }
 
   search = () => {
-    // will be changed this.props.updateLogs();
+    if (this.queryValid()) {
+      // send query
+      console.log("valid");
+    }
+  };
+
+  queryValid = () => {
+    /^(\s*{\s*(severity|message|host|process|)\s*:\s*.*?})(,(\s*{\s*(severity|message|host|process|)\s*:\s*.*?}))*$/.test(
+      this.searchBy
+    );
   };
 
   dropdownSelect = eventKey => {

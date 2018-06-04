@@ -13,7 +13,7 @@ export default class NavBar extends React.Component {
       <Navbar>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#home">Gibanica Mental Facility</a>
+            <a href="#home">Gibanica Security</a>
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
