@@ -5,7 +5,8 @@ import threading
 import win32evtlog # pip install pywin32
 from win32event import *
 import win32evtlogutil
-
+from syslogmp import parse
+import requests
 
 
 def readConf():
@@ -52,6 +53,13 @@ def sendLogs(logs):
 	print("\n\nSENDING LOGS: \n")
 	print(logs)
 	print("\n")
+	
+	url = "http://localhost:3000/logs" if not len(sys.argv) == 2 else sys.argv[1]
+    headers = {'Content-type': 'application/json'}
+
+    r = requests.post(url, json={"agent": "pacman", "logs": logs}, headers=headers)
+    if r.status_code == 200:
+        print('Logs have been sent successfully')
 
 
 class WinEventLogReader(threading.Thread):
