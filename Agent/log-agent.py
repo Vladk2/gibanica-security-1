@@ -7,7 +7,7 @@ from win32event import *
 import win32evtlogutil
 from syslogmp import parse
 import requests
-
+import dateutil.parser as parser
 
 def readConf():
 	'''
@@ -16,9 +16,9 @@ def readConf():
 	CONFIGURATION FILE EXAMPLE:
 	{
 	"log_formats": [
-    				{"sample_format": <regex>},
-    				{"pacman_format": <regex>}
-    				],
+					{"sample_format": <regex>},
+					{"pacman_format": <regex>}
+					],
 	"log_files": [
 					  { "path": PATH_TO_LOGFILE,"log_format": "sample_format", "filter_by": "ERROR|WARNING"} ,
 					  { "path": PATH_TO_OTHER_LOGFILE,"log_format": "pacman_format", "filter_by": "2018-06-03"}
@@ -53,13 +53,13 @@ def sendLogs(logs):
 	print("\n\nSENDING LOGS: \n")
 	print(logs)
 	print("\n")
-	
-	url = "http://localhost:3000/logs" if not len(sys.argv) == 2 else sys.argv[1]
-    headers = {'Content-type': 'application/json'}
 
-    r = requests.post(url, json={"agent": "pacman", "logs": logs}, headers=headers)
-    if r.status_code == 200:
-        print('Logs have been sent successfully')
+	url = "http://localhost:3000/logs" if not len(sys.argv) == 2 else sys.argv[1]
+	headers = {'Content-type': 'application/json'}
+
+	r = requests.post(url, json={"agent": "pacman", "logs": logs}, headers=headers)
+	if r.status_code == 200:
+		print('Logs have been sent successfully')
 
 
 class WinEventLogReader(threading.Thread):
@@ -187,6 +187,9 @@ def parseLog(log, log_format):
 		#time = match.group("time").split(",")[0]
 		if("date" in pattern.groupindex and "time" in pattern.groupindex):
 			datetime = match.group("date") + " " + match.group("time")
+
+			
+
 			log_json["logged_date"] = match.group("date")
 			log_json["logged_time"] = datetime
 		if("host" in pattern.groupindex):
