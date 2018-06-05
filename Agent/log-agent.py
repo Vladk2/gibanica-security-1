@@ -25,18 +25,18 @@ def readConf():
 					  ],
 	"win_event_logs": {"read_event_logs": boolean, "log_type(s)": "system | application"}
 	"batch_size" : NUMBER,
-	"max_time" : NUMBER_OF_SECONDS 
+	"max_time" : NUMBER_OF_SECONDS
 	}
 
 	EXPLANATION AND USAGE:
 	log_formats: Contains a list of log formats. Every format has its name as key, and a regular expression of log format as value.
-				 If you're defining a new format, make sure that you escape all special characters in regex (for example, replace "\" with "\\"). 
+				 If you're defining a new format, make sure that you escape all special characters in regex (for example, replace "\" with "\\").
 				 Also make sure that you give provided names for groups in regex. Only groups with provided names can be parsed. Provided names so far are: date, time, host, process, severity and message.
 				 Example of one log format: {"example_format": "(?P<date>[a-zA-Z0-9]+)\\s+(?P<host>\w*)}"
 	log_files: Contains a list of log files with its configuration.
 			path: Path to the logfile that you want to read from.
 			log_format: Format of your logs that you're reading - must be one from list in "log_formats"(object key is the name of the format).
-			filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file. 
+			filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file.
 	win_event_logs: This field is only for Windows users.
 			read_event_logs: Boolean value. Agent will read system event logs only if it's True.
 			log_type(s): Choose what kind of system logs You want to read (system or application). If you leave an empty string, then it will read them both.
@@ -44,7 +44,7 @@ def readConf():
 	batch_size: Max. number of logs that Agent can store before sending them to the SIEM.
 	max_time: Max. number of seconds that Agent can store logs before sending them to the SIEM.
 	'''
-	
+
 	data = json.load(open('log-agent.conf'))
 	return data['log_files'], data['batch_size'], data['max_time'], data['win_event_logs'], data['log_formats']
 
@@ -71,7 +71,7 @@ class WinEventLogReader(threading.Thread):
 		self.logtype = logtype
 
 	def run(self):
-		
+
 		self.hand = win32evtlog.OpenEventLog(self.server,self.logtype)
 		global time_limit
 		flags = win32evtlog.EVENTLOG_FORWARDS_READ|win32evtlog.EVENTLOG_SEEK_READ
@@ -118,13 +118,13 @@ class WinEventLogReader(threading.Thread):
 						print("\n\n")
 				ResetEvent(evnthndl)
 				prevNumOfRecs = numOfRec
-				
+
 
 
 
 def readLogFiles():
 	now = time.time()
-	global time_limit 
+	global time_limit
 	time_limit = now + max_time
 	for file in log_files:
 		print(file)
@@ -137,7 +137,7 @@ def readLogFile(log_file_conf):
 		for log in Pygtail(log_file_conf["path"]):
 			log = checkLog(log, log_file_conf)
 			if(log != None):
-				logs.append(log)			
+				logs.append(log)
 				if(len(logs) >= batch_size or time.time() > time_limit):
 					now = time.time()
 					time_limit = now + max_time
@@ -162,7 +162,7 @@ def checkLog(log, log_file_conf):
 			return None
 
 def parseLog(log, log_format):
-	
+
 	format_found = False
 	log_format_regex = ""
 	for format_ in log_formats:
@@ -211,7 +211,7 @@ def readWinEventLogs():
 		log_type = "System"
 	elif(event_logs["log_type(s)"] == "application"):
 		log_type = "Application"
-	if(event_logs["log_type(s)"] == ""):	
+	if(event_logs["log_type(s)"] == ""):
 		systemEventViewer1 = WinEventLogReader('localhost', "System")
 		systemEventViewer2 = WinEventLogReader('localhost', "Application")
 		systemEventViewer1.start()
@@ -221,7 +221,7 @@ def readWinEventLogs():
 		systemEventViewer.start()
 	else:
 		print("Cannot read event logs. Possible reason: Bad configuration.")
-	
+
 
 
 if __name__ == '__main__':
@@ -229,16 +229,16 @@ if __name__ == '__main__':
 	logs = []
 	time_limit = 0
 	log_files, batch_size, max_time, event_logs, log_formats = readConf()
-	
-	if(platform.system() == "Windows" and event_logs["read_event_logs"]):	
+
+	if(platform.system() == "Windows" and event_logs["read_event_logs"]):
 		readWinEventLogs()
 	if log_files:
 		readLogFiles()
 
 
-	
 
-	
+
+
 
 
 
