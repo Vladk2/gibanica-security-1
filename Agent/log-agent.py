@@ -171,18 +171,21 @@ def parseLog(log, log_format):
 			log_format_regex = format_[log_format]
 			format_found = True
 		if(log_format == "RFC 3164"):
-			# Parse data (usually received via network).
+			
 			log_byte = str.encode(log)
 			message = parse(log_byte)
-			datetime_parsed = message.timestamp
-			datetime = datetime_parsed.strftime('%d-%m-%Y %H:%M:%S')
+			splited_msg = message.message.decode('utf-8').split("]:", 1)
+			datetime = message.timestamp
 			log_json = {}
-			log_json["logged_date"] = datetime.split(" ")[0]
-			log_json["logged_time"] = datetime
-			log_json["host"] = message.message.split("]:", 1)[0].strip()
-			log_json["process"] = match.group("process")
-			log_json["severity"] = message.severity
-			log_json["message"] = message.message
+			log_json["logged_date"] = datetime.strftime('%Y-%M-%D')
+            log_json["logged_time"] = datetime.strftime('%Y-%M-%D %H:%m:%s')
+            log_json["host"] = message.hostname
+            log_json["process"] = splited_msg[0].strip()+']'
+            if(message.severity.name == "informational"):
+            	log_json["severity"] = "INFO"
+            else:
+            	log_json["severity"] = message.severity.name.upper()
+            log_json["message"] = splited_msg[1].strip()
 			return log_json
 		#<30>Jun  5 02:36:06 stefan-pc systemd: Started Syslog service for accepting logs from journald.
 	if(format_found):
