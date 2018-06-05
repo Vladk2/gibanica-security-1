@@ -12,6 +12,7 @@ gem 'rack-cors', require: 'rack/cors'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 gem 'sidekiq'
+gem 'rack-attack'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
