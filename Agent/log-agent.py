@@ -174,7 +174,8 @@ def parseLog(log, log_format):
 			# Parse data (usually received via network).
 			log_byte = str.encode(log)
 			message = parse(log_byte)
-			datetime = message.timestamp
+			datetime_parsed = message.timestamp
+			datetime = datetime_parsed.strftime('%d-%m-%Y %H:%M:%S')
 			log_json = {}
 			log_json["logged_date"] = datetime.split(" ")[0]
 			log_json["logged_time"] = datetime
