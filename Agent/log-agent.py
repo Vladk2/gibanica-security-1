@@ -2,12 +2,13 @@ import sys
 import json, re, requests, time, platform
 from pygtail import Pygtail
 import threading
-import win32evtlog # pip install pywin32
-from win32event import *
-import win32evtlogutil
 from syslogmp import parse
 import requests
 import dateutil.parser as parser
+if platform.system() != 'Linux':  # only for Windows users
+	import win32evtlog  # pip install pywin32
+	from win32event import *
+	import win32evtlogutil
 
 def readConf():
 	'''
@@ -169,7 +170,20 @@ def parseLog(log, log_format):
 		if(log_format in format_):
 			log_format_regex = format_[log_format]
 			format_found = True
-
+		if(log_format == "RFC 3164"):
+			# Parse data (usually received via network).
+			log_byte = str.encode(log)
+			message = parse(log_byte)
+			datetime = message.timestamp
+			log_json = {}
+			log_json["logged_date"] = datetime.split(" ")[0]
+			log_json["logged_time"] = datetime
+			log_json["host"] = message.message.split("]:", 1)[0].strip()
+			log_json["process"] = match.group("process")
+			log_json["severity"] = message.severity
+			log_json["message"] = message.message
+			return log_json
+		#<30>Jun  5 02:36:06 stefan-pc systemd: Started Syslog service for accepting logs from journald.
 	if(format_found):
 		log_format_raw = log_format_regex.encode('unicode_escape').decode()
 		pattern = re.compile(log_format_regex)
@@ -188,10 +202,11 @@ def parseLog(log, log_format):
 		if("date" in pattern.groupindex and "time" in pattern.groupindex):
 			datetime = match.group("date") + " " + match.group("time")
 
-			
-
-			log_json["logged_date"] = match.group("date")
-			log_json["logged_time"] = datetime
+			date = parser.parse(datetime)
+			datetime_formated = date.strftime('%d-%m-%Y %H:%M:%S')
+			date_formated = date.strftime('%d-%m-%Y')
+			log_json["logged_date"] = date_formated
+			log_json["logged_time"] = datetime_formated
 		if("host" in pattern.groupindex):
 			log_json["host"] = match.group("host")
 		if("process" in pattern.groupindex):
