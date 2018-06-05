@@ -1,5 +1,9 @@
 import sys
-import json, re, requests, time, platform
+import json
+import re
+import requests
+import time
+import platform
 from pygtail import Pygtail
 import threading
 from syslogmp import parse
@@ -21,8 +25,10 @@ def readConf():
 					{"pacman_format": <regex>}
 					],
 	"log_files": [
-					  { "path": PATH_TO_LOGFILE,"log_format": "sample_format", "filter_by": "ERROR|WARNING"} ,
-					  { "path": PATH_TO_OTHER_LOGFILE,"log_format": "pacman_format", "filter_by": "2018-06-03"}
+					  { "path": PATH_TO_LOGFILE,"log_format": "sample_format",
+					      "filter_by": "ERROR|WARNING"} ,
+					  { "path": PATH_TO_OTHER_LOGFILE,
+					      "log_format": "pacman_format", "filter_by": "2018-06-03"}
 					  ],
 	"win_event_logs": {"read_event_logs": boolean, "log_type(s)": "system | application"}
 	"batch_size" : NUMBER,
@@ -114,8 +120,8 @@ class WinEventLogReader(threading.Thread):
 							logs.clear()
 						print(" EVENT: \n")
 						print(evJson)
-						#print("\n All events: \n")
-						#print(logs)
+						# print("\n All events: \n")
+						# print(logs)
 						print("\n\n")
 				ResetEvent(evnthndl)
 				prevNumOfRecs = numOfRec
@@ -146,11 +152,11 @@ def readLogFile(log_file_conf):
 					logs.clear()
 
 def checkLog(log, log_file_conf):
-	#log: 2018-06-02 04:58:04,977  root  port-scanner2  ERROR  {'port': 445, 'isOpen': True}
-	#regex: (?P<date>[0-9]+-[0-9]+-[0-9]+)\s(?P<time>([0-9]+:[0-9]+:[0-9,]+)\s+(?P<host>.*?)\s+(?P<process>.*?)\s+(?P<severity>.*?)\s+(?P<message>.*)
+	# log: 2018-06-02 04:58:04,977  root  port-scanner2  ERROR  {'port': 445, 'isOpen': True}
+	# regex: (?P<date>[0-9]+-[0-9]+-[0-9]+)\s(?P<time>([0-9]+:[0-9]+:[0-9,]+)\s+(?P<host>.*?)\s+(?P<process>.*?)\s+(?P<severity>.*?)\s+(?P<message>.*)
 
-	#log: May 24 18:50:48 notebook sudo[1144]:   stefan : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/pacman -Ss syslog ng
-	#regex: (?P<date>[a-zA-Z]+\s+[0-9]+)\s+(?P<time>[0-9]+:[0-9]+:[0-9]+)\s+(?P<host>.*?)\s+(?P<process>.*?)\s+(?P<message>.*)
+	# log: May 24 18:50:48 notebook sudo[1144]:   stefan : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/pacman -Ss syslog ng
+	# regex: (?P<date>[a-zA-Z]+\s+[0-9]+)\s+(?P<time>[0-9]+:[0-9]+:[0-9]+)\s+(?P<host>.*?)\s+(?P<process>.*?)\s+(?P<message>.*)
 
 	parsed_log = parseLog(log, log_file_conf["log_format"])
 	if(parsed_log == None):
@@ -198,7 +204,7 @@ def parseLog(log, log_format):
 		return None
 	else:
 		log_json = {}
-		#time = match.group("time").split(",")[0]
+		# time = match.group("time").split(",")[0]
 		if("date" in pattern.groupindex and "time" in pattern.groupindex):
 			datetime = match.group("date") + " " + match.group("time")
 

@@ -67,39 +67,6 @@ class LogsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def log_params
       # check for agents sending logs. based on agent, allow different params
-      case params[:agent]
-      when 'vladk'
-        params.permit(logs: [:logged_time, :host, :process, :severity,
-                              {
-                                message: %i[port isOpen]
-                              }
-                            ]).require(:logs)
-      when 'miko'
-        params.permit(logs: [:logged_time, :host, :process, :severity,
-                              {
-                                message: %i[name user time is_dir dir_path action]
-                              }
-                            ]).require(:logs)
-      when 'dragan'
-        params.permit(logs: [:host, :logged_time, :process, :severity,
-                              {
-                                message: %i[username method]
-                              }
-                            ]).require(:logs)
-      when 'stanija'
-        params.permit(logs: [:host, :logged_time, :process, :severity,
-                              {
-                                message: %i[frequency temperature memory swap]
-                              }
-                            ]).require(:logs)
-      when 'pacman'
-        params.permit(logs: [:host, :logged_time, :process, :severity,
-                              {
-                                message: %i[content]
-                              }
-                            ]).require(:logs)
-      else
-        puts 'Agent not recognized'
-      end
+      params.permit(logs: %i[host logged_date logged_time process severity message]).require(:logs)
     end
 end
