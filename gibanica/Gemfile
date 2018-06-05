@@ -13,6 +13,7 @@ gem 'rack-cors', require: 'rack/cors'
 gem 'puma', '~> 3.7'
 gem 'sidekiq'
 gem 'rack-attack'
+gem 'redis-rails'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 

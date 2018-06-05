@@ -59,7 +59,13 @@ export default class SendPasswordResetEmail extends React.Component {
           this.setState({ emailSent: true });
         }
       })
-      .catch(err => console.log(err.status));
+      .catch(err => {
+        if (err.response.status === 503) {
+          alert(
+            "You already reached maximum password resend mails within 2 minutes."
+          );
+        }
+      });
   };
 
   render() {
