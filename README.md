@@ -6,7 +6,7 @@
     > bundle install --path vendor/bundle
     > cd client
     > yarn --ignore-engines
-    > openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem
+    > openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem -subj /CN=localhost
 
  - RUN REDIS
     > redis-server

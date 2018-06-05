@@ -1,4 +1,5 @@
 class LogsController < ApplicationController
+  skip_before_action :authenticate_user, only: %w[create]
   before_action :accept_json_only, only: [:index]
   before_action :admin?, only: %w[host_status monthly_status]
   before_action :content_type_json_only, only: [:create]

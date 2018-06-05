@@ -32,11 +32,14 @@ module Gibanica
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins 'https://localhost:5000'
-        resource '*', headers: :any, methods: %i[get post]
+        resource '/users', headers: :any, methods: %i[get post]
+        resource '/logs', headers: :any, methods: %i[get]
+        resource '/logs/*', headers: :any, methods: %i[get]
       end
+
       allow do
         origins '*'
-        resource '/logs', headers: :any, method: %i[create]
+        resource '/logs', headers: :any, method: %i[post]
       end
     end
 
