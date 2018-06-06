@@ -11,11 +11,8 @@
  - RUN REDIS
     > redis-server
 
- - RUN SIDEKIQ (gibanica directory)
-    > bundle exec sidekiq -q default -q mailers
-
  - RUN SERVER API (gibanica directory):
-    > bundle exec rails s -b 'ssl://localhost:3000?key=cert.key&cert=cert.pem'
+    > foreman start -f Procfile.dev
 
  - RUN FRONTEND (gibanica/client/ directory):
  	> yarn start
