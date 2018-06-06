@@ -55,6 +55,20 @@ export default class Graph extends React.Component {
       };
 
       this.parseGraphDataPerHost(this.props.data.data);
+    } else if (type === "system") {
+      this.data = {
+        labels: ["Gibanica Security"],
+        datasets: [
+          {
+            label: "Number of Logs Submitted - All Time",
+            backgroundColor: "#669999",
+            borderColor: "#ffffff",
+            data: [this.props.data.data]
+          }
+        ]
+      };
+
+      this.setState({ loaded: true });
     }
   }
 

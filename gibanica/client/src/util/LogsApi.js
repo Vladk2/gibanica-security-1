@@ -33,6 +33,14 @@ function getNumberOfLogsInsertedPerHost() {
   });
 }
 
+function getNumberOfLogsInserted() {
+  return axios.get(`${LOGS_API_URL}/system_status`, {
+    headers: {
+      Accept: "application/json"
+    }
+  });
+}
+
 function searchLogs(page, query) {
   return fetch(`https://${LOGS_API_URL}?page=${page}&query=${query}`, {
     headers: {
@@ -47,5 +55,6 @@ export {
   getLogsPerPage,
   searchLogs,
   getNumberOfLogsInsertedPerDay,
-  getNumberOfLogsInsertedPerHost
+  getNumberOfLogsInsertedPerHost,
+  getNumberOfLogsInserted
 };

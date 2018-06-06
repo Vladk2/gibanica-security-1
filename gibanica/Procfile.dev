@@ -1,0 +1,2 @@
+web: bundle exec rails s -b 'ssl://localhost:3000?cert=cert.pem&key=cert.key'
+worker: bundle exec sidekiq -q default -q mailers

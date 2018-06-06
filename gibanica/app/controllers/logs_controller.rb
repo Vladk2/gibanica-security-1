@@ -39,6 +39,11 @@ class LogsController < ApplicationController
     render json: Log.inserted_logs_status('host'), status: :ok
   end
 
+  # GET /logs/system_status
+  def system_status
+    render json: Log.count, status: :ok
+  end
+
   # POST /logs
   def create
     Log.batch_save!(log_params)
