@@ -33,7 +33,7 @@ export default class Graph extends React.Component {
         datasets: [
           {
             label: "Number of Logs Submitted Per Day",
-            backgroundColor: "#669999",
+            backgroundColor: "#33aca8",
             borderColor: "#ffffff",
             data: Array(30).fill(0)
           }
@@ -47,7 +47,7 @@ export default class Graph extends React.Component {
         datasets: [
           {
             label: "Number of Logs Submitted Per Machine",
-            backgroundColor: "#669999",
+            backgroundColor: "#33aca8",
             borderColor: "#ffffff",
             data: []
           }
@@ -61,7 +61,7 @@ export default class Graph extends React.Component {
         datasets: [
           {
             label: "Number of Logs Submitted - All Time",
-            backgroundColor: "#669999",
+            backgroundColor: "#33aca8",
             borderColor: "#ffffff",
             data: [this.props.data.data]
           }

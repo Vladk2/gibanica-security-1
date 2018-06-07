@@ -33,6 +33,7 @@ export default class Index extends React.Component {
       <div>
         <main id="main">
           <IntroContent loggedIn={loggedIn} />
+          <LoginForm />
           <About />
           <Services />
           <Team />

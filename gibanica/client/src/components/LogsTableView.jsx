@@ -21,11 +21,11 @@ export default class LogsTableView extends React.Component {
         <tbody>
           {logs.map((log, key) => (
             <tr key={key}>
-              <td>{this.parseDate(log.logged_time)}</td>
-              <td>{log.host}</td>
-              <td>{log.process}</td>
-              <td>{log.severity}</td>
-              <td>{log.message}</td>
+              <td className="text-center">{this.parseDate(log.logged_time)}</td>
+              <td className="text-center">{log.host}</td>
+              <td className="text-center">{log.process}</td>
+              <td className="text-center">{log.severity}</td>
+              <td className="text-center">{log.message}</td>
             </tr>
           ))}
         </tbody>

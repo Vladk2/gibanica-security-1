@@ -1,5 +1,12 @@
 import React from "react";
-import { Popover, OverlayTrigger, Alert } from "react-bootstrap";
+import {
+  Popover,
+  OverlayTrigger,
+  Alert,
+  DropdownButton,
+  MenuItem
+} from "react-bootstrap";
+import SearchBadges from "./SearchBadges";
 import { searchLogs } from "../../util/LogsApi";
 
 export default class SearchBar extends React.Component {
@@ -7,39 +14,31 @@ export default class SearchBar extends React.Component {
     super(props);
 
     this.state = {
+      badges: [],
+      searchBy: "",
       filterMenu: {
-        eventKey: 0,
-        value: "All Time",
+        eventKey: 1,
+        value: "Severity",
         showAlert: false
       }
     };
 
-    this.searchBy = "";
-
     this.filters = [
       {
         eventKey: 1,
-        value: "Last Hour"
+        value: "Severity"
       },
       {
         eventKey: 2,
-        value: "Today"
+        value: "Host"
       },
       {
         eventKey: 3,
-        value: "Last 7 Days"
+        value: "Process"
       },
       {
         eventKey: 4,
-        value: "Last Month"
-      },
-      {
-        eventKey: 5,
-        value: "Last Year"
-      },
-      {
-        eventKey: 6,
-        value: "Date Range"
+        value: "Message"
       }
     ];
   }
@@ -88,14 +87,74 @@ export default class SearchBar extends React.Component {
   };
 
   dropdownSelect = eventKey => {
-    this.setState({
-      filterMenu: this.filters.find(f => f.eventKey === eventKey)
-    });
+    const filter = this.filters.find(f => f.eventKey === eventKey);
+    const { searchBy } = this.state;
+
+    if (searchBy) {
+      if (this.state.badges.find(b => b.filter === filter.value)) {
+        const badges_copy = this.state.badges;
+
+        const badge_index = badges_copy.findIndex(
+          b => b.filter === filter.value
+        );
+
+        badges_copy[badge_index].search = searchBy;
+
+        this.setState({
+          badges: badges_copy,
+          filterMenu: filter,
+          searchBy: ""
+        });
+      } else {
+        this.setState({
+          filterMenu: filter,
+          badges: [
+            ...this.state.badges,
+            { filter: filter.value, search: searchBy }
+          ],
+          searchBy: ""
+        });
+      }
+    }
+    this.setState({ filterMenu: filter });
+  };
+
+  // fix duplicated code !!!
+  addBadge = () => {
+    const { badges, filterMenu, searchBy } = this.state;
+
+    if (badges.find(b => b.filter === filterMenu.value)) {
+      const badges_copy = this.state.badges;
+
+      const badge_index = badges_copy.findIndex(
+        b => b.filter === filterMenu.value
+      );
+
+      badges_copy[badge_index].search = searchBy;
+
+      this.setState({
+        badges: badges_copy,
+        searchBy: ""
+      });
+    } else {
+      this.setState({
+        badges: [
+          ...this.state.badges,
+          { filter: filterMenu.value, search: searchBy }
+        ],
+        searchBy: ""
+      });
+    }
+  };
+
+  removeBadge = badge_index => {
+    const badges_copy = this.state.badges;
+    badges_copy.splice(badge_index, 1);
+    this.setState({ badges: badges_copy });
   };
 
   render() {
-    const { filterMenu, showAlert } = this.state;
-
+    const { badges, showAlert, searchBy, filterMenu } = this.state;
     const popoverHoverFocus = (
       <Popover
         id="popover-trigger-hover-focus"
@@ -127,59 +186,77 @@ export default class SearchBar extends React.Component {
     );
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="input-group input-group-lg" style={{ height: "10%" }}>
-            <span className="input-group-btn">
-              <button
-                className="btn btn-default"
-                type="button"
-                onClick={this.search}
-              >
-                {filterMenu.value}
-              </button>
-            </span>
-            <input
-              type="hidden"
-              name="search_param"
-              value="all"
-              id="search_param"
-            />
-            <OverlayTrigger
-              trigger={["focus"]}
-              placement="bottom"
-              overlay={popoverHoverFocus}
-            >
+      <div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="input-group input-group-lg">
+              <span className="input-group-btn">
+                <DropdownButton
+                  bsSize="large"
+                  onSelect={e => this.dropdownSelect(e)}
+                  title={filterMenu.value}
+                  key={4}
+                  id={`dropdown-basic`}
+                >
+                  {this.filters.map((f, key) => (
+                    <MenuItem key={key} eventKey={f.eventKey}>
+                      {f.value}
+                    </MenuItem>
+                  ))}
+                </DropdownButton>
+              </span>
               <input
-                onFocus={this.toggleQueryTips}
-                onBlur={this.toggleQueryTips}
-                onChange={e => (this.searchBy = e.target.value)}
-                type="text"
-                className="form-control"
-                name="x"
-                placeholder="Search term..."
+                type="hidden"
+                name="search_param"
+                value="all"
+                id="search_param"
               />
-            </OverlayTrigger>
-            <span className="input-group-btn">
-              <button
-                className="btn btn-default"
-                type="button"
-                onClick={this.search}
+              <OverlayTrigger
+                trigger={["focus"]}
+                placement="bottom"
+                overlay={popoverHoverFocus}
               >
-                <span className="glyphicon glyphicon-search" />
-              </button>
-            </span>
-          </div>
-          {showAlert ? (
-            <div>
-              <br />
-              <Alert bsStyle="warning">
-                <strong>Query not valid!</strong> Carefully create your query
-                following examples in tool-tip box.
-              </Alert>
+                <input
+                  onFocus={this.toggleQueryTips}
+                  onBlur={this.toggleQueryTips}
+                  value={searchBy}
+                  onChange={e => this.setState({ searchBy: e.target.value })}
+                  type="text"
+                  className="form-control"
+                  name="x"
+                  placeholder="Search term..."
+                />
+              </OverlayTrigger>
+              <span className="input-group-btn">
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={this.addBadge}
+                >
+                  <span className="glyphicon glyphicon-plus" />
+                </button>
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={this.search}
+                >
+                  <span className="glyphicon glyphicon-search" />
+                </button>
+              </span>
             </div>
-          ) : null}
+            {showAlert ? (
+              <div>
+                <br />
+                <Alert bsStyle="warning">
+                  <strong>Query not valid!</strong> Carefully create your query
+                  following examples in tool-tip box.
+                </Alert>
+              </div>
+            ) : null}
+          </div>
         </div>
+        <br />
+        <SearchBadges badges={badges} removeBadge={this.removeBadge} />
       </div>
     );
   }

@@ -2,10 +2,15 @@ require_relative '../util/jwt_util'
 
 class ApplicationController < ActionController::API
   before_action :authenticate_user
+  rescue_from JWT::DecodeError, with: :deny_access
 
   attr_reader :current_user
 
   private
+
+  def deny_access
+    head :unauthorized
+  end
 
   def authenticate_user
     cookie = request.headers['Authorization']
