@@ -155,3 +155,22 @@ test:
         read:
           mode: :primary
         max_pool_size: 1
+        # The name of the user for authentication.
+        user: <%= ENV['MONGO_USERNAME'] %>
+
+        # The password of the user for authentication.
+        password: <%= ENV['MONGO_PASSWORD'] %>
+
+        # The user's database roles.
+        # roles:
+        #   - 'dbOwner'
+
+        # Change the default authentication mechanism. Valid options are: :scram,
+        # :mongodb_cr, :mongodb_x509, and :plain. Note that all authentication
+        # mechanisms require username and password, with the exception of :mongodb_x509.
+        # Default on mongoDB 3.0 is :scram, default on 2.4 and 2.6 is :plain.
+        # auth_mech: :scram
+
+        # The database or source to authenticate the user against.
+        # (default: the database specified above or admin)
+        auth_source: admin

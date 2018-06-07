@@ -1,8 +1,8 @@
 import React from "react";
 import CarouselGraph from "./CarouselGraph";
-import NavBar from "./navbar/NavBar";
 import LogsTableView from "./LogsTableView";
 import SearchBar from "./common/SearchBar";
+import NavBar from "./navbar/NavBar";
 import LogsJsonView from "./LogsJsonView";
 import { getLogsPerPage } from "../util/LogsApi";
 import Pages from "./Pages";

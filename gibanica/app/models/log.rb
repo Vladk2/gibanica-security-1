@@ -26,13 +26,8 @@ class Log
     Log.collection.insert_many(batch)
   end
 
-  def self.search(filter_by, search_by)
-    filter = filter_by.downcase
-    search_text = /.*#{search_by}.*/i
-
-    return nil unless self.filter_valid?(filter)
-
-    Log.by_field(filter, search_text)
+  def self.search(query)
+    self.validate_query(query)
   end
 
   def self.inserted_logs_status(filter)
@@ -101,9 +96,9 @@ class Log
     ).include?(filter_by)
   end
 
-  def self.validate_query()
-    w = String.new("{host: 'pc|stefan'}")
-    q = String.new("or [{message: 'ab+c'},{severity: 'error|info'}, {host:'stefan-notebook'}, {process: 'kojuma'} ], { process: 'pYthOn' }")
+  def self.validate_query(q)
+    # w = String.new("{host: 'pc|stefan'}")
+    # q = String.new("or [{message: 'ab+c'},{severity: 'error|info'}, {host:'stefan-notebook'}, {process: 'kojuma'} ], { process: 'pYthOn' }")
     q = q.delete(' ')
 
     if query_valid?(q)

@@ -1,4 +1,5 @@
 Rails.application.configure do
+  Mongoid.load!(Rails.root.join('./config/mongoid.yml'))
   # Settings specified here will take precedence over those in config/application.rb.
 
   # The test environment is used exclusively to run your application's

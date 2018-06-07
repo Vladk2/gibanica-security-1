@@ -7,7 +7,7 @@ class LogsController < ApplicationController
 
   # GET /logs
   def index
-    logs = if params[:filterBy].nil?
+    logs = if params[:query].nil?
              page = params[:page].nil? ? 1 : params[:page]
              {
                data: Log.page(page),
@@ -16,12 +16,7 @@ class LogsController < ApplicationController
              }
            else
             # add pagination for query. first finish query lang
-             Log.search(
-                    params[:filterBy],
-                    params[:searchBy],
-                    page,
-                    params[:page_size]
-                )
+            Log.search(query).page(params[:page])
            end
 
     render json: logs,

@@ -1,10 +1,6 @@
 import React from "react";
-import {
-  DropdownButton,
-  MenuItem,
-  Popover,
-  OverlayTrigger
-} from "react-bootstrap";
+import { Popover, OverlayTrigger, Alert } from "react-bootstrap";
+import { searchLogs } from "../../util/LogsApi";
 
 export default class SearchBar extends React.Component {
   constructor(props) {
@@ -13,7 +9,8 @@ export default class SearchBar extends React.Component {
     this.state = {
       filterMenu: {
         eventKey: 0,
-        value: "All Time"
+        value: "All Time",
+        showAlert: false
       }
     };
 
@@ -48,16 +45,46 @@ export default class SearchBar extends React.Component {
   }
 
   search = () => {
-    if (this.queryValid()) {
-      // send query
-      console.log("valid");
+    if (!this.queryValid()) {
+      this.setState({ showAlert: true });
+    } else {
+      this.setState({ showAlert: false }, () => {
+        // send query
+        searchLogs(encodeURIComponent(this.searchBy.trim()), 0).then(res => {
+          console.log(res);
+        });
+      });
     }
   };
 
   queryValid = () => {
-    /^(\s*{\s*(severity|message|host|process|)\s*:\s*.*?})(,(\s*{\s*(severity|message|host|process|)\s*:\s*.*?}))*$/.test(
-      this.searchBy
-    );
+    // {severity: ERROR|INFO}
+    // {severity: ERROR|INFO} or [{host: notebook}, {process: gnome.shell}]
+    const rule_one = new RegExp(
+      "^\\s*({\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*)?" +
+        "(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\])?\\s*$"
+    ).test(this.searchBy);
+
+    // or [{host: notebook}, {process: gnome.shell}], {severity: ERROR|INFO}
+    // or [{host: notebook}, {process: gnome.shell}]
+    const rule_two = new RegExp(
+      "^(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\]\\s*)" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*$"
+    ).test(this.searchBy);
+
+    // {message: installed} or [{host: notebook}, {process: gnome.shell}], {severity: ERROR|INFO}
+    const rule_three = new RegExp(
+      "^\\s*({\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*)?" +
+        "(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\])\\s*" +
+        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*$"
+    ).test(this.searchBy);
+
+    return rule_one || rule_two || rule_three;
   };
 
   dropdownSelect = eventKey => {
@@ -67,7 +94,7 @@ export default class SearchBar extends React.Component {
   };
 
   render() {
-    const { filterMenu } = this.state;
+    const { filterMenu, showAlert } = this.state;
 
     const popoverHoverFocus = (
       <Popover
@@ -83,7 +110,7 @@ export default class SearchBar extends React.Component {
           }}
         >
           <p>
-            <i>{"{severity: WARNING*}, ..., {process: apache-server[1298]}"}</i>
+            <i>{"{severity: WARNING}, ..., {process: apache-server[1298]}"}</i>
           </p>
           <p>
             <i>{"or [{severity : ERROR|ALERT}, ..., {host : notebook}]"}</i>
@@ -102,25 +129,16 @@ export default class SearchBar extends React.Component {
     return (
       <div className="row">
         <div className="col-md-12">
-          <div className="input-group">
-            <div className="input-group-btn search-panel">
-              <DropdownButton
-                onSelect={e => this.dropdownSelect(e)}
-                title={filterMenu.value}
-                key={4}
-                id={`dropdown-basic`}
+          <div className="input-group input-group-lg" style={{ height: "10%" }}>
+            <span className="input-group-btn">
+              <button
+                className="btn btn-default"
+                type="button"
+                onClick={this.search}
               >
-                {this.filters.map((f, key) => (
-                  <MenuItem key={key} eventKey={f.eventKey}>
-                    {f.value}
-                  </MenuItem>
-                ))}
-                <MenuItem divider />
-                <MenuItem eventKey="0" active>
-                  All Time
-                </MenuItem>
-              </DropdownButton>
-            </div>
+                {filterMenu.value}
+              </button>
+            </span>
             <input
               type="hidden"
               name="search_param"
@@ -152,6 +170,15 @@ export default class SearchBar extends React.Component {
               </button>
             </span>
           </div>
+          {showAlert ? (
+            <div>
+              <br />
+              <Alert bsStyle="warning">
+                <strong>Query not valid!</strong> Carefully create your query
+                following examples in tool-tip box.
+              </Alert>
+            </div>
+          ) : null}
         </div>
       </div>
     );
