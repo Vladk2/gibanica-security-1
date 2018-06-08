@@ -2,24 +2,23 @@ import React from "react";
 import {
   Popover,
   OverlayTrigger,
-  Alert,
   DropdownButton,
   MenuItem
 } from "react-bootstrap";
 import SearchBadges from "./SearchBadges";
-import { searchLogs } from "../../util/LogsApi";
-
+import DatePicker from "react-date-picker";
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       badges: [],
+      dateStart: null,
+      dateEnd: null,
       searchBy: "",
       filterMenu: {
         eventKey: 1,
-        value: "Severity",
-        showAlert: false
+        value: "Severity"
       }
     };
 
@@ -44,46 +43,30 @@ export default class SearchBar extends React.Component {
   }
 
   search = () => {
-    if (!this.queryValid()) {
-      this.setState({ showAlert: true });
-    } else {
-      this.setState({ showAlert: false }, () => {
-        // send query
-        searchLogs(encodeURIComponent(this.searchBy.trim()), 0).then(res => {
-          console.log(res);
-        });
+    const criteria = this.state.badges.splice();
+    const { dateStart, dateEnd } = this.state;
+
+    criteria.forEach(b => {
+      b.filter = b.filter.toLowerCase();
+    });
+
+    if (dateStart) {
+      criteria.push({
+        filter: "logged_time_start",
+        search: dateStart.toLocaleDateString("en-CA")
       });
     }
-  };
 
-  queryValid = () => {
-    // {severity: ERROR|INFO}
-    // {severity: ERROR|INFO} or [{host: notebook}, {process: gnome.shell}]
-    const rule_one = new RegExp(
-      "^\\s*({\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*)?" +
-        "(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\])?\\s*$"
-    ).test(this.searchBy);
+    if (dateEnd) {
+      criteria.push({
+        filter: "logged_time_end",
+        search: dateEnd.toLocaleDateString("en-CA")
+      });
+    }
 
-    // or [{host: notebook}, {process: gnome.shell}], {severity: ERROR|INFO}
-    // or [{host: notebook}, {process: gnome.shell}]
-    const rule_two = new RegExp(
-      "^(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\]\\s*)" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*$"
-    ).test(this.searchBy);
+    const search_query_encoded = encodeURIComponent(JSON.stringify(criteria));
 
-    // {message: installed} or [{host: notebook}, {process: gnome.shell}], {severity: ERROR|INFO}
-    const rule_three = new RegExp(
-      "^\\s*({\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*)?" +
-        "(\\s*or\\s*\\[\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*})*\\s*\\])\\s*" +
-        "(,\\s*{\\s*(severity|message|process|host)\\s*:\\s*[^}]*\\s*}\\s*)*$"
-    ).test(this.searchBy);
-
-    return rule_one || rule_two || rule_three;
+    this.props.searchPerPage(search_query_encoded, 0);
   };
 
   dropdownSelect = eventKey => {
@@ -123,6 +106,10 @@ export default class SearchBar extends React.Component {
   addBadge = () => {
     const { badges, filterMenu, searchBy } = this.state;
 
+    if (!searchBy) {
+      return;
+    }
+
     if (badges.find(b => b.filter === filterMenu.value)) {
       const badges_copy = this.state.badges;
 
@@ -153,8 +140,16 @@ export default class SearchBar extends React.Component {
     this.setState({ badges: badges_copy });
   };
 
+  onChangeDate = (date, type) => {
+    if (type === "start") {
+      this.setState({ dateStart: date });
+    } else {
+      this.setState({ dateEnd: date });
+    }
+  };
+
   render() {
-    const { badges, showAlert, searchBy, filterMenu } = this.state;
+    const { badges, searchBy, filterMenu, dateStart, dateEnd } = this.state;
     const popoverHoverFocus = (
       <Popover
         id="popover-trigger-hover-focus"
@@ -244,15 +239,27 @@ export default class SearchBar extends React.Component {
                 </button>
               </span>
             </div>
-            {showAlert ? (
-              <div>
-                <br />
-                <Alert bsStyle="warning">
-                  <strong>Query not valid!</strong> Carefully create your query
-                  following examples in tool-tip box.
-                </Alert>
-              </div>
-            ) : null}
+          </div>
+        </div>
+        <br />
+        <div className="row">
+          <div
+            className="col-md-12"
+            style={{
+              flex: 1,
+              flexDirection: "row"
+            }}
+          >
+            <DatePicker
+              locale="en-au"
+              onChange={d => this.onChangeDate(d, "start")}
+              value={dateStart}
+            />
+            <DatePicker
+              locale="en-au"
+              onChange={d => this.onChangeDate(d, "end")}
+              value={dateEnd}
+            />
           </div>
         </div>
         <br />

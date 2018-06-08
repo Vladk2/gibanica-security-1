@@ -24,6 +24,7 @@ export default class Index extends React.Component {
   loggedIn = () => {
     if (localStorage.getItem("token")) {
       this.setState({ loggedIn: true });
+      window.location.replace("/logs");
     }
   };
 

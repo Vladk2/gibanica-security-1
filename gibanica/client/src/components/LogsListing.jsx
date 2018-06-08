@@ -4,7 +4,7 @@ import LogsTableView from "./LogsTableView";
 import SearchBar from "./common/SearchBar";
 import NavBar from "./navbar/NavBar";
 import LogsJsonView from "./LogsJsonView";
-import { getLogsPerPage } from "../util/LogsApi";
+import { getLogsPerPage, searchLogs } from "../util/LogsApi";
 import Pages from "./Pages";
 
 export default class LogsListing extends React.Component {
@@ -18,6 +18,8 @@ export default class LogsListing extends React.Component {
       currentPage: 1,
       tableView: true
     };
+
+    this.search_query = "";
   }
 
   componentWillMount() {
@@ -55,6 +57,10 @@ export default class LogsListing extends React.Component {
 
   updateLogs = logs => this.setState({ logs });
 
+  updatePagesCount = count => this.setState({ pagesCount: count });
+
+  updateSearchQuery = query => (this.search_query = query);
+
   fetchLogs = page => {
     getLogsPerPage(this.checkPage(page)).then(res => {
       this.setState({
@@ -64,6 +70,21 @@ export default class LogsListing extends React.Component {
       });
     });
   };
+
+  searchPerPage = (query, page) => {
+    searchLogs(query, page).then(res => {
+      if (res.status === 200) {
+        this.setState({
+          logs: res.data.data,
+          currentPage: res.data.page,
+          pagesCount: Math.ceil(res.data.count / 20)
+        });
+        this.search_query = query;
+      }
+    });
+  };
+
+  searchWithExistingQuery = () => {};
 
   render() {
     const { logs, pagesCount, currentPage, tableView, userLogged } = this.state;
@@ -81,9 +102,11 @@ export default class LogsListing extends React.Component {
       >
         <NavBar />
         <SearchBar
+          searchPerPage={this.searchPerPage}
           page={currentPage}
           updateLogs={this.updateLogs}
           updatePage={this.updatePage}
+          updatePagesCount={this.updatePagesCount}
         />
         <br />
 
@@ -114,6 +137,8 @@ export default class LogsListing extends React.Component {
           )}
         </div>
         <Pages
+          query={this.search_query}
+          searchPerPage={this.searchPerPage}
           pagesCount={pagesCount}
           currentPage={currentPage}
           loadLogs={this.fetchLogs}

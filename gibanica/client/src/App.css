@@ -1155,6 +1155,9 @@ body.mobile-nav-active #mobile-nav-toggle {
   opacity: 0.3;
   cursor: pointer;
 }
+.dp {
+  border-radius: 25;
+}
 
 .tag {
   font-size: 14px;
