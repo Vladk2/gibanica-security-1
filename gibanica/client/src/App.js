@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LogsListing from "./components/LogsListing";
 import Index from "./components/home/Index";
+import Agents from "./components/Agents";
 import ForgotPassword from "./components/common/ForgotPassword";
 import ResetPassword from "./components/common/ResetPassword";
+import "../node_modules/grommet-css";
 import "./App.css";
 
 class App extends Component {
@@ -14,6 +16,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Index} />
             <Route exact path="/logs" component={LogsListing} />
+            <Route exact path="/agents" component={Agents} />
             <Route exact path="/forgot_password" component={ForgotPassword} />
             <Route exact path="/reset_password" component={ResetPassword} />
             <Route

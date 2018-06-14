@@ -12,9 +12,20 @@ export default class IntroContent extends React.Component {
     this.currentIndex = 0;
 
     this.state = {
-      background: this.backgrounds[0]
+      background: this.backgrounds[0],
+      loggedIn: false
     };
   }
+
+  componentWillMount() {
+    this.loggedIn();
+  }
+
+  loggedIn = () => {
+    if (localStorage.getItem("token")) {
+      this.setState({ loggedIn: true });
+    }
+  };
 
   tick() {
     if (this.currentIndex === 3) {
@@ -38,8 +49,7 @@ export default class IntroContent extends React.Component {
   }
 
   render() {
-    const { background } = this.state;
-    const { loggedIn } = this.props;
+    const { background, loggedIn } = this.state;
 
     return (
       <section

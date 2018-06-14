@@ -9,31 +9,11 @@ import Footer from "../home/sections/Footer";
 import "../../App.css";
 
 export default class Index extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      loggedIn: false
-    };
-  }
-
-  componentWillMount() {
-    this.loggedIn();
-  }
-
-  loggedIn = () => {
-    if (localStorage.getItem("token")) {
-      this.setState({ loggedIn: true });
-      window.location.replace("/logs");
-    }
-  };
-
   render() {
-    const { loggedIn } = this.state;
     return (
       <div>
         <main id="main">
-          <IntroContent loggedIn={loggedIn} />
+          <IntroContent />
           <LoginForm />
           <About />
           <Services />

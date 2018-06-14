@@ -43,8 +43,13 @@ export default class SearchBar extends React.Component {
   }
 
   search = () => {
-    const criteria = this.state.badges.splice();
     const { dateStart, dateEnd } = this.state;
+
+    if (!this.state.badges || !dateStart || !dateEnd) {
+      return;
+    }
+
+    const criteria = JSON.parse(JSON.stringify(this.state.badges));
 
     criteria.forEach(b => {
       b.filter = b.filter.toLowerCase();
@@ -93,7 +98,10 @@ export default class SearchBar extends React.Component {
           filterMenu: filter,
           badges: [
             ...this.state.badges,
-            { filter: filter.value, search: searchBy }
+            {
+              filter: filter.value,
+              search: searchBy
+            }
           ],
           searchBy: ""
         });
@@ -119,15 +127,15 @@ export default class SearchBar extends React.Component {
 
       badges_copy[badge_index].search = searchBy;
 
-      this.setState({
-        badges: badges_copy,
-        searchBy: ""
-      });
+      this.setState({ badges: badges_copy, searchBy: "" });
     } else {
       this.setState({
         badges: [
           ...this.state.badges,
-          { filter: filterMenu.value, search: searchBy }
+          {
+            filter: filterMenu.value,
+            search: searchBy
+          }
         ],
         searchBy: ""
       });
@@ -151,31 +159,13 @@ export default class SearchBar extends React.Component {
   render() {
     const { badges, searchBy, filterMenu, dateStart, dateEnd } = this.state;
     const popoverHoverFocus = (
-      <Popover
-        id="popover-trigger-hover-focus"
-        title="Query Examples"
-        style={{
-          maxWidth: "100%"
-        }}
-      >
+      <Popover id="popover-trigger-hover-focus" title="Query Examples">
         <div
           style={{
-            width: 1000
+            textAlign: "center"
           }}
         >
-          <p>
-            <i>{"{severity: WARNING}, ..., {process: apache-server[1298]}"}</i>
-          </p>
-          <p>
-            <i>{"or [{severity : ERROR|ALERT}, ..., {host : notebook}]"}</i>
-          </p>
-          <p>
-            <i>
-              {
-                "{message: [a-z]*}, {process: [0-9]+} or [{severity : WARNING|INFO}, ..., {host : local-pc}]"
-              }
-            </i>
-          </p>
+          <p>44.2 ms</p>
         </div>
       </Popover>
     );
@@ -199,30 +189,6 @@ export default class SearchBar extends React.Component {
                     </MenuItem>
                   ))}
                 </DropdownButton>
-              </span>
-              <input
-                type="hidden"
-                name="search_param"
-                value="all"
-                id="search_param"
-              />
-              <OverlayTrigger
-                trigger={["focus"]}
-                placement="bottom"
-                overlay={popoverHoverFocus}
-              >
-                <input
-                  onFocus={this.toggleQueryTips}
-                  onBlur={this.toggleQueryTips}
-                  value={searchBy}
-                  onChange={e => this.setState({ searchBy: e.target.value })}
-                  type="text"
-                  className="form-control"
-                  name="x"
-                  placeholder="Search term..."
-                />
-              </OverlayTrigger>
-              <span className="input-group-btn">
                 <button
                   className="btn btn-default"
                   type="button"
@@ -230,13 +196,49 @@ export default class SearchBar extends React.Component {
                 >
                   <span className="glyphicon glyphicon-plus" />
                 </button>
+              </span>
+              <input
+                type="hidden"
+                name="search_param"
+                value="all"
+                id="search_param"
+              />
+
+              <input
+                onFocus={this.toggleQueryTips}
+                onBlur={this.toggleQueryTips}
+                value={searchBy}
+                onChange={e => this.setState({ searchBy: e.target.value })}
+                type="text"
+                className="form-control"
+                name="x"
+                placeholder="Search term..."
+              />
+
+              <span className="input-group-btn">
                 <button
                   className="btn btn-default"
                   type="button"
-                  onClick={this.search}
+                  onClick={() => this.setState({ badges: [] })}
                 >
-                  <span className="glyphicon glyphicon-search" />
+                  <span className="glyphicon glyphicon-remove" />
                 </button>
+                <OverlayTrigger
+                  trigger={["click"]}
+                  placement="bottom"
+                  overlay={popoverHoverFocus}
+                >
+                  <button
+                    className="btn btn-default"
+                    type="button"
+                    onClick={this.search}
+                    style={{
+                      width: 100
+                    }}
+                  >
+                    <span className="glyphicon glyphicon-search" />
+                  </button>
+                </OverlayTrigger>
               </span>
             </div>
           </div>

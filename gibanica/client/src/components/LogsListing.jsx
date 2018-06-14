@@ -16,10 +16,9 @@ export default class LogsListing extends React.Component {
       logs: [],
       pagesCount: 0,
       currentPage: 1,
-      tableView: true
+      tableView: true,
+      search_query: ""
     };
-
-    this.search_query = "";
   }
 
   componentWillMount() {
@@ -77,9 +76,9 @@ export default class LogsListing extends React.Component {
         this.setState({
           logs: res.data.data,
           currentPage: res.data.page,
-          pagesCount: Math.ceil(res.data.count / 20)
+          pagesCount: Math.ceil(res.data.count / 20),
+          search_query: query
         });
-        this.search_query = query;
       }
     });
   };
@@ -87,7 +86,14 @@ export default class LogsListing extends React.Component {
   searchWithExistingQuery = () => {};
 
   render() {
-    const { logs, pagesCount, currentPage, tableView, userLogged } = this.state;
+    const {
+      logs,
+      pagesCount,
+      currentPage,
+      tableView,
+      userLogged,
+      search_query
+    } = this.state;
 
     if (!userLogged) {
       return null;
@@ -137,7 +143,7 @@ export default class LogsListing extends React.Component {
           )}
         </div>
         <Pages
-          query={this.search_query}
+          query={search_query}
           searchPerPage={this.searchPerPage}
           pagesCount={pagesCount}
           currentPage={currentPage}

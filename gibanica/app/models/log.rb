@@ -8,9 +8,9 @@ class Log
   field :process, type: String
   field :message, type: String
 
-  index({ logged_date: 1, host: 1 }, { unique: false })
-  index({ logged_date: 1, severity: 1 }, { unique: false })
-  index({ logged_date: 1 }, { unique: false })
+  index({logged_date: 1, host: 1}, unique: false)
+  index({logged_date: 1, severity: 1}, unique: false)
+  index({logged_date: 1}, unique: false)
 
   scope :by_field, lambda { |field, pattern|
     where("#{field}": pattern)
@@ -20,7 +20,7 @@ class Log
     Log.where(:logged_date.gte => time)
   }
 
-  scope :to_date, lambda { |time|
+  scope :to_date, lambda {|time|
     Log.where(:logged_date.lte => time)
   }
 
@@ -37,14 +37,14 @@ class Log
   def self.search(query)
     query = JSON.parse(query)
 
-    if self.fields_valid?(query)
-      search_with_time = self.time_search(query)
+    if fields_valid?(query)
+      search_with_time = time_search(query)
 
       return search_with_time.ascending(:logged_time) unless search_with_time.nil?
 
-      return Log.and(self.transform_to_search_array(query)).ascending(:logged_time)
+      return Log.and(transform_to_search_array(query)).ascending(:logged_time)
     end
-    []
+    Log.none
   end
 
   def self.inserted_logs_status(filter)
@@ -52,11 +52,11 @@ class Log
     data = []
 
     if filter == 'date'
-      self.inserted_last_30_days.each do |c|
+      inserted_last_30_days.each do |c|
         data.push(c)
       end
     else
-      self.inserted_per_host_machine.each do |c|
+      inserted_per_host_machine.each do |c|
         data.push(c)
       end
     end
@@ -67,23 +67,23 @@ class Log
   private
 
   def self.time_search(query)
-    if query.any? { |e| e["filter"].start_with?("logged_time")}
-      start_time = self.start_time_term(query)
-      end_time = self.end_time_term(query)
+    if query.any? {|e| e['filter'].start_with?('logged_time') }
+      start_time = start_time_term(query)
+      end_time = end_time_term(query)
 
       unless start_time.nil?
         unless end_time.nil?
-          return Log.from_date(start_time["search"])
-            .to_date(end_time["search"])
-            .and(self.transform_to_search_array(query))
+          return Log.from_date(start_time['search'])
+                    .to_date(end_time['search'])
+                    .and(transform_to_search_array(query))
         end
 
-        return Log.from_date(start_time["search"])
-          .and(self.transform_to_search_array(query))
+        return Log.from_date(start_time['search'])
+                  .and(transform_to_search_array(query))
       end
 
-      return Log.to_date(end_time["search"])
-        .and(self.transform_to_search_array(query))
+      return Log.to_date(end_time['search'])
+                .and(transform_to_search_array(query))
     end
 
     nil
@@ -94,7 +94,7 @@ class Log
       [
         {
           "$group": {
-            _id: "$host",
+            _id: '$host',
             count: {
               "$sum": 1
             }
@@ -116,7 +116,7 @@ class Log
         },
         {
           "$group":{
-            _id: "$logged_date",
+            _id: '$logged_date',
             count: {
               "$sum": 1
             }
@@ -129,13 +129,13 @@ class Log
   def self.fields_valid?(query)
     query.each do |filter|
       unless %w(
-                severity
-                logged_time_start
-                logged_time_end
-                process
-                host
-                message
-              ).include?(filter["filter"].downcase)
+        severity
+        logged_time_start
+        logged_time_end
+        process
+        host
+        message
+      ).include?(filter['filter'].downcase)
         return false
       end
     end
@@ -143,19 +143,19 @@ class Log
   end
 
   def self.start_time_term(query)
-    query.detect { |e| e["filter"] == "logged_time_start"}
+    query.find {|e| e['filter'] == 'logged_time_start' }
   end
 
   def self.end_time_term(query)
-    query.detect { |e| e["filter"] == "logged_time_end"}
+    query.find {|e| e['filter'] == 'logged_time_end' }
   end
 
   def self.transform_to_search_array(query)
     mongoid_query = []
 
     query.each do |e|
-      next if e["filter"].start_with?("logged_time")
-      mongoid_query.push({ "#{e["filter"]}": /#{e["search"]}/i})
+      next if e['filter'].start_with?('logged_time')
+      mongoid_query.push("#{e['filter']}": /#{e["search"]}/i)
     end
 
     mongoid_query
