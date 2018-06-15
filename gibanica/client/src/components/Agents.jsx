@@ -1,4 +1,7 @@
 import React from "react";
+import Select from "grommet/components/Select";
+import Button from "grommet/components/Button";
+import CheckmarkIcon from "grommet/components/icons/base/Checkmark";
 import NavBar from "./navbar/NavBar";
 import CarouselGraph from "./CarouselGraph";
 import SortableTree from "react-sortable-tree";
@@ -8,7 +11,20 @@ export default class Agents extends React.Component {
   constructor(props) {
     super(props);
 
+    this.options = [
+      {
+        value: "stefan-pc",
+        label: "stefan-pc"
+      },
+      {
+        value: "notebook",
+        label: "notebook"
+      }
+    ];
+
     this.state = {
+      edited: false,
+      selectedMachine: undefined,
       treeData: [
         {
           title: "SIEM",
@@ -63,8 +79,17 @@ export default class Agents extends React.Component {
     };
   }
 
+  updateTree = tree => {
+    this.setState({ treeData: tree, edited: true });
+  };
+
+  updateMachineAgents = () => {
+    // send POST to SIEM
+    console.log("saving ...");
+  };
+
   render() {
-    const { treeData } = this.state;
+    const { treeData, selectedMachine, edited } = this.state;
 
     return (
       <div
@@ -76,10 +101,32 @@ export default class Agents extends React.Component {
         <NavBar />
         <CarouselGraph />
         <br />
-        <div>
+        <div className="row">
+          <div className="col-md-9">
+            {edited ? (
+              <Button
+                label="Save"
+                type="submit"
+                icon={<CheckmarkIcon />}
+                onClick={this.updateMachineAgents}
+              />
+            ) : null}
+          </div>
+          <div className="col-md-3" style={{ textAlign: "right" }}>
+            <Select
+              onChange={e => this.setState({ selectedMachine: e.option })}
+              options={this.options}
+              Placeholder={
+                !selectedMachine ? "Select machine" : selectedMachine.label
+              }
+            />
+          </div>
+        </div>
+        <br />
+        <div style={{ height: 500, textAlign: "left" }}>
           <SortableTree
             treeData={treeData}
-            onChange={td => this.setState({ treeData: td })}
+            onChange={td => this.updateTree(td)}
           />
         </div>
       </div>

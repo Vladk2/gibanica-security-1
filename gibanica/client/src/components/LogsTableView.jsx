@@ -1,11 +1,12 @@
 import React from "react";
-import { Table } from "react-bootstrap";
+import PropTypes from 'prop-types';
+import {Table} from "react-bootstrap";
 
 export default class LogsTableView extends React.Component {
   parseDate = date => new Date(date).toUTCString();
 
   render() {
-    const { logs } = this.props;
+    const {logs} = this.props;
 
     return (
       <Table striped hover>
@@ -33,3 +34,7 @@ export default class LogsTableView extends React.Component {
     );
   }
 }
+
+LogsTableView.propTypes = {
+  logs: PropTypes.array.isRequired
+};

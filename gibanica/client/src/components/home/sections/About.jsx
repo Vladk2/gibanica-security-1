@@ -1,5 +1,4 @@
 import React from "react";
-import DateTime from "grommet/components/DateTime";
 import about_img from "../../../assets/images/about-img.jpg";
 
 export default class About extends React.Component {
@@ -21,11 +20,6 @@ export default class About extends React.Component {
   render() {
     return (
       <section id="about" className="wow fadeInUp">
-        <DateTime
-          format="YYYY-M-D h:mm"
-          value={this.state.date}
-          onChange={date => this.changeDate(date)}
-        />
         <div className="container">
           <div className="row">
             <div className="col-lg-6 about-img">
