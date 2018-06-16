@@ -1,158 +1,271 @@
 import React from "react";
 import {
-  DropdownButton,
-  MenuItem,
   Popover,
-  OverlayTrigger
+  OverlayTrigger,
+  DropdownButton,
+  MenuItem
 } from "react-bootstrap";
-
+import SearchBadges from "./SearchBadges";
+import DatePicker from "react-date-picker";
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      badges: [],
+      dateStart: null,
+      dateEnd: null,
+      searchBy: "",
       filterMenu: {
-        eventKey: 0,
-        value: "All Time"
+        eventKey: 1,
+        value: "Severity"
       }
     };
-
-    this.searchBy = "";
 
     this.filters = [
       {
         eventKey: 1,
-        value: "Last Hour"
+        value: "Severity"
       },
       {
         eventKey: 2,
-        value: "Today"
+        value: "Host"
       },
       {
         eventKey: 3,
-        value: "Last 7 Days"
+        value: "Process"
       },
       {
         eventKey: 4,
-        value: "Last Month"
-      },
-      {
-        eventKey: 5,
-        value: "Last Year"
-      },
-      {
-        eventKey: 6,
-        value: "Date Range"
+        value: "Message"
       }
     ];
   }
 
   search = () => {
-    if (this.queryValid()) {
-      // send query
-      console.log("valid");
-    }
-  };
+    const { dateStart, dateEnd } = this.state;
 
-  queryValid = () => {
-    /^(\s*{\s*(severity|message|host|process|)\s*:\s*.*?})(,(\s*{\s*(severity|message|host|process|)\s*:\s*.*?}))*$/.test(
-      this.searchBy
-    );
+    if (!this.state.badges || !dateStart || !dateEnd) {
+      return;
+    }
+
+    const criteria = JSON.parse(JSON.stringify(this.state.badges));
+
+    criteria.forEach(b => {
+      b.filter = b.filter.toLowerCase();
+    });
+
+    if (dateStart) {
+      criteria.push({
+        filter: "logged_time_start",
+        search: dateStart.toLocaleDateString("en-CA")
+      });
+    }
+
+    if (dateEnd) {
+      criteria.push({
+        filter: "logged_time_end",
+        search: dateEnd.toLocaleDateString("en-CA")
+      });
+    }
+
+    const search_query_encoded = encodeURIComponent(JSON.stringify(criteria));
+
+    this.props.searchPerPage(search_query_encoded, 0);
   };
 
   dropdownSelect = eventKey => {
-    this.setState({
-      filterMenu: this.filters.find(f => f.eventKey === eventKey)
-    });
+    const filter = this.filters.find(f => f.eventKey === eventKey);
+    const { searchBy } = this.state;
+
+    if (searchBy) {
+      if (this.state.badges.find(b => b.filter === filter.value)) {
+        const badges_copy = this.state.badges;
+
+        const badge_index = badges_copy.findIndex(
+          b => b.filter === filter.value
+        );
+
+        badges_copy[badge_index].search = searchBy;
+
+        this.setState({
+          badges: badges_copy,
+          filterMenu: filter,
+          searchBy: ""
+        });
+      } else {
+        this.setState({
+          filterMenu: filter,
+          badges: [
+            ...this.state.badges,
+            {
+              filter: filter.value,
+              search: searchBy
+            }
+          ],
+          searchBy: ""
+        });
+      }
+    }
+    this.setState({ filterMenu: filter });
+  };
+
+  // fix duplicated code !!!
+  addBadge = () => {
+    const { badges, filterMenu, searchBy } = this.state;
+
+    if (!searchBy) {
+      return;
+    }
+
+    if (badges.find(b => b.filter === filterMenu.value)) {
+      const badges_copy = this.state.badges;
+
+      const badge_index = badges_copy.findIndex(
+        b => b.filter === filterMenu.value
+      );
+
+      badges_copy[badge_index].search = searchBy;
+
+      this.setState({ badges: badges_copy, searchBy: "" });
+    } else {
+      this.setState({
+        badges: [
+          ...this.state.badges,
+          {
+            filter: filterMenu.value,
+            search: searchBy
+          }
+        ],
+        searchBy: ""
+      });
+    }
+  };
+
+  removeBadge = badge_index => {
+    const badges_copy = this.state.badges;
+    badges_copy.splice(badge_index, 1);
+    this.setState({ badges: badges_copy });
+  };
+
+  onChangeDate = (date, type) => {
+    if (type === "start") {
+      this.setState({ dateStart: date });
+    } else {
+      this.setState({ dateEnd: date });
+    }
   };
 
   render() {
-    const { filterMenu } = this.state;
-
+    const { badges, searchBy, filterMenu, dateStart, dateEnd } = this.state;
     const popoverHoverFocus = (
-      <Popover
-        id="popover-trigger-hover-focus"
-        title="Query Examples"
-        style={{
-          maxWidth: "100%"
-        }}
-      >
+      <Popover id="popover-trigger-hover-focus" title="Query Examples">
         <div
           style={{
-            width: 1000
+            textAlign: "center"
           }}
         >
-          <p>
-            <i>{"{severity: WARNING*}, ..., {process: apache-server[1298]}"}</i>
-          </p>
-          <p>
-            <i>{"or [{severity : ERROR|ALERT}, ..., {host : notebook}]"}</i>
-          </p>
-          <p>
-            <i>
-              {
-                "{message: [a-z]*}, {process: [0-9]+} or [{severity : WARNING|INFO}, ..., {host : local-pc}]"
-              }
-            </i>
-          </p>
+          <p>44.2 ms</p>
         </div>
       </Popover>
     );
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="input-group">
-            <div className="input-group-btn search-panel">
-              <DropdownButton
-                onSelect={e => this.dropdownSelect(e)}
-                title={filterMenu.value}
-                key={4}
-                id={`dropdown-basic`}
-              >
-                {this.filters.map((f, key) => (
-                  <MenuItem key={key} eventKey={f.eventKey}>
-                    {f.value}
-                  </MenuItem>
-                ))}
-                <MenuItem divider />
-                <MenuItem eventKey="0" active>
-                  All Time
-                </MenuItem>
-              </DropdownButton>
-            </div>
-            <input
-              type="hidden"
-              name="search_param"
-              value="all"
-              id="search_param"
-            />
-            <OverlayTrigger
-              trigger={["focus"]}
-              placement="bottom"
-              overlay={popoverHoverFocus}
-            >
+      <div>
+        <div className="row">
+          <div className="col-md-12">
+            <div className="input-group input-group-lg">
+              <span className="input-group-btn">
+                <DropdownButton
+                  bsSize="large"
+                  onSelect={e => this.dropdownSelect(e)}
+                  title={filterMenu.value}
+                  key={4}
+                  id={`dropdown-basic`}
+                >
+                  {this.filters.map((f, key) => (
+                    <MenuItem key={key} eventKey={f.eventKey}>
+                      {f.value}
+                    </MenuItem>
+                  ))}
+                </DropdownButton>
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={this.addBadge}
+                >
+                  <span className="glyphicon glyphicon-plus" />
+                </button>
+              </span>
+              <input
+                type="hidden"
+                name="search_param"
+                value="all"
+                id="search_param"
+              />
+
               <input
                 onFocus={this.toggleQueryTips}
                 onBlur={this.toggleQueryTips}
-                onChange={e => (this.searchBy = e.target.value)}
+                value={searchBy}
+                onChange={e => this.setState({ searchBy: e.target.value })}
                 type="text"
                 className="form-control"
                 name="x"
                 placeholder="Search term..."
               />
-            </OverlayTrigger>
-            <span className="input-group-btn">
-              <button
-                className="btn btn-default"
-                type="button"
-                onClick={this.search}
-              >
-                <span className="glyphicon glyphicon-search" />
-              </button>
-            </span>
+
+              <span className="input-group-btn">
+                <button
+                  className="btn btn-default"
+                  type="button"
+                  onClick={() => this.setState({ badges: [] })}
+                >
+                  <span className="glyphicon glyphicon-remove" />
+                </button>
+                <OverlayTrigger
+                  trigger={["click"]}
+                  placement="bottom"
+                  overlay={popoverHoverFocus}
+                >
+                  <button
+                    className="btn btn-default"
+                    type="button"
+                    onClick={this.search}
+                    style={{
+                      width: 100
+                    }}
+                  >
+                    <span className="glyphicon glyphicon-search" />
+                  </button>
+                </OverlayTrigger>
+              </span>
+            </div>
           </div>
         </div>
+        <br />
+        <div className="row">
+          <div
+            className="col-md-12"
+            style={{
+              flex: 1,
+              flexDirection: "row"
+            }}
+          >
+            <DatePicker
+              locale="en-au"
+              onChange={d => this.onChangeDate(d, "start")}
+              value={dateStart}
+            />
+            <DatePicker
+              locale="en-au"
+              onChange={d => this.onChangeDate(d, "end")}
+              value={dateEnd}
+            />
+          </div>
+        </div>
+        <br />
+        <SearchBadges badges={badges} removeBadge={this.removeBadge} />
       </div>
     );
   }

@@ -41,14 +41,12 @@ function getNumberOfLogsInserted() {
   });
 }
 
-function searchLogs(page, query) {
-  return fetch(`https://${LOGS_API_URL}?page=${page}&query=${query}`, {
+function searchLogs(query, page) {
+  return axios.get(`${LOGS_API_URL}?query=${query}&page=${page}`, {
     headers: {
       Accept: "application/json"
     }
-  })
-    .then(res => res.json())
-    .catch(err => console.error(err));
+  });
 }
 
 export {

@@ -70,7 +70,7 @@ def sendLogs(logs):
 
     if r.status_code == 200:
         print('Logs have been sent successfully')
-    r.connection.close()
+        # r.connection.close()
 
 
 class WinEventLogReader(threading.Thread):

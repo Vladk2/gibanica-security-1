@@ -8,12 +8,20 @@ class Log
   field :process, type: String
   field :message, type: String
 
-  index({ logged_time: 1, host: 1 }, { unique: false })
-  index({ logged_time: 1, severity: 1 }, { unique: false })
-  index({ logged_time: 1 }, { unique: false })
+  index({logged_date: 1, host: 1}, unique: false)
+  index({logged_date: 1, severity: 1}, unique: false)
+  index({logged_date: 1}, unique: false)
 
   scope :by_field, lambda { |field, pattern|
     where("#{field}": pattern)
+  }
+
+  scope :from_date, lambda { |time|
+    Log.where(:logged_date.gte => time)
+  }
+
+  scope :to_date, lambda {|time|
+    Log.where(:logged_date.lte => time)
   }
 
   def self.batch_save!(logs)
@@ -26,25 +34,29 @@ class Log
     Log.collection.insert_many(batch)
   end
 
-  def self.search(filter_by, search_by)
-    filter = filter_by.downcase
-    search_text = /.*#{search_by}.*/i
+  def self.search(query)
+    query = JSON.parse(query)
 
-    return nil unless self.filter_valid?(filter)
+    if fields_valid?(query)
+      search_with_time = time_search(query)
 
-    Log.by_field(filter, search_text)
+      return search_with_time.ascending(:logged_time) unless search_with_time.nil?
+
+      return Log.and(transform_to_search_array(query)).ascending(:logged_time)
+    end
+    Log.none
   end
 
   def self.inserted_logs_status(filter)
     # (Date.today - 30.days..Date.today).to_a
     data = []
 
-    if filter == 'days'
-      self.inserted_last_30_days.each do |c|
+    if filter == 'date'
+      inserted_last_30_days.each do |c|
         data.push(c)
       end
     else
-      self.inserted_per_host_machine.each do |c|
+      inserted_per_host_machine.each do |c|
         data.push(c)
       end
     end
@@ -54,12 +66,35 @@ class Log
 
   private
 
+  def self.time_search(query)
+    if query.any? {|e| e['filter'].start_with?('logged_time') }
+      start_time = start_time_term(query)
+      end_time = end_time_term(query)
+
+      unless start_time.nil?
+        unless end_time.nil?
+          return Log.from_date(start_time['search'])
+                    .to_date(end_time['search'])
+                    .and(transform_to_search_array(query))
+        end
+
+        return Log.from_date(start_time['search'])
+                  .and(transform_to_search_array(query))
+      end
+
+      return Log.to_date(end_time['search'])
+                .and(transform_to_search_array(query))
+    end
+
+    nil
+  end
+
   def self.inserted_per_host_machine
     Log.collection.aggregate(
       [
         {
           "$group": {
-            _id: "$host",
+            _id: '$host',
             count: {
               "$sum": 1
             }
@@ -81,7 +116,7 @@ class Log
         },
         {
           "$group":{
-            _id: "$logged_date",
+            _id: '$logged_date',
             count: {
               "$sum": 1
             }
@@ -91,83 +126,38 @@ class Log
     )
   end
 
-  def self.field_valid?(filter_by)
-    %w(
-      severity
-      logged_time
-      process"
-      host
-      message
-    ).include?(filter_by)
-  end
-
-  def self.validate_query()
-    w = String.new("{host: 'pc|stefan'}")
-    q = String.new("or [{message: 'ab+c'},{severity: 'error|info'}, {host:'stefan-notebook'}, {process: 'kojuma'} ], { process: 'pYthOn' }")
-    q = q.delete(' ')
-
-    if query_valid?(q)
-      search_terms = split_query(q)
-
-      if search_terms[:or_conditions].nil?
-        Log.where('$and': search_terms[:and_conditions])
-      else
-        Log.where('$and': search_terms[:and_conditions])
-           .where('$or': search_terms[:or_conditions])
+  def self.fields_valid?(query)
+    query.each do |filter|
+      unless %w(
+        severity
+        logged_time_start
+        logged_time_end
+        process
+        host
+        message
+      ).include?(filter['filter'].downcase)
+        return false
       end
     end
+    true
   end
 
-  def self.query_valid?(query)
-    pattern = /or[ ]*\[[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*,[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*\]/
-
-    query.match?(pattern)
+  def self.start_time_term(query)
+    query.find {|e| e['filter'] == 'logged_time_start' }
   end
 
-  def self.split_query(query)
-    # good, maybe? (or?[ ]*\[({[ ]*[severity|host|process|message]+[ ]*:[ ]*'[^']*'})*[ ]*,[ ]*)|([ ]*{[ ]*[severity|host|process|message]+[ ]*:[ ]*'[^']*'})
-    pattern_or = /\[[ ]*{[ ]*[severity|host|process|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*,[ ]*{[ ]*[severity|host|process|logged_time|message]+[ ]*:[ ]*'.*'[ ]*}[ ]*\]/
+  def self.end_time_term(query)
+    query.find {|e| e['filter'] == 'logged_time_end' }
+  end
 
-    tokens = query.partition(pattern_or)
+  def self.transform_to_search_array(query)
+    mongoid_query = []
 
-    puts 'splited ...'
-
-    # split by this regex or brackets.
-    or_fields = /,[ ]*{[ ]*[severity|host|process|message]+[ ]*:[ ]*'.*'[ ]*}/
-
-    query_conditions = {}
-
-    or_conditions = []
-    and_conditions = []
-
-    search_term = /{[ ]*[severity|host|process|message]+[ ]*:[ ]*'[^']*'}/
-
-    tokens.each_with_index do |t, i|
-      if t.match?(pattern_or)
-        t.scan(search_term).each do |p|
-          or_conditions.push(regexify_search_terms(p))
-        end
-      else
-        if t != 'or'
-          and_terms = t.scan(search_term)
-
-          and_terms.each do |and_term|
-            unless and_term.blank?
-              t = t.delete_prefix(',').delete_suffix(',')
-              and_conditions.push(regexify_search_terms(t))
-            end
-          end
-        end
-      end
+    query.each do |e|
+      next if e['filter'].start_with?('logged_time')
+      mongoid_query.push("#{e['filter']}": /#{e["search"]}/i)
     end
 
-    query_conditions[:and_conditions] = and_conditions
-    query_conditions[:or_conditions] = or_conditions
-
-    return query_conditions
-  end
-
-  def self.regexify_search_terms(term)
-    eval(term).transform_values { |v| /#{v}/ }
+    mongoid_query
   end
 end
