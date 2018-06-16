@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :agents, only: %i[index create update]
+
   resources :logs, only: %i[index create] do
     collection do
       get :monthly_status
