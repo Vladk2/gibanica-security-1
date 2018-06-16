@@ -11,16 +11,7 @@ export default class Agents extends React.Component {
   constructor(props) {
     super(props);
 
-    this.options = [
-      {
-        value: "stefan-pc",
-        label: "stefan-pc"
-      },
-      {
-        value: "notebook",
-        label: "notebook"
-      }
-    ];
+    this.options = ["stefan-pc", "notebook"];
 
     this.state = {
       edited: false,
@@ -117,7 +108,7 @@ export default class Agents extends React.Component {
               onChange={e => this.setState({ selectedMachine: e.option })}
               options={this.options}
               Placeholder={
-                !selectedMachine ? "Select machine" : selectedMachine.label
+                !selectedMachine ? "Select machine" : selectedMachine
               }
             />
           </div>

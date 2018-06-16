@@ -20,6 +20,7 @@
     "grommet-css": "^1.6.0",
     "imports-loader": "^0.7.1",
     "moment": "^2.22.2",
+    "node-sass": "^4.9.0",
     "react": "^16.0.0",
     "react-bootstrap": "^0.32.1",
     "react-chartjs-2": "^2.7.2",
@@ -29,7 +30,9 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
     "react-sortable-tree": "^2.1.2",
-    "react-syntax-highlighter": "^7.0.4"
+    "react-syntax-highlighter": "^7.0.4",
+    "sass-loader": "^7.0.3",
+    "style-loader": "^0.21.0"
   },
   "scripts": {
     "start": "HTTPS=true PORT=5000 react-scripts start",
