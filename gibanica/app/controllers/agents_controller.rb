@@ -1,5 +1,6 @@
 class AgentsController < ApplicationController
-  skip_before_action :authenticate_user
+  skip_before_action :authenticate_user, except: [:create]
+  before_action :agent_params, only: [:create]
 
   # GET /agents
   def index

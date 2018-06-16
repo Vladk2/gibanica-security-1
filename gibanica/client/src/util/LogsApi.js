@@ -14,7 +14,7 @@ function getLogsPerPage(page) {
         Accept: "application/json"
       }
     })
-    .catch(err => console.err(err));
+    .catch(err => console.log(err));
 }
 
 function getNumberOfLogsInsertedPerDay(n_of_days_ago) {

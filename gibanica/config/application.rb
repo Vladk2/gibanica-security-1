@@ -39,11 +39,13 @@ module Gibanica
         resource '/users/*', headers: :any, methods: %i[post]
         resource '/logs', headers: :any, methods: %i[get]
         resource '/logs/*', headers: :any, methods: %i[get]
+        resource '/agents', headers: :any, methods: %i[get post]
       end
 
       allow do
         origins '*'
         resource '/logs', headers: :any, method: %i[post]
+        resource '/agents', headers: :any, method: %i[post]
       end
     end
 

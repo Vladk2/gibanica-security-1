@@ -2,9 +2,11 @@ import React from "react";
 import Select from "grommet/components/Select";
 import Button from "grommet/components/Button";
 import CheckmarkIcon from "grommet/components/icons/base/Checkmark";
+import EditIcon from "grommet/components/icons/base/Edit";
 import NavBar from "./navbar/NavBar";
 import CarouselGraph from "./CarouselGraph";
 import SortableTree from "react-sortable-tree";
+import { getAgents } from "../util/AgentsApi";
 import "react-sortable-tree/style.css";
 
 export default class Agents extends React.Component {
@@ -18,47 +20,64 @@ export default class Agents extends React.Component {
       selectedMachine: undefined,
       treeData: [
         {
-          title: "SIEM",
+          title: "Firewall Agent",
+          subtitle:
+            "type: Firewall, host: notebook, address: 192.168.0.23:5000",
+          canDrag: true,
+          canDrop: true,
           children: [
             {
-              title: "Firewall Agent",
+              title: "paths",
+              canDrag: false,
+              canDrop: false,
+              children: [
+                {
+                  title: "/var/log/firewall.log",
+                  editable: true,
+                  canDrag: false,
+                  canDrop: false
+                }
+              ]
+            },
+            {
+              title: "Windows agent",
+              subtitle:
+                "type: Windows, host: stefan-pc, address: 192.168.0.21:5000",
+              canDrag: true,
+              canDrop: true,
               children: [
                 {
                   title: "paths",
+                  canDrag: false,
+                  canDrop: false,
                   children: [
                     {
-                      title: "/var/log/firewall.log"
+                      title: "C:\\sys32logssys.evl",
+                      editable: true,
+                      canDrag: false,
+                      canDrop: false
                     }
                   ]
-                },
+                }
+              ]
+            },
+            {
+              title: "Linux agent",
+              subtitle:
+                "type: Linux, host: stefan-pc, address: 192.168.0.21:4000",
+              canDrag: true,
+              canDrop: true,
+              children: [
                 {
-                  title: "Agents",
+                  title: "paths",
+                  canDrag: false,
+                  canDrop: false,
                   children: [
                     {
-                      title: "Windows agent",
-                      children: [
-                        {
-                          title: "Paths",
-                          children: [
-                            {
-                              title: "C:\\sys32logssys.evl"
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      title: "Linux agent",
-                      children: [
-                        {
-                          title: "paths",
-                          children: [
-                            {
-                              title: "/var/log/messages.log"
-                            }
-                          ]
-                        }
-                      ]
+                      title: "/var/log/messages.log",
+                      editable: true,
+                      canDrag: false,
+                      canDrop: false
                     }
                   ]
                 }
@@ -70,11 +89,19 @@ export default class Agents extends React.Component {
     };
   }
 
+  componentWillMount() {
+    getAgents()
+      .then(res => {
+        console.log(res.data);
+      })
+      .catch(err => console.log(err));
+  }
+
   updateTree = tree => {
     this.setState({ treeData: tree, edited: true });
   };
 
-  updateMachineAgents = () => {
+  updateAgents = () => {
     // send POST to SIEM
     console.log("saving ...");
   };
@@ -90,7 +117,6 @@ export default class Agents extends React.Component {
         }}
       >
         <NavBar />
-        <CarouselGraph />
         <br />
         <div className="row">
           <div className="col-md-9">
@@ -99,7 +125,7 @@ export default class Agents extends React.Component {
                 label="Save"
                 type="submit"
                 icon={<CheckmarkIcon />}
-                onClick={this.updateMachineAgents}
+                onClick={this.updateAgents}
               />
             ) : null}
           </div>
@@ -118,6 +144,19 @@ export default class Agents extends React.Component {
           <SortableTree
             treeData={treeData}
             onChange={td => this.updateTree(td)}
+            canDrag={({ node }) => node.canDrag}
+            canDrop={({ node }) => node.canDrop}
+            generateNodeProps={rowInfo => ({
+              buttons: [
+                rowInfo.node.subtitle ? (
+                  <EditIcon
+                    style={{ cursor: "pointer" }}
+                    size="small"
+                    onClick={() => console.log(rowInfo)}
+                  />
+                ) : null
+              ]
+            })}
           />
         </div>
       </div>
