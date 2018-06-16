@@ -5,9 +5,34 @@ user.save!
 Role.new(name: 'operater').save!
 Role.new(name: 'admin').save!
 
-u = User.where(email: "g@g.com").first
-u.roles << Role.where(name: "admin")
+u = User.where(email: 'g@g.com').first
+u.roles << Role.where(name: 'admin')
 u.save!
+
+Agent.new(
+  name: 'OS Auth Agent',
+  type: 'Linux',
+  address: '192.168.2.19:5000',
+  paths: ['auth.log', '/var/log/auth.log'],
+  host: 'notebook'
+).save!
+
+Agent.new(
+  name: 'Windows Event Log Agent',
+  type: 'Windows',
+  address: '192.168.0.17:5000',
+  paths: ['sys32.evl'],
+  host: 'dragan-pc'
+).save!
+
+Agent.new(
+  name: 'Firewall Log Agent',
+  type: 'Linux',
+  address: '192.168.0.9:5000',
+  paths: ['kernel.log'],
+  host: 'notebook',
+  super: true
+).save!
 
 for i in 1..400 do
   Log.new(
