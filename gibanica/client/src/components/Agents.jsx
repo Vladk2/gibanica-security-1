@@ -6,7 +6,7 @@ import Button from "grommet/components/Button";
 import CheckmarkIcon from "grommet/components/icons/base/Checkmark";
 import EditIcon from "grommet/components/icons/base/Edit";
 import SubtractCircleIcon from "grommet/components/icons/base/SubtractCircle";
-import AddIcon from "grommet/components/icons/base/Add";
+//import AddIcon from "grommet/components/icons/base/Add";
 import Layer from "grommet/components/Layer";
 import FormField from "grommet/components/FormField";
 import TextInput from "grommet/components/TextInput";
@@ -14,7 +14,6 @@ import Label from "grommet/components/Label";
 import Toast from "grommet/components/Toast";
 
 import NavBar from "./navbar/NavBar";
-//import CarouselGraph from "./CarouselGraph";
 import SortableTree from "react-sortable-tree";
 import { getAgents } from "../util/AgentsApi";
 
@@ -76,14 +75,28 @@ export default class Agents extends React.Component {
     const treeData = _.filter(data, a => !a.agent_id);
     const remainingData = _.difference(data, treeData);
 
-    _.forEach(remainingData, agent => {
-      _.forEach(treeData, treeAgent => {
-        if (agent.agent_id["$oid"] === treeAgent._id["$oid"]) {
-          if (!treeAgent.children) {
-            treeAgent.children = [];
+    const checkChildrenRecursive = function(agent, treeAgent) {
+      if (treeAgent.children) {
+        _.forEach(treeAgent.children, treeAgentChild => {
+          if (treeAgentChild._id) {
+            if (agent.agent_id["$oid"] === treeAgentChild._id["$oid"]) {
+              treeAgentChild.children.push(agent);
+            } else {
+              if (treeAgentChild.children) {
+                checkChildrenRecursive(agent, treeAgentChild);
+              }
+            }
           }
+        });
+      }
+    };
 
+    _.forEach(treeData, treeAgent => {
+      _.forEach(remainingData, agent => {
+        if (agent.agent_id["$oid"] === treeAgent._id["$oid"]) {
           treeAgent.children.push(agent);
+        } else {
+          checkChildrenRecursive(agent, treeAgent);
         }
       });
     });
@@ -326,6 +339,7 @@ export default class Agents extends React.Component {
               buttons: [
                 rowInfo.node.subtitle ? (
                   <EditIcon
+                    colorIndex="neutral-4"
                     style={{
                       cursor: "pointer"
                     }}
