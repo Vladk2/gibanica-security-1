@@ -5,7 +5,7 @@ import Index from "./components/home/Index";
 import Agents from "./components/Agents";
 import ForgotPassword from "./components/common/ForgotPassword";
 import ResetPassword from "./components/common/ResetPassword";
-import "../node_modules/grommet-css";
+import "./assets/stylesheets/grommet-css";
 import "./App.css";
 
 class App extends Component {

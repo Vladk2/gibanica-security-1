@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export default class Pages extends React.Component {
   pageNumbers = pagesCount => {
@@ -78,3 +79,11 @@ export default class Pages extends React.Component {
     );
   }
 }
+
+Pages.propTypes = {
+  pagesCount: PropTypes.number.isRequired,
+  currentPage: PropTypes.any.isRequired, // bug if set to number|string
+  loadLogs: PropTypes.func.isRequired,
+  searchPerPage: PropTypes.func.isRequired,
+  query: PropTypes.string.isRequired
+};

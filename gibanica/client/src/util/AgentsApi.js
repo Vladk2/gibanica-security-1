@@ -17,8 +17,14 @@ function getAgents() {
     .catch(err => console.log(err));
 }
 
-function updateAgents() {
-  // update agents
+function updateAgent(data) {
+  console.log(data);
+  return axios.put(`${AGENTS_API_URL}/${data._id["$oid"]}`, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    }
+  });
 }
 
-export { getAgents, updateAgents };
+export { getAgents, updateAgent };

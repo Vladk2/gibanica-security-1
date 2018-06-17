@@ -15,7 +15,7 @@ import Toast from "grommet/components/Toast";
 
 import NavBar from "./navbar/NavBar";
 import SortableTree from "react-sortable-tree";
-import { getAgents } from "../util/AgentsApi";
+import { getAgents, updateAgent } from "../util/AgentsApi";
 
 import "react-sortable-tree/style.css";
 
@@ -55,6 +55,7 @@ export default class Agents extends React.Component {
 
       _.forEach(a.paths, p => {
         paths.push({
+          path: p.path,
           title: p.path,
           format: p.format,
           canDrag: false,
@@ -127,13 +128,20 @@ export default class Agents extends React.Component {
     // send POST to SIEM
     const { selectedAgent } = this.state;
 
-    if (true) {
-      let treeData = JSON.parse(JSON.stringify(this.state.treeData));
+    updateAgent({
+      _id: selectedAgent._id,
+      name: selectedAgent.name,
+      paths: _.find(selectedAgent.children, child => child.title === "paths")
+        .children
+    }).then(res => {
+      if (res.status === 200) {
+        let treeData = JSON.parse(JSON.stringify(this.state.treeData));
 
-      this.updateTree(treeData, selectedAgent);
+        this.updateTree(treeData, selectedAgent);
 
-      this.setState({ treeData, toast: true, modalOpened: false });
-    }
+        this.setState({ treeData, toast: true, modalOpened: false });
+      }
+    });
   };
 
   updatePath = (text, index, pathOrFormat) => {
@@ -146,6 +154,7 @@ export default class Agents extends React.Component {
       if (index === i) {
         if (pathOrFormat === "path") {
           paths[i].title = text;
+          paths[i].path = text;
         } else {
           paths[i].format = text;
         }
@@ -187,10 +196,6 @@ export default class Agents extends React.Component {
       toast,
       selectedAgent
     } = this.state;
-
-    if (!treeData) {
-      return null;
-    }
 
     return (
       <div
@@ -265,7 +270,8 @@ export default class Agents extends React.Component {
                       this.setState({
                         selectedAgent: {
                           ...this.state.selectedAgent,
-                          title: e.target.value
+                          title: e.target.value,
+                          name: e.target.value
                         }
                       })
                     }
@@ -330,32 +336,36 @@ export default class Agents extends React.Component {
               <br />
             </Layer>
           ) : null}
-          <SortableTree
-            treeData={treeData}
-            onChange={td => this.updateTreeOnMove(td)}
-            canDrag={({ node }) => node.canDrag}
-            canDrop={({ node }) => node.canDrop}
-            generateNodeProps={rowInfo => ({
-              buttons: [
-                rowInfo.node.subtitle ? (
-                  <EditIcon
-                    colorIndex="neutral-4"
-                    style={{
-                      cursor: "pointer"
-                    }}
-                    size="small"
-                    onClick={() =>
-                      this.setState({
-                        selectedAgent: JSON.parse(JSON.stringify(rowInfo.node)), // make copy of it
-                        modalOpened: true,
-                        toast: false
-                      })
-                    }
-                  />
-                ) : null
-              ]
-            })}
-          />
+          {treeData.length > 0 ? (
+            <SortableTree
+              treeData={treeData}
+              onChange={td => this.updateTreeOnMove(td)}
+              canDrag={({ node }) => node.canDrag}
+              canDrop={({ node }) => node.canDrop}
+              generateNodeProps={rowInfo => ({
+                buttons: [
+                  rowInfo.node.subtitle ? (
+                    <EditIcon
+                      colorIndex="neutral-4"
+                      style={{
+                        cursor: "pointer"
+                      }}
+                      size="small"
+                      onClick={() =>
+                        this.setState({
+                          selectedAgent: JSON.parse(
+                            JSON.stringify(rowInfo.node)
+                          ), // make copy of it
+                          modalOpened: true,
+                          toast: false
+                        })
+                      }
+                    />
+                  ) : null
+                ]
+              })}
+            />
+          ) : null}
         </div>
       </div>
     );

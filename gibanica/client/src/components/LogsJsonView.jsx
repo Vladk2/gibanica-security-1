@@ -1,13 +1,13 @@
 import React from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import SyntaxHighlighter from "react-syntax-highlighter/prism";
-import {light} from "react-syntax-highlighter/styles/prism";
+import { light } from "react-syntax-highlighter/styles/prism";
 
 export default class LogsJsonView extends React.Component {
   parseDate = date => new Date(date).toUTCString();
 
   render() {
-    const {logs} = this.props;
+    const { logs } = this.props;
     return (
       <div>
         {logs.map((log, key) => (
@@ -15,14 +15,15 @@ export default class LogsJsonView extends React.Component {
             <div
               className="row"
               style={{
-              borderWidth: 1,
-              borderRadius: 15,
-              borderColor: "gray",
-              borderStyle: "solid",
-              padding: 15
-            }}>
+                borderWidth: 1,
+                borderRadius: 15,
+                borderColor: "gray",
+                borderStyle: "solid",
+                padding: 15
+              }}
+            >
               <div className="col-md-2">
-                <div className="row"/>
+                <div className="row" />
                 <div className="col-md-10">
                   {this.parseDate(log.logged_time)}
                 </div>
@@ -33,7 +34,7 @@ export default class LogsJsonView extends React.Component {
                 </SyntaxHighlighter>
               </div>
             </div>
-            <br/>
+            <br />
           </div>
         ))}
       </div>

@@ -1,6 +1,7 @@
 class AgentsController < ApplicationController
   skip_before_action :authenticate_user, except: [:create]
-  before_action :agent_params, only: [:create]
+  before_action :agent_params, only: %i[create update]
+  before_action :set_agent, only: [:update]
 
   # GET /agents
   def index
@@ -22,6 +23,7 @@ class AgentsController < ApplicationController
 
   # PATCH/PUT /agents/1
   def update
+    puts agent_params
     if @agent.update(agent_params)
       render json: @agent, status: :ok
     else
@@ -31,8 +33,12 @@ class AgentsController < ApplicationController
 
   private
 
+  def set_agent
+    @agent = Agent.find(params[:id])
+  end
+
   # Only allow a trusted parameter "white list" through.
   def agent_params
-    params.require(:agent).permit(:name, :type, :address, :host, :super, paths: [])
+    params.require(:agent).permit(:id, :name, :type, :address, :host, :super, paths: %i[path format])
   end
 end
