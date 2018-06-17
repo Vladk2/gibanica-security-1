@@ -13,6 +13,8 @@ import TextInput from "grommet/components/TextInput";
 import Label from "grommet/components/Label";
 import Toast from "grommet/components/Toast";
 
+import { Alert } from "react-bootstrap";
+
 import NavBar from "./navbar/NavBar";
 import SortableTree from "react-sortable-tree";
 import { getAgents, updateAgent } from "../util/AgentsApi";
@@ -31,6 +33,7 @@ export default class Agents extends React.Component {
       selectedAgent: undefined,
       modalOpened: false,
       toast: false,
+      notificationError: false,
       treeData: []
     };
   }
@@ -140,6 +143,8 @@ export default class Agents extends React.Component {
         this.updateTree(treeData, selectedAgent);
 
         this.setState({ treeData, toast: true, modalOpened: false });
+      } else {
+        this.setState({ notificationError: true });
       }
     });
   };
@@ -194,6 +199,7 @@ export default class Agents extends React.Component {
       edited,
       modalOpened,
       toast,
+      notificationError,
       selectedAgent
     } = this.state;
 
@@ -205,7 +211,28 @@ export default class Agents extends React.Component {
         }}
       >
         <NavBar />
-        <br />{" "}
+        <br />
+        {notificationError ? (
+          <Alert bsStyle="warning">
+            <div className="row">
+              <div className="col-md-10">
+                <strong>
+                  Could not complete request. Your internet connection may not
+                  be working.
+                </strong>
+              </div>
+              <div className="col-md-2" style={{ textAlign: "right" }}>
+                <button
+                  className="btn btn-default"
+                  type="submit"
+                  onClick={() => this.setState({ notificationError: false })}
+                >
+                  Hide
+                </button>
+              </div>
+            </div>
+          </Alert>
+        ) : null}
         {toast ? (
           <Toast status="ok" onClose={() => this.setState({ toast: false })}>
             {`${selectedAgent.title} updated`}

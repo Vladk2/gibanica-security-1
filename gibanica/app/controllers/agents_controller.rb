@@ -23,7 +23,6 @@ class AgentsController < ApplicationController
 
   # PATCH/PUT /agents/1
   def update
-    puts agent_params
     if @agent.update(agent_params)
       render json: @agent, status: :ok
     else
