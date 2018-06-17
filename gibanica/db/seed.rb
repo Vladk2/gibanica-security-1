@@ -13,25 +13,27 @@ Agent.new(
   name: 'OS Auth Agent',
   type: 'Linux',
   address: '192.168.2.19:5000',
-  paths: ['auth.log', '/var/log/auth.log'],
+  paths: [{path: 'auth.log', format: 'RFC5424'}, {path: '/var/log/auth.log', format: 'RFC5424'}],
   host: 'notebook'
 ).save!
+
+agent = Agent.new(
+  name: 'Firewall Log Agent',
+  type: 'Linux',
+  address: '192.168.0.9:5000',
+  paths: [{path: 'kernel.log', format: 'RFC3464'}],
+  host: 'notebook'
+)
+
+agent.save!
 
 Agent.new(
   name: 'Windows Event Log Agent',
   type: 'Windows',
   address: '192.168.0.17:5000',
-  paths: ['sys32.evl'],
-  host: 'dragan-pc'
-).save!
-
-Agent.new(
-  name: 'Firewall Log Agent',
-  type: 'Linux',
-  address: '192.168.0.9:5000',
-  paths: ['kernel.log'],
-  host: 'notebook',
-  super: true
+  paths: [{path: 'sys32.evl', format: 'Event Log'}],
+  host: 'dragan-pc',
+  agent: agent
 ).save!
 
 for i in 1..400 do
