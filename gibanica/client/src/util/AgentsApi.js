@@ -18,7 +18,6 @@ function getAgents() {
 }
 
 function updateAgent(data) {
-  console.log(data);
   return axios.put(`${AGENTS_API_URL}/${data._id["$oid"]}`, data, {
     headers: {
       "Content-Type": "application/json",

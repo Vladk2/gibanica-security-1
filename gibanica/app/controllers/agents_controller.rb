@@ -24,7 +24,7 @@ class AgentsController < ApplicationController
   # PATCH/PUT /agents/1
   def update
     if @agent.update(agent_params)
-      AgentsNotifyJob.perform_later
+      AgentsNotifyJob.perform_later(@agent.to_json, @agent.address)
       render json: @agent, status: :ok
     else
       render json: @agent.errors, status: :unprocessable_entity

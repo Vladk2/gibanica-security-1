@@ -3,9 +3,17 @@ require 'rest-client'
 class AgentsNotifyJob < ApplicationJob
   queue_as :notify_agents
 
-  def perform(*args)
-    response = RestClient.get 'https://github.com/rest-client/rest-client'
-    puts response.body
-    #puts response.status
+  include RestClient
+
+  def perform(agent, address)
+    Request.execute(
+      method: :put,
+      url: "#{address}/config",
+      payload: agent,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      ssl_ca_file: 'cert.pem'
+    )
   end
 end
