@@ -1,5 +1,5 @@
 class AgentsController < ApplicationController
-  skip_before_action :authenticate_user, except: [:create]
+  skip_before_action :authenticate_user, only: [:create]
   before_action :agent_params, only: %i[create update]
   before_action :set_agent, only: [:update]
 
@@ -14,7 +14,7 @@ class AgentsController < ApplicationController
   def create
     @agent = Agent.new(agent_params)
 
-    if @agent.save!
+    if @agent.save
       render json: @agent, status: :created
     else
       render json: @agent.errors, status: :unprocessable_entity
@@ -24,6 +24,7 @@ class AgentsController < ApplicationController
   # PATCH/PUT /agents/1
   def update
     if @agent.update(agent_params)
+      AgentsNotifyJob.perform_later
       render json: @agent, status: :ok
     else
       render json: @agent.errors, status: :unprocessable_entity

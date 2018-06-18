@@ -10,7 +10,7 @@ require 'action_mailer/railtie'
 require 'action_view/railtie'
 require 'action_cable/engine'
 require 'sprockets/railtie'
-#require 'rails/test_unit/railtie'
+# require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -25,7 +25,7 @@ module Gibanica
 
     config.middleware.use Rack::Attack
 
-    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: 90.minutes }
+    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', {expires_in: 90.minutes}
 
     config.active_job.queue_adapter = :sidekiq
 
