@@ -249,7 +249,6 @@ export default class Agents extends React.Component {
                 label="Save"
                 type="submit"
                 icon={<CheckmarkIcon />}
-                onClick={this.updateAgents}
               />
             ) : null}
           </div>
