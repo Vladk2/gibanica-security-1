@@ -1,3 +1,5 @@
+ ![Alt text](gibanica-security-diagram.jpg)
+
  - Install ruby, ruby-bundler, mongodb, yarn, redis
  - gem install rails, foreman (add gems directory to path)
 

@@ -23,17 +23,17 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 #
 workers 1
 
-app_dir = File.expand_path("../..", __FILE__)
-shared_dir = "#{app_dir}/shared"
+#app_dir = File.expand_path("../..", __FILE__)
+#shared_dir = "#{app_dir}/shared"
 
 # Set up socket location
-bind "unix://#{shared_dir}/sockets/puma.sock"
-bind 'ssl://localhost:3000?cert=cert.pem&key=cert.key'
+#bind "unix://#{shared_dir}/sockets/puma.sock"
+#bind 'ssl://localhost:3000?cert=cert.pem&key=cert.key'
 
 # Set master PID and state locations
-pidfile "#{shared_dir}/pids/puma.pid"
-state_path "#{shared_dir}/pids/puma.state"
-activate_control_app
+#pidfile "#{shared_dir}/pids/puma.pid"
+#state_path "#{shared_dir}/pids/puma.state"
+#activate_control_app
 
 # Use the `preload_app!` method when specifying a `workers` number.
 # This directive tells Puma to first boot the application and load code

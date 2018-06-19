@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
 
-import Select from "grommet/components/Select";
 import Button from "grommet/components/Button";
 import CheckmarkIcon from "grommet/components/icons/base/Checkmark";
 import EditIcon from "grommet/components/icons/base/Edit";
@@ -258,13 +257,7 @@ export default class Agents extends React.Component {
             style={{
               textAlign: "right"
             }}
-          >
-            <Select
-              onChange={e => this.setState({ selectedMachine: e.option })}
-              options={this.options}
-              value={!selectedMachine ? "Select machine" : selectedMachine}
-            />
-          </div>
+          />
         </div>
         <br />
         <div
