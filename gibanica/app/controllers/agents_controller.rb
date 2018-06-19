@@ -1,6 +1,7 @@
 class AgentsController < ApplicationController
   skip_before_action :authenticate_user, only: [:create]
   before_action :agent_params, only: %i[create update]
+  before_action :agents_hierarchy_params, only: [:update_hierarchy]
   before_action :set_agent, only: [:update]
 
   # GET /agents
@@ -21,7 +22,7 @@ class AgentsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /agents/1
+  # PUT /agents/1
   def update
     if @agent.update(agent_params)
       AgentsNotifyJob.perform_later(@agent.to_json, @agent.address)
@@ -29,6 +30,11 @@ class AgentsController < ApplicationController
     else
       render json: @agent.errors, status: :unprocessable_entity
     end
+  end
+
+  # PATCH /agents/update_hierarchy
+  def update_hierarchy
+    Agent.batch_update agents_hierarchy_params[:agents]
   end
 
   private
@@ -40,5 +46,9 @@ class AgentsController < ApplicationController
   # Only allow a trusted parameter "white list" through.
   def agent_params
     params.require(:agent).permit(:id, :name, :type, :address, :host, :super, paths: %i[path format])
+  end
+
+  def agents_hierarchy_params
+    params.permit(agents: %i[id super])
   end
 end

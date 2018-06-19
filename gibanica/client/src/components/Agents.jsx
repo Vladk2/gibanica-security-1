@@ -16,7 +16,7 @@ import { Alert } from "react-bootstrap";
 
 import NavBar from "./navbar/NavBar";
 import SortableTree from "react-sortable-tree";
-import { getAgents, updateAgent } from "../util/AgentsApi";
+import { getAgents, updateAgent, updateAgentsTree } from "../util/AgentsApi";
 
 import "react-sortable-tree/style.css";
 
@@ -28,13 +28,14 @@ export default class Agents extends React.Component {
 
     this.state = {
       edited: false,
-      selectedMachine: undefined,
       selectedAgent: undefined,
       modalOpened: false,
       toast: false,
       notificationError: false,
       treeData: []
     };
+
+    this.agents_hierarchy = [];
   }
 
   componentWillMount() {
@@ -52,6 +53,11 @@ export default class Agents extends React.Component {
       a.canDrag = true;
       a.canDrop = true;
       a.children = [];
+
+      this.agents_hierarchy.push({
+        id: a._id["$oid"],
+        super: a.agent_id ? a.agent_id["$oid"] : null
+      });
 
       const paths = [];
 
@@ -148,6 +154,53 @@ export default class Agents extends React.Component {
     });
   };
 
+  updateTreeHierarchy = () => {
+    const { treeData } = this.state;
+    const agentsHierarchyData = [];
+
+    const findAgentsRecursive = function(node, agents) {
+      if (!node.children) {
+        return;
+      }
+
+      _.forEach(node.children, nodeChild => {
+        if (nodeChild._id) {
+          agents.push({
+            id: nodeChild._id["$oid"],
+            super: node._id["$oid"]
+          });
+          findAgentsRecursive(nodeChild, agents);
+        }
+      });
+    };
+
+    _.forEach(treeData, node => {
+      agentsHierarchyData.push({
+        id: node._id["$oid"],
+        super: null
+      });
+      findAgentsRecursive(node, agentsHierarchyData);
+    });
+
+    const updatedAgents = [];
+
+    _.forEach(this.agents_hierarchy, originalAgent => {
+      _.forEach(agentsHierarchyData, updatedAgent => {
+        if (originalAgent.id === updatedAgent.id) {
+          if (originalAgent.super !== updatedAgent.super) {
+            updatedAgents.push(updatedAgent);
+          }
+        }
+      });
+    });
+
+    updateAgentsTree({ agents: updatedAgents }).then(res => {
+      if (res.status === 200) {
+        this.agents_hierarchy = agentsHierarchyData;
+      }
+    });
+  };
+
   updatePath = (text, index, pathOrFormat) => {
     const { selectedAgent } = this.state;
 
@@ -194,7 +247,6 @@ export default class Agents extends React.Component {
   render() {
     const {
       treeData,
-      selectedMachine,
       edited,
       modalOpened,
       toast,
@@ -248,6 +300,7 @@ export default class Agents extends React.Component {
                 label="Save"
                 type="submit"
                 icon={<CheckmarkIcon />}
+                onClick={this.updateTreeHierarchy}
               />
             ) : null}
           </div>

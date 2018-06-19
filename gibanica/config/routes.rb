@@ -10,7 +10,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :agents, only: %i[index create update]
+  resources :agents, only: %i[index create update] do
+    collection do
+      patch :update_hierarchy
+    end
+  end
 
   resources :logs, only: %i[index create] do
     collection do

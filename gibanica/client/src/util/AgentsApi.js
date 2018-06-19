@@ -8,13 +8,11 @@ axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(
 )}`;
 
 function getAgents() {
-  return axios
-    .get(`${AGENTS_API_URL}`, {
-      headers: {
-        Accept: "application/json"
-      }
-    })
-    .catch(err => console.log(err));
+  return axios.get(`${AGENTS_API_URL}`, {
+    headers: {
+      Accept: "application/json"
+    }
+  });
 }
 
 function updateAgent(data) {
@@ -26,4 +24,13 @@ function updateAgent(data) {
   });
 }
 
-export { getAgents, updateAgent };
+function updateAgentsTree(data) {
+  return axios.patch(`${AGENTS_API_URL}/update_hierarchy`, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    }
+  });
+}
+
+export { getAgents, updateAgent, updateAgentsTree };
