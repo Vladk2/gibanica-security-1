@@ -81,36 +81,19 @@ export default class Agents extends React.Component {
       });
     });
 
-    const treeData = _.filter(data, a => !a.agent_id);
-    const remainingData = _.difference(data, treeData);
+    _(data).forEach(f => {
+      const children = _(data)
+        .filter(g => (g.agent_id ? g.agent_id["$oid"] : null) === f._id["$oid"])
+        .value();
 
-    const checkChildrenRecursive = function(agent, treeAgent) {
-      if (treeAgent.children) {
-        _.forEach(treeAgent.children, treeAgentChild => {
-          if (treeAgentChild._id) {
-            if (agent.agent_id["$oid"] === treeAgentChild._id["$oid"]) {
-              treeAgentChild.children.push(agent);
-            } else {
-              if (treeAgentChild.children) {
-                checkChildrenRecursive(agent, treeAgentChild);
-              }
-            }
-          }
-        });
-      }
-    };
-
-    _.forEach(treeData, treeAgent => {
-      _.forEach(remainingData, agent => {
-        if (agent.agent_id["$oid"] === treeAgent._id["$oid"]) {
-          treeAgent.children.push(agent);
-        } else {
-          checkChildrenRecursive(agent, treeAgent);
-        }
-      });
+      f.children = f.children.concat(children ? children : []);
     });
 
-    return treeData;
+    data = _(data)
+      .filter(f => (f.agent_id ? f.agent_id["$oid"] : null) === null)
+      .value();
+
+    return data;
   };
 
   updateTreeOnMove = tree => {
