@@ -7,8 +7,8 @@ class AgentsNotifyJob < ApplicationJob
 
   def perform(agent, address)
     Request.execute(
-      method: :put,
-      url: "#{address}/config",
+      method: :patch,
+      url: "#{address}/update",
       payload: agent,
       headers: {
         'Content-Type': 'application/json'

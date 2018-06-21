@@ -1,15 +1,17 @@
 import React from "react";
-import PropTypes from 'prop-types';
-import {Table} from "react-bootstrap";
+import PropTypes from "prop-types";
+// import { Table } from "react-bootstrap";
+import Table from "grommet/components/Table";
+import TableRow from "grommet/components/TableRow";
 
 export default class LogsTableView extends React.Component {
   parseDate = date => new Date(date).toUTCString();
 
   render() {
-    const {logs} = this.props;
+    const { logs } = this.props;
 
     return (
-      <Table striped hover>
+      <Table selectable>
         <thead>
           <tr>
             <th className="text-center">Time</th>
@@ -21,13 +23,13 @@ export default class LogsTableView extends React.Component {
         </thead>
         <tbody>
           {logs.map((log, key) => (
-            <tr key={key}>
+            <TableRow key={key}>
               <td className="text-center">{this.parseDate(log.logged_time)}</td>
               <td className="text-center">{log.host}</td>
               <td className="text-center">{log.process}</td>
               <td className="text-center">{log.severity}</td>
               <td className="text-center">{log.message}</td>
-            </tr>
+            </TableRow>
           ))}
         </tbody>
       </Table>
