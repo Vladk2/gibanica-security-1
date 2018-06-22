@@ -3,6 +3,7 @@ import Layer from "grommet/components/Layer";
 import LoginForm from "grommet/components/LoginForm";
 import Anchor from "grommet/components/Anchor";
 import Notification from "grommet/components/Notification";
+import about_img from "../../assets/images/logo.png";
 import { login } from "../../util/UserApi";
 
 export default class SignInForm extends React.Component {
@@ -74,6 +75,8 @@ export default class SignInForm extends React.Component {
             forgotPassword={
               <Anchor href="/forgot_password" label="Forgot password?" />
             }
+            logo={<img src={about_img} alt="" width={170} height={100} />}
+            secondaryText="Welcome back"
           />
         </div>
       </Layer>

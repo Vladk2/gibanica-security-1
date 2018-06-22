@@ -7,6 +7,7 @@ import ForgotPassword from "./components/common/ForgotPassword";
 import ResetPassword from "./components/common/ResetPassword";
 import "./assets/stylesheets/grommet-css";
 import "./App.css";
+import Alarms from "./components/Alarms";
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/" component={Index} />
             <Route exact path="/logs" component={LogsListing} />
+            <Route exact path="/alarms" component={Alarms} />
             <Route exact path="/agents" component={Agents} />
             <Route exact path="/forgot_password" component={ForgotPassword} />
             <Route exact path="/reset_password" component={ResetPassword} />
