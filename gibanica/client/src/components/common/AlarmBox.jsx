@@ -8,6 +8,7 @@ import Meter from "grommet/components/Meter";
 import Box from "grommet/components/Box";
 import Value from "grommet/components/Value";
 import Label from "grommet/components/Label";
+import Heading from "grommet/components/Heading";
 
 import { Collapse } from "react-collapse";
 
@@ -40,7 +41,11 @@ export default class AlarmBox extends React.Component {
                 }}
               >
                 <AlertIcon colorIndex="critical" size="large" />
-                <p>{`${new Date(alarm.created_at).toLocaleDateString()} \n ${new Date(alarm.created_at).toLocaleTimeString()}`}</p>
+                <p style={{ color: "#C8C8C8" }}>{`${new Date(
+                  alarm.created_at
+                ).toLocaleDateString()} \n ${new Date(
+                  alarm.created_at
+                ).toLocaleTimeString()}`}</p>
               </div>
               <div
                 className="col-md-9"
@@ -50,9 +55,10 @@ export default class AlarmBox extends React.Component {
                   transform: "translateY(-50%)"
                 }}
               >
-                <p>{alarm.name}</p>
-                <p>{alarm.message}</p>
-                
+                <Heading tag="h3" align="center">
+                  {alarm.name}
+                </Heading>
+                <p style={{ color: "gray" }}>{alarm.message}</p>
               </div>
             </div>
             <div
@@ -78,7 +84,18 @@ export default class AlarmBox extends React.Component {
               >
                 <div>
                   <Box align="center">
-                    <Meter label={<div><Value value={40}/><p>Logs</p></div>} size="xsmall" type="circle" value={40} />
+                    <Meter
+                      label={
+                        <div>
+                          <Value value={40} />
+                          <p>Logs</p>
+                        </div>
+                      }
+                      size="xsmall"
+                      type="circle"
+                      max={1000}
+                      value={40}
+                    />
                     <Box
                       direction="row"
                       justify="between"
@@ -116,6 +133,7 @@ export default class AlarmBox extends React.Component {
               <p>Log 5 from Alarm {alarm.alarm}</p>
             </Carousel>
           </Collapse>
+          <br />
           <br />
         </div>
       </div>

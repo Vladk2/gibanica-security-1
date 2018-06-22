@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "192.168.0.12";
+const host = "192.168.0.13";
 const ALARMS_API_URL = `https://${host}/alarms`;
 
 axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(
@@ -17,6 +17,4 @@ function getAlarmsPerPage(page) {
     .catch(err => console.log(err));
 }
 
-export {
-  getAlarmsPerPage
-};
+export { getAlarmsPerPage };
