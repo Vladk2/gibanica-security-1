@@ -41,6 +41,7 @@ module Gibanica
         resource '/logs/*', headers: :any, methods: %i[get]
         resource '/agents', headers: :any, methods: %i[get]
         resource '/agents/*', headers: :any, methods: %i[put patch]
+        resource '/alarms', headers: :any, methods: %i[get]
       end
 
       allow do

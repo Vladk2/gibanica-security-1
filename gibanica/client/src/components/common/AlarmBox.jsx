@@ -40,6 +40,7 @@ export default class AlarmBox extends React.Component {
                 }}
               >
                 <AlertIcon colorIndex="critical" size="large" />
+                <p>{`${new Date(alarm.created_at).toLocaleDateString()} \n ${new Date(alarm.created_at).toLocaleTimeString()}`}</p>
               </div>
               <div
                 className="col-md-9"
@@ -49,7 +50,9 @@ export default class AlarmBox extends React.Component {
                   transform: "translateY(-50%)"
                 }}
               >
-                <p>Alarm {alarm.alarm}</p>
+                <p>{alarm.name}</p>
+                <p>{alarm.message}</p>
+                
               </div>
             </div>
             <div
@@ -75,7 +78,7 @@ export default class AlarmBox extends React.Component {
               >
                 <div>
                   <Box align="center">
-                    <Meter size="xsmall" type="arc" value={40} max={1000} />
+                    <Meter label={<div><Value value={40}/><p>Logs</p></div>} size="xsmall" type="circle" value={40} />
                     <Box
                       direction="row"
                       justify="between"
@@ -84,7 +87,6 @@ export default class AlarmBox extends React.Component {
                       responsive={false}
                     >
                       <Label size="small">0</Label>
-                      <Value value={40} units="logs" size="xsmall" />
                       <Label size="small">1000</Label>
                     </Box>
                   </Box>

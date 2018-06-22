@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :alarms, only: %i[index show]
+
   resources :agents, only: %i[index create update] do
     collection do
       patch :update_hierarchy

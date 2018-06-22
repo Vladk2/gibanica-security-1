@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "192.168.0.13";
+const host = "192.168.0.12";
 const AGENTS_API_URL = `https://${host}/agents`;
 
 axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(
