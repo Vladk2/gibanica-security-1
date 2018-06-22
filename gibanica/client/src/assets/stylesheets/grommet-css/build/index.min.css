@@ -2500,8 +2500,8 @@ html.rtl .grommetux-button--align-start{
   -webkit-filter:drop-shadow(1px 1px 1px rgba(170,170,170,0.5))
 }
 .grommetux-carousel__control--active{
-  stroke:rgb(29, 194, 144);
-  fill:rgb(29, 194, 144)
+  stroke:rgb(255, 255, 255);
+  fill:rgb(167, 167, 167)
 }
 .grommetux-carousel--hide-controls .grommetux-control-icon-previous,.grommetux-carousel--hide-controls .grommetux-control-icon-next,.grommetux-carousel--hide-controls .grommetux-carousel__controls{
   opacity:0;
