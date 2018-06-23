@@ -27,6 +27,7 @@ export default class SignInForm extends React.Component {
         if (res.status === 200) {
           // set to local storage
           localStorage.setItem("token", res.data.token);
+          localStorage.setItem("role", res.data.roles);
 
           window.location.assign("/logs");
           return;

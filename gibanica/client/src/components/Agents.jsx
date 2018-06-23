@@ -27,6 +27,7 @@ export default class Agents extends React.Component {
     this.options = ["stefan-pc", "notebook"];
 
     this.state = {
+      permissionGranted: false,
       edited: false,
       selectedAgent: undefined,
       modalOpened: false,
@@ -39,12 +40,26 @@ export default class Agents extends React.Component {
   }
 
   componentWillMount() {
-    getAgents()
-      .then(res => {
-        this.setState({ treeData: this.parseData(res.data) });
-      })
-      .catch(err => console.log(err));
+    if (this.isAdmin()) {
+      this.setState({ permissionGranted: true });
+      getAgents()
+        .then(res => {
+          this.setState({ treeData: this.parseData(res.data) });
+        })
+        .catch(err => console.log(err));
+    } else {
+      window.location.replace("/logs");
+    }
   }
+
+  isAdmin = () => {
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+      return true;
+    }
+
+    return false;
+  };
 
   parseData = data => {
     _.forEach(data, a => {
@@ -229,6 +244,7 @@ export default class Agents extends React.Component {
 
   render() {
     const {
+      permissionGranted,
       treeData,
       edited,
       modalOpened,
@@ -236,6 +252,10 @@ export default class Agents extends React.Component {
       notificationError,
       selectedAgent
     } = this.state;
+
+    if (!permissionGranted) {
+      return null;
+    }
 
     return (
       <div

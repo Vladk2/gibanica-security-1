@@ -31,6 +31,10 @@ class User
     roles.any? {|r| r.name == 'admin' }
   end
 
+  def operater?
+    roles.any? {|r| r.name == 'operater' }
+  end
+
   private
 
   def strong_password?(password)

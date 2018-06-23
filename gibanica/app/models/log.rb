@@ -12,11 +12,11 @@ class Log
   index({logged_date: 1, severity: 1}, unique: false)
   index({logged_date: 1}, unique: false)
 
-  scope :by_field, lambda { |field, pattern|
+  scope :by_field, lambda {|field, pattern|
     where("#{field}": pattern)
   }
 
-  scope :from_date, lambda { |time|
+  scope :from_date, lambda {|time|
     Log.where(:logged_date.gte => time)
   }
 

@@ -3,6 +3,8 @@ class AlarmsController < ApplicationController
 
   # GET /alarms
   def index
+    authorize! :read, Alarm
+
     @alarms = Alarm.all
 
     render json: @alarms
@@ -14,8 +16,9 @@ class AlarmsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_alarm
-      @alarm = Alarm.find(params[:id])
-    end
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_alarm
+    @alarm = Alarm.find(params[:id])
+  end
 end

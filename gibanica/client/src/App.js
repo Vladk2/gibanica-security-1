@@ -10,6 +10,15 @@ import "./App.css";
 import AlarmsListing from "./components/AlarmsListing";
 
 class App extends Component {
+  isAdmin = () => {
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+      return true;
+    }
+
+    return false;
+  };
+
   render() {
     return (
       <Router>
@@ -18,7 +27,9 @@ class App extends Component {
             <Route exact path="/" component={Index} />
             <Route exact path="/logs" component={LogsListing} />
             <Route exact path="/alarms" component={AlarmsListing} />
-            <Route exact path="/agents" component={Agents} />
+            {this.isAdmin() ? (
+              <Route exact path="/agents" component={Agents} />
+            ) : null}
             <Route exact path="/forgot_password" component={ForgotPassword} />
             <Route exact path="/reset_password" component={ResetPassword} />
             <Route
