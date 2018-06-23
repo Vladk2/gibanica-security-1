@@ -9,6 +9,7 @@ import Box from "grommet/components/Box";
 import Value from "grommet/components/Value";
 import Label from "grommet/components/Label";
 import Heading from "grommet/components/Heading";
+import Timestamp from "grommet/components/Timestamp";
 
 import { Collapse } from "react-collapse";
 
@@ -41,11 +42,9 @@ export default class AlarmBox extends React.Component {
                 }}
               >
                 <AlertIcon colorIndex="critical" size="large" />
-                <p style={{ color: "#C8C8C8" }}>{`${new Date(
-                  alarm.created_at
-                ).toLocaleDateString()} \n ${new Date(
-                  alarm.created_at
-                ).toLocaleTimeString()}`}</p>
+                <Timestamp
+                  value={new Date(alarm.created_at).toLocaleDateString()}
+                />
               </div>
               <div
                 className="col-md-9"
