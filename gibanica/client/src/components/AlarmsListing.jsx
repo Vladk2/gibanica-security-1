@@ -6,9 +6,16 @@ import AddIcon from "grommet/components/icons/base/Add";
 import Button from "grommet/components/Button";
 import DateTime from "grommet/components/DateTime";
 import FormField from "grommet/components/FormField";
+import Box from "grommet/components/Box";
+import Paragraph from "grommet/components/Paragraph";
+import Title from "grommet/components/Title";
+import Anchor from "grommet/components/Anchor";
+import Menu from "grommet/components/Menu";
+import Footer from "grommet/components/Footer";
 
 import AlarmBox from "./common/AlarmBox";
 import NavBar from "./navbar/NavBar";
+import logo from "../assets/images/logo.png";
 
 export default class AlarmsListing extends React.Component {
   constructor(props) {
@@ -62,12 +69,11 @@ export default class AlarmsListing extends React.Component {
         <div className="row">
           <div className="col-md-3">
             <FormField>
-              <Select
-                placeHolder="Match By"
-                inline={false}
-                multiple={false}
-                options={["severity", "host", "process", "message"]}
-                value={undefined}
+              <TextInput
+                style={{ width: "100%" }}
+                id="item1"
+                name="item-1"
+                placeHolder="Title"
               />
             </FormField>
           </div>
@@ -77,7 +83,7 @@ export default class AlarmsListing extends React.Component {
                 style={{ width: "100%" }}
                 id="item1"
                 name="item-1"
-                placeHolder="Rule goes here ..."
+                placeHolder="Message"
               />
             </FormField>
           </div>
@@ -92,6 +98,29 @@ export default class AlarmsListing extends React.Component {
               type="submit"
               icon={<AddIcon />}
             />
+          </div>
+        </div>
+        <br />
+        <div className="row">
+          <div className="col-md-3">
+            <FormField label="Match By">
+              <Select
+                inline={false}
+                multiple={false}
+                options={["severity", "host", "process", "message"]}
+                value={undefined}
+              />
+            </FormField>
+          </div>
+          <div className="col-md-6">
+            <FormField label="Rule goes here">
+              <TextInput style={{ width: "100%" }} id="item1" name="item-1" />
+            </FormField>
+          </div>
+          <div className="col-md-3">
+            <FormField label="Count (Optional)">
+              <TextInput />
+            </FormField>
           </div>
         </div>
         <br />
@@ -133,6 +162,21 @@ export default class AlarmsListing extends React.Component {
             ))}
           </div>
         </div>
+        <br />
+        <br />
+        <Footer justify="between" size="small">
+          <Title>
+            <img src={logo} alt="" width={80} height={45} />
+            Gibanica Security
+          </Title>
+          <Box direction="row" align="center" pad={{ between: "medium" }}>
+            <Paragraph margin="none">© 2018 Gibanica Security</Paragraph>
+            <Menu direction="row" size="small" dropAlign={{ right: "right" }}>
+              <Anchor href="/logs">Logs</Anchor>
+              <Anchor href="/agents">Agents</Anchor>
+            </Menu>
+          </Box>
+        </Footer>
       </div>
     );
   }

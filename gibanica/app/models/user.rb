@@ -12,7 +12,7 @@ class User
   field :last_name, type: String
   field :password, type: String
 
-  index({ email: 1 }, unique: true)
+  index({email: 1}, unique: true)
 
   def password_valid?(password)
     Password.new(self.password) == password
@@ -28,7 +28,7 @@ class User
   end
 
   def admin?
-    roles.any? { |r| r.name == 'admin' }
+    roles.any? {|r| r.name == 'admin' }
   end
 
   private
