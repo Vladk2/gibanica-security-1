@@ -3,7 +3,8 @@ require 'jwt'
 class JwtUtil
   def self.encode(obj)
     {
-      token: JWT.encode(user_data(obj), ENV['GIBANICA_SECRET'], 'HS256')
+      token: JWT.encode(user_data(obj), ENV['GIBANICA_SECRET'], 'HS256'),
+      roles: obj.roles.map(&:name)
     }
   end
 
@@ -19,8 +20,6 @@ class JwtUtil
 
     JSON.parse(payload)
   end
-
-  private
 
   def self.user_data(user)
     {

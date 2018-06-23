@@ -164,19 +164,16 @@ export default class AlarmsListing extends React.Component {
         </div>
         <br />
         <br />
-        <Footer justify="between" size="small">
-          <Title>
-            <img src={logo} alt="" width={80} height={45} />
-            Gibanica Security
-          </Title>
-          <Box direction="row" align="center" pad={{ between: "medium" }}>
-            <Paragraph margin="none">© 2018 Gibanica Security</Paragraph>
-            <Menu direction="row" size="small" dropAlign={{ right: "right" }}>
-              <Anchor href="/logs">Logs</Anchor>
-              <Anchor href="/agents">Agents</Anchor>
-            </Menu>
-          </Box>
-        </Footer>
+        <div>
+          <Footer justify="between" size="small">
+            <Title>
+              <img src={logo} alt="" width={80} height={45} />
+            </Title>
+            <Box direction="row" align="center" pad={{ between: "medium" }}>
+              <Paragraph margin="none">© 2018 Gibanica Security</Paragraph>
+            </Box>
+          </Footer>
+        </div>
       </div>
     );
   }

@@ -8,12 +8,21 @@ export default class NavBar extends React.Component {
     window.location.replace("/");
   };
 
+  isAdmin = () => {
+    const role = localStorage.getItem("role");
+    if (role === "admin") {
+      return true;
+    }
+
+    return false;
+  };
+
   render() {
     return (
       <Navbar>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#home">Gibanica Security</a>
+            <a href="/">Gibanica Security</a>
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
@@ -23,9 +32,11 @@ export default class NavBar extends React.Component {
           <NavItem eventKey={2} href="/alarms">
             Alarms
           </NavItem>
-          <NavItem eventKey={3} href="/agents">
-            Agents
-          </NavItem>
+          {this.isAdmin() ? (
+            <NavItem eventKey={3} href="/agents">
+              Agents
+            </NavItem>
+          ) : null}
         </Nav>
         <Nav pullRight>
           <NavDropdown

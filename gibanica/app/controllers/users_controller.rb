@@ -10,7 +10,6 @@ class UsersController < ApplicationController
   before_action :user_params
 
   def login
-    puts request.headers['X-SSL-CERT']
     user = User.where(email: params[:email]).first
 
     if user.nil?

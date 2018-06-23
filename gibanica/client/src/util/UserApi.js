@@ -20,6 +20,7 @@ function login(email, password) {
 
 function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("role");
 }
 
 function checkUserEmail(email) {
