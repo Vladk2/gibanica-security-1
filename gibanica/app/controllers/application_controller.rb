@@ -2,6 +2,9 @@ require_relative '../util/jwt_util'
 
 class ApplicationController < ActionController::API
   before_action :authenticate_user
+  rescue_from AccessGranted::AccessDenied do
+    head :forbidden
+  end
   rescue_from JWT::DecodeError, with: :deny_access
 
   attr_reader :current_user

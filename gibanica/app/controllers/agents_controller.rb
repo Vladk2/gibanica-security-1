@@ -6,9 +6,9 @@ class AgentsController < ApplicationController
 
   # GET /agents
   def index
-    @agents = Agent.all
+    authorize! :read, Agent
 
-    render json: @agents
+    render json: Agent.all
   end
 
   # POST /agents
@@ -24,6 +24,8 @@ class AgentsController < ApplicationController
 
   # PUT /agents/1
   def update
+    authorize! :update, @agent
+
     if @agent.update(agent_params)
       AgentsNotifyJob.perform_later(@agent.to_json, @agent.address)
       render json: @agent, status: :ok
@@ -34,6 +36,7 @@ class AgentsController < ApplicationController
 
   # PATCH /agents/update_hierarchy
   def update_hierarchy
+    authorize! :update, Agent
     Agent.batch_update agents_hierarchy_params[:agents]
   end
 

@@ -3,6 +3,8 @@ class AlarmsController < ApplicationController
 
   # GET /alarms
   def index
+    authorize! :read, Alarm
+
     @alarms = Alarm.all
 
     render json: @alarms
