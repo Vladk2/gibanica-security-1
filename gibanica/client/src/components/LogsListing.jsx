@@ -62,11 +62,13 @@ export default class LogsListing extends React.Component {
 
   fetchLogs = page => {
     getLogsPerPage(this.checkPage(page)).then(res => {
-      this.setState({
-        logs: res.data.data,
-        pagesCount: Math.ceil(res.data.count / 20),
-        currentPage: res.data.page
-      });
+      if (res && res.status === 200) {
+        this.setState({
+          logs: res.data.data,
+          pagesCount: Math.ceil(res.data.count / 20),
+          currentPage: res.data.page
+        });
+      }
     });
   };
 

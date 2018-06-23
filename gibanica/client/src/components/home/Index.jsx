@@ -1,5 +1,4 @@
 import React from "react";
-import LoginForm from "./LoginForm";
 import IntroContent from "../home/sections/IntroContent";
 import About from "../home/sections/About";
 import Services from "../home/sections/Services";
@@ -14,7 +13,6 @@ export default class Index extends React.Component {
       <div>
         <main id="main">
           <IntroContent />
-          <LoginForm />
           <About />
           <Services />
           <Team />

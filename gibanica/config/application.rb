@@ -10,7 +10,7 @@ require 'action_mailer/railtie'
 require 'action_view/railtie'
 require 'action_cable/engine'
 require 'sprockets/railtie'
-#require 'rails/test_unit/railtie'
+# require 'rails/test_unit/railtie'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -25,7 +25,7 @@ module Gibanica
 
     config.middleware.use Rack::Attack
 
-    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', { expires_in: 90.minutes }
+    config.cache_store = :redis_store, 'redis://localhost:6379/0/cache', {expires_in: 90.minutes}
 
     config.active_job.queue_adapter = :sidekiq
 
@@ -35,15 +35,19 @@ module Gibanica
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'https://localhost:5000'
+        origins 'https://localhost:5000' # change to machine's lan network ip
         resource '/users/*', headers: :any, methods: %i[post]
         resource '/logs', headers: :any, methods: %i[get]
         resource '/logs/*', headers: :any, methods: %i[get]
+        resource '/agents', headers: :any, methods: %i[get]
+        resource '/agents/*', headers: :any, methods: %i[put patch]
+        resource '/alarms', headers: :any, methods: %i[get]
       end
 
       allow do
-        origins '*'
+        origins '*' # agents through nginx
         resource '/logs', headers: :any, method: %i[post]
+        resource '/agents', headers: :any, method: %i[post]
       end
     end
 

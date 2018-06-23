@@ -1,4 +1,7 @@
 import React from "react";
+
+import SignInForm from "../SignInForm";
+
 import bg_1 from "../../../assets/images/intro-carousel/1.jpg";
 import bg_2 from "../../../assets/images/intro-carousel/2.jpg";
 import bg_3 from "../../../assets/images/intro-carousel/3.jpg";
@@ -13,6 +16,7 @@ export default class IntroContent extends React.Component {
 
     this.state = {
       background: this.backgrounds[0],
+      modalOpened: false,
       loggedIn: false
     };
   }
@@ -49,7 +53,7 @@ export default class IntroContent extends React.Component {
   }
 
   render() {
-    const { background, loggedIn } = this.state;
+    const { background, loggedIn, modalOpened } = this.state;
 
     return (
       <section
@@ -58,6 +62,11 @@ export default class IntroContent extends React.Component {
           background: `url("${background}")`
         }}
       >
+        {modalOpened ? (
+          <SignInForm
+            closeModal={() => this.setState({ modalOpened: false })}
+          />
+        ) : null}
         <div className="intro-content">
           <h2>
             SIEM<span>security</span>
@@ -70,15 +79,28 @@ export default class IntroContent extends React.Component {
             >
               Get Started
             </a>
-            <a
-              href={loggedIn ? "/logs" : null}
-              style={{
-                cursor: "pointer"
-              }}
-              className="btn-projects scrollto"
-            >
-              {loggedIn ? "Enter" : "Our Services"}
-            </a>
+            {loggedIn ? (
+              <a
+                href="/logs"
+                style={{
+                  cursor: "pointer"
+                }}
+                className="btn-projects scrollto"
+                onClick={credentials => this.something(credentials)}
+              >
+                Enter
+              </a>
+            ) : (
+              <a
+                style={{
+                  cursor: "pointer"
+                }}
+                className="btn-projects scrollto"
+                onClick={() => this.setState({ modalOpened: true })}
+              >
+                Sign In
+              </a>
+            )}
           </div>
         </div>
       </section>

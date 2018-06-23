@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "localhost:3000";
+const host = "192.168.0.13";
 const LOGS_API_URL = `https://${host}/logs`;
 
 axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(
@@ -14,7 +14,7 @@ function getLogsPerPage(page) {
         Accept: "application/json"
       }
     })
-    .catch(err => console.err(err));
+    .catch(err => console.log(err));
 }
 
 function getNumberOfLogsInsertedPerDay(n_of_days_ago) {

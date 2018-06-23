@@ -20,7 +20,7 @@ export default class NavBar extends React.Component {
           <NavItem eventKey={1} href="/logs">
             Logs
           </NavItem>
-          <NavItem eventKey={2} href="#">
+          <NavItem eventKey={2} href="/alarms">
             Alarms
           </NavItem>
           <NavItem eventKey={3} href="/agents">
