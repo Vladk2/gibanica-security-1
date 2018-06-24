@@ -43,7 +43,7 @@ def update_supervisor():
 	print(content)
 
 	data['super'] = {}
-	data['super']['id'] = content['super']['id']['$oid']
+	data['super']['id'] = content['super']['id']['$oid'] if content['super']['id'] != None else None
 	data['super']['address'] = content['super']['address']
 
 	with open('log-agent2.conf','w') as file:
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 							"Missing cert or key. Details: {}"
 							.format(e))
 	# if startup(): app.run ... - send request to siem and update conf, then run server
-	startup()
+	# startup()
 	serving.run_simple(
 			API_HOST, API_PORT, app, ssl_context=context)
 

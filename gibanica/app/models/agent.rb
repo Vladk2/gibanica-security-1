@@ -32,7 +32,7 @@ class Agent
   def self.agent_notify_data(agent)
     {
       super: {
-        id: agent.agent ? agent.agent[:id] : nil,
+        id: agent.agent ? agent.agent._id : nil,
         address: agent.agent ? agent.agent[:address] : nil
       }
     }.to_json
