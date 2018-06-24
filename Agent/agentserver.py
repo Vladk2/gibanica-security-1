@@ -11,7 +11,7 @@ app = Flask(__name__)
 data = json.load(open('log-agent2.conf'))
 
 HTTPS_ENABLED = True
-VERIFY_USER = False
+VERIFY_USER = True
 
 API_HOST = data['address']
 API_PORT = data['port']
@@ -30,18 +30,28 @@ def startup():
 		print('Logs have been sent successfully')
 		print(r)
 
-@app.route("/hello")
-def bleja():
-	return "buja"
+@app.route("/update_supervisor", methods = ["PATCH"])
+def update_supervisor():
+	content = request.get_json(silent=True)
+	print(content)
+
+	data['super'] = {}
+	data['super']['id'] = content['super']['id']['$oid']
+	data['super']['address'] = content['super']['address']
+
+	with open('log-agent2.conf','w') as file:
+		file.write(json.dumps(data, indent=4, sort_keys=True))
+
+	return "ok"
 
 @app.route("/update", methods = ['PATCH'])
 def update():
-	content = request.get_json(silent=True);
+	content = request.get_json(silent=True)
 
 	data["log_files"] = content["paths"]
 	data["name"] = content["name"]
 
-	with open('log-agent.conf','w') as file:
+	with open('log-agent2.conf','w') as file:
 		file.write(json.dumps(data, indent=4, sort_keys=True))
 
 	return jsonify(content)

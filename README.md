@@ -19,6 +19,7 @@ Run this in /certs directory:
     > openssl genrsa -out client.key 2048
     > openssl req -new -key client.key -out client.csr
     > openssl x509 -req -in client.csr -CA root_ca.crt -CAkey root_ca.key -CAcreateserial -out client.crt -days 1024 -sha256
+    > curl -v -s -k --key client.key --cert client.crt --cacert root_ca.crt https://{ siem_ip }/logs -- 401 response if passes
     > cat client.key client.crt > client.pem
 
  - RUN REDIS

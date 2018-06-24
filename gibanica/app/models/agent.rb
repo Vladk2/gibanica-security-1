@@ -16,8 +16,27 @@ class Agent
     # Agent.with_session(causal_consistency: true) do
     # session as transaction also not working. FIX
     agents.each do |a|
-      Agent.find(a[:id]).update(agent: a[:super])
+      agent = Agent.find(a[:id])
+      agent.update(agent: a[:super])
+
+      # bug in sending supervisor data to agent. Needs urgent FIX !
+      AgentsNotifyJob.perform_later(
+        agent_notify_data(agent),
+        agent.address,
+        '/update_supervisor'
+      )
     end
     # end
+  end
+
+  private
+
+  def self.agent_notify_data(agent)
+    {
+      super: {
+        id: agent.agent ? agent.agent[:id] : nil,
+        address: agent.agent ? agent.agent[:address] : nil
+      }
+    }.to_json
   end
 end

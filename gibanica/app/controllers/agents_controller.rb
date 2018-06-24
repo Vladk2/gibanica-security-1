@@ -27,7 +27,7 @@ class AgentsController < ApplicationController
     authorize! :update, @agent
 
     if @agent.update(agent_params)
-      AgentsNotifyJob.perform_later(@agent.to_json, @agent.address)
+      AgentsNotifyJob.perform_later(@agent.to_json, @agent.address, '/update')
       render json: @agent, status: :ok
     else
       render json: @agent.errors, status: :unprocessable_entity
