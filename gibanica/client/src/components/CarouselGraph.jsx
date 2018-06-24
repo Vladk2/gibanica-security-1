@@ -1,10 +1,13 @@
 import React from "react";
+
 import { Carousel } from "react-bootstrap";
+
 import {
   getNumberOfLogsInsertedPerDay,
   getNumberOfLogsInsertedPerHost,
   getNumberOfLogsInserted
 } from "../util/LogsApi";
+
 import Graph from "./Graph";
 
 export default class CarouselGraph extends React.Component {

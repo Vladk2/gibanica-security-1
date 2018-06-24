@@ -5,12 +5,15 @@ import { getAlarmsPerPage } from "../util/AlarmsApi";
 import Box from "grommet/components/Box";
 import Paragraph from "grommet/components/Paragraph";
 import Title from "grommet/components/Title";
+import Carousel from "grommet/components/Carousel";
 import Footer from "grommet/components/Footer";
 
 import AlarmBox from "./common/AlarmBox";
 import AlarmRuleForm from "./common/AlarmRuleForm";
 import NavBar from "./navbar/NavBar";
 import logo from "../assets/images/logo.png";
+
+import Graph from "./Graph";
 
 export default class AlarmsListing extends React.Component {
   constructor(props) {
@@ -62,6 +65,13 @@ export default class AlarmsListing extends React.Component {
         <NavBar />
         <br />
         <AlarmRuleForm />
+        <br />
+        <div>
+          <Carousel style={{ height: window.innerHeight / 4 }}>
+            <Graph type="alarms_host" data={[]} />
+            <Graph type="alarms_system" data={[]} />
+          </Carousel>
+        </div>
         <br />
         <br />
         <br />
