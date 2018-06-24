@@ -1,5 +1,6 @@
 class AgentsController < ApplicationController
   skip_before_action :authenticate_user, only: [:create]
+  before_action :verify_client_cert, only: [:create]
   before_action :agent_params, only: %i[create update]
   before_action :agents_hierarchy_params, only: [:update_hierarchy]
   before_action :set_agent, only: [:update]
@@ -13,12 +14,22 @@ class AgentsController < ApplicationController
 
   # POST /agents
   def create
-    @agent = Agent.new(agent_params)
+    if agent_params[:id].nil?
+      agent = Agent.new(agent_params)
 
-    if @agent.save
-      render json: @agent, status: :created
+      #if @agent.save
+      render json: agent, status: :created
+      #else
+      #  render json: agent.errors, status: :unprocessable_entity
+      #end
     else
-      render json: @agent.errors, status: :unprocessable_entity
+      agent = Agent.find(agent_params[:id])
+
+      if agent.update(agent_params)
+        render json: @agent, status: :ok
+      else
+        render json: @agent.errors, status: :unprocessable_entity
+      end
     end
   end
 
@@ -41,6 +52,10 @@ class AgentsController < ApplicationController
   end
 
   private
+
+  def verify_client_cert
+    head :not_acceptable unless request.headers['X-TLS-CLIENT-VERIFIED'] == 'SUCCESS'
+  end
 
   def set_agent
     @agent = Agent.find(params[:id])

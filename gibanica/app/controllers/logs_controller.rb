@@ -1,5 +1,9 @@
 class LogsController < ApplicationController
-  skip_before_action :authenticate_user, only: %w[create]
+  skip_before_action :authenticate_user, only: [:create]
+
+  before_action :verify_client_cert, only: [:create]
+  before_action :set_agent, only: [:create]
+  before_action :verify_agent_authority, only: [:create]
   before_action :accept_json_only, only: [:index]
   before_action :content_type_json_only, only: [:create]
   before_action :set_logs, only: [:index]
@@ -43,12 +47,24 @@ class LogsController < ApplicationController
 
   private
 
+  def verify_client_cert
+    head :not_acceptable unless request.headers['X-TLS-CLIENT-VERIFIED'] == 'SUCCESS'
+  end
+
+  def verify_agent_authority
+    head :unauthorized unless @agent.agent.nil?
+  end
+
   def accept_json_only
     head :not_acceptable unless request.headers['Accept'] == 'application/json'
   end
 
   def content_type_json_only
     head :not_acceptable unless request.headers['Content-Type'] == 'application/json'
+  end
+
+  def set_agent
+    @agent = Agent.find(params[:id])
   end
 
   def set_logs
@@ -72,6 +88,6 @@ class LogsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def log_params
-    params.permit(logs: %i[host logged_date logged_time process severity message]).require(:logs)
+    params.permit(:id, logs: %i[host logged_date logged_time process severity message]).require(:logs)
   end
 end

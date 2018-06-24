@@ -23,11 +23,18 @@ def startup():
 	url = "https://%s/agents" % data['siem_ip']
 	headers = {'Content-type': 'application/json', 'Connection': 'close'}
 
-	r = requests.post(url, json=data,
-					  headers=headers, verify=API_CA_T)
+	r = requests.post(
+		url,
+		# returns 401 if this agent has super agent
+		json={'id': '5b27fd9c0bd44e1afc82a84e', 'logs': [{'host': 'sibalica'}]}, # send agent data from .conf file
+		cert=('../certs/client.crt', '../certs/client.key'), # returns 406 without cert
+		headers=headers,
+		verify=API_CA_T
+	)
+
+	print(r.status_code)
 
 	if r.status_code == 200 or r.status_code == 201:
-		print('Logs have been sent successfully')
 		print(r)
 
 @app.route("/update_supervisor", methods = ["PATCH"])
@@ -71,6 +78,7 @@ if __name__ == "__main__":
 							"Missing cert or key. Details: {}"
 							.format(e))
 	# if startup(): app.run ... - send request to siem and update conf, then run server
+	startup()
 	serving.run_simple(
 			API_HOST, API_PORT, app, ssl_context=context)
 

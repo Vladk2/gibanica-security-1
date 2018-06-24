@@ -29,8 +29,6 @@ class Agent
     # end
   end
 
-  private
-
   def self.agent_notify_data(agent)
     {
       super: {
@@ -39,4 +37,6 @@ class Agent
       }
     }.to_json
   end
+
+  private_class_method :agent_notify_data
 end
