@@ -1,5 +1,5 @@
 import React from "react";
-import { getAlarmsPerPage } from "../util/AlarmsApi";
+import { getAlarmsPerPage, getHello } from "../util/AlarmsApi";
 import Select from "grommet/components/Select";
 import TextInput from "grommet/components/TextInput";
 import AddIcon from "grommet/components/icons/base/Add";
@@ -9,8 +9,6 @@ import FormField from "grommet/components/FormField";
 import Box from "grommet/components/Box";
 import Paragraph from "grommet/components/Paragraph";
 import Title from "grommet/components/Title";
-import Anchor from "grommet/components/Anchor";
-import Menu from "grommet/components/Menu";
 import Footer from "grommet/components/Footer";
 
 import AlarmBox from "./common/AlarmBox";
@@ -27,6 +25,9 @@ export default class AlarmsListing extends React.Component {
   }
 
   componentWillMount() {
+    // getHello()
+    //   .then(res => console.log(res))
+    //   .catch(err => console.log(err));
     getAlarmsPerPage(1)
       .then(res => {
         if (res.status === 200) {

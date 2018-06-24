@@ -33,23 +33,23 @@ module Gibanica
 
     # Rails 5
 
-    config.middleware.insert_before 0, Rack::Cors do
-      allow do
-        origins 'https://localhost:5000' # change to machine's lan network ip
-        resource '/users/*', headers: :any, methods: %i[post]
-        resource '/logs', headers: :any, methods: %i[get]
-        resource '/logs/*', headers: :any, methods: %i[get]
-        resource '/agents', headers: :any, methods: %i[get]
-        resource '/agents/*', headers: :any, methods: %i[put patch]
-        resource '/alarms', headers: :any, methods: %i[get]
-      end
+    # config.middleware.insert_before 0, Rack::Cors do
+    #   allow do
+    #     origins 'https://192.168.0.13:5000' # change to machine's lan network ip
+    #     resource '/users/*', headers: :any, methods: %i[post]
+    #     resource '/logs', headers: :any, methods: %i[get]
+    #     resource '/logs/*', headers: :any, methods: %i[get]
+    #     resource '/agents', headers: :any, methods: %i[get]
+    #     resource '/agents/*', headers: :any, methods: %i[put patch]
+    #     resource '/alarms', headers: :any, methods: %i[get]
+    #   end
 
-      allow do
-        origins '*' # agents through nginx
-        resource '/logs', headers: :any, method: %i[post]
-        resource '/agents', headers: :any, method: %i[post]
-      end
-    end
+    #   allow do
+    #     origins '*' # agents through nginx
+    #     resource '/logs', headers: :any, method: %i[post]
+    #     resource '/agents', headers: :any, method: %i[post]
+    #   end
+    # end
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

@@ -8,13 +8,27 @@
     > bundle install --path vendor/bundle
     > cd client
     > yarn --ignore-engines
-    > openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout cert.key -out cert.pem -subj /CN=localhost
+
+Run this in /certs directory:
+
+    > openssl genrsa -out root_ca.key 2048
+    > openssl req -x509 -new -nodes -key root_ca.key -sha256 -days 1024 -out root_ca.crt
+    > openssl genrsa -out siem.key 2048
+    > openssl req -new -key siem.key -out siem.csr
+    > openssl x509 -req -in siem.csr -CA root_ca.crt -CAkey root_ca.key -CAcreateserial -out siem.crt -days 1024 -sha256
+    > openssl genrsa -out client.key 2048
+    > openssl req -new -key client.key -out client.csr
+    > openssl x509 -req -in client.csr -CA root_ca.crt -CAkey root_ca.key -CAcreateserial -out client.crt -days 1024 -sha256
+    > cat client.key client.crt > client.pem
 
  - RUN REDIS
     > redis-server
 
+ - RUN SIDEKIQ
+    > be sidekiq -q default -q mailers -q notify_agents
+
  - RUN SERVER API (gibanica directory):
-    > foreman start -f Procfile.dev
+    > be rails s
 
  - RUN FRONTEND (gibanica/client/ directory):
  	> yarn start

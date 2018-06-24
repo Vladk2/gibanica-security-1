@@ -30,7 +30,7 @@ export default class AlarmBox extends React.Component {
                 borderLeftColor: "#CFCFCF",
                 borderLeftStyle: "solid",
                 backgroundColor: "#FFFFFF",
-                height: window.innerHeight / 7
+                height: window.innerHeight / 6
               }}
             >
               <div
@@ -71,7 +71,7 @@ export default class AlarmBox extends React.Component {
                 borderRightColor: "#CFCFCF",
                 borderRightStyle: "solid",
                 backgroundColor: "#FFFFFF",
-                height: window.innerHeight / 7
+                height: window.innerHeight / 6
               }}
             >
               <div
