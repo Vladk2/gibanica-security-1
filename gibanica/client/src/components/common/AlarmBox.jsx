@@ -43,6 +43,7 @@ export default class AlarmBox extends React.Component {
               >
                 <AlertIcon colorIndex="critical" size="large" />
                 <Timestamp
+                  style={{ color: "#A2A2A2" }}
                   value={new Date(alarm.created_at).toLocaleDateString()}
                 />
               </div>

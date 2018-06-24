@@ -64,7 +64,9 @@ export default class Agents extends React.Component {
   parseData = data => {
     _.forEach(data, a => {
       a.title = a.name;
-      a.subtitle = `type: ${a.type}, host: ${a.host}, address: ${a.address}`;
+      a.subtitle = `${a._id["$oid"]}, type: ${a.type}, host: ${
+        a.host
+      }, address: ${a.address}`;
       a.canDrag = true;
       a.canDrop = true;
       a.children = [];
@@ -115,6 +117,7 @@ export default class Agents extends React.Component {
     this.setState({ treeData: tree, edited: true });
   };
 
+  // find agent node and replace it with server (updated) data
   updateTree = (collection, newNode) => {
     _.forEach(collection, (child, index) => {
       if (child._id) {
@@ -191,6 +194,8 @@ export default class Agents extends React.Component {
         }
       });
     });
+
+    console.log(updatedAgents);
 
     updateAgentsTree({ agents: updatedAgents }).then(res => {
       if (res.status === 200) {

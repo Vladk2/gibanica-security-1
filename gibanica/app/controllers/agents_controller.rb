@@ -48,7 +48,10 @@ class AgentsController < ApplicationController
   # PATCH /agents/update_hierarchy
   def update_hierarchy
     authorize! :update, Agent
+
     Agent.batch_update agents_hierarchy_params[:agents]
+
+    head :ok
   end
 
   private
