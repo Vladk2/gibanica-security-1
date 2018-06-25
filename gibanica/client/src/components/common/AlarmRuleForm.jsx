@@ -1,5 +1,7 @@
 import React from "react";
 
+import _ from "lodash";
+
 import Animate from "grommet/components/Animate";
 import Select from "grommet/components/Select";
 import TextInput from "grommet/components/TextInput";
@@ -10,13 +12,20 @@ import Button from "grommet/components/Button";
 import DateTime from "grommet/components/DateTime";
 import FormField from "grommet/components/FormField";
 
+import SearchBadges from "./SearchBadges";
+
 export default class AlarmRuleForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      badges: [],
       formVisible: false,
-      isAdmin: false
+      isAdmin: false,
+      rule: "",
+      match: undefined,
+      title: "",
+      message: ""
     };
   }
 
@@ -24,8 +33,57 @@ export default class AlarmRuleForm extends React.Component {
     this.setState({ isAdmin: localStorage.getItem("role") });
   }
 
+  handleSelect = option => {
+    const { badges } = this.state;
+
+    const badge = _.find(badges, b => b.filter === option);
+
+    if (badge) {
+      this.setState({ match: option, rule: badge.search });
+      return;
+    }
+
+    badges.push({ filter: option, search: "=" });
+
+    this.setState({ match: option, badges, rule: "" });
+  };
+
+  handleRule = text => {
+    const { badges, match } = this.state;
+
+    _.forEach(badges, b => {
+      if (b.filter === match) {
+        if (text) {
+          b.search = text;
+        } else {
+          b.search = "=";
+        }
+      }
+    });
+
+    this.setState({ badges, rule: text });
+  };
+
+  handleBadgeClick = badge => {
+    this.setState({ rule: badge.search, match: badge.filter });
+  };
+
+  removeBadge = badge_index => {
+    const badges_copy = this.state.badges;
+    badges_copy.splice(badge_index, 1);
+    this.setState({ badges: badges_copy });
+  };
+
   render() {
-    const { formVisible, isAdmin } = this.state;
+    const {
+      formVisible,
+      isAdmin,
+      badges,
+      title,
+      message,
+      rule,
+      match
+    } = this.state;
 
     if (!isAdmin) {
       return null;
@@ -61,9 +119,10 @@ export default class AlarmRuleForm extends React.Component {
             <div className="col-md-3">
               <FormField>
                 <TextInput
+                  value={title}
+                  onDOMChange={e => this.setState({ title: e.target.value })}
                   style={{ width: "100%" }}
-                  id="item1"
-                  name="item-1"
+                  name="title"
                   placeHolder="Title"
                 />
               </FormField>
@@ -71,9 +130,10 @@ export default class AlarmRuleForm extends React.Component {
             <div className="col-md-6">
               <FormField>
                 <TextInput
+                  value={message}
+                  onDOMChange={e => this.setState({ message: e.target.value })}
                   style={{ width: "100%" }}
-                  id="item1"
-                  name="item-1"
+                  name="message"
                   placeHolder="Message"
                 />
               </FormField>
@@ -96,16 +156,22 @@ export default class AlarmRuleForm extends React.Component {
             <div className="col-md-3">
               <FormField label="Match By">
                 <Select
+                  onChange={o => this.handleSelect(o.value)}
                   inline={false}
                   multiple={false}
                   options={["severity", "host", "process", "message"]}
-                  value={undefined}
+                  value={match}
                 />
               </FormField>
             </div>
             <div className="col-md-9">
               <FormField label="Rule goes here">
-                <TextInput style={{ width: "100%" }} id="item1" name="item-1" />
+                <TextInput
+                  value={rule}
+                  style={{ width: "100%" }}
+                  name="rule"
+                  onDOMChange={e => this.handleRule(e.target.value)}
+                />
               </FormField>
             </div>
           </div>
@@ -132,6 +198,19 @@ export default class AlarmRuleForm extends React.Component {
               </FormField>
             </div>
           </div>
+          <Animate
+            visible={badges.length > 0}
+            enter={{ animation: "slide-down", duration: 500, delay: 0 }}
+            leave={{ animation: "slide-up", duration: 500, delay: 0 }}
+            keep
+          >
+            <br />
+            <SearchBadges
+              badges={badges}
+              removeBadge={this.removeBadge}
+              badgeClick={this.handleBadgeClick}
+            />
+          </Animate>
         </Animate>
       </div>
     );

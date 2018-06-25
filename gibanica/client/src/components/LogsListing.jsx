@@ -1,10 +1,14 @@
 import React from "react";
+
 import CarouselGraph from "./CarouselGraph";
 import LogsTableView from "./LogsTableView";
 import SearchBar from "./common/SearchBar";
 import NavBar from "./navbar/NavBar";
 import LogsJsonView from "./LogsJsonView";
+import FooterBox from "./common/FooterBox";
+
 import { getLogsPerPage, searchLogs } from "../util/LogsApi";
+
 import Pages from "./Pages";
 
 export default class LogsListing extends React.Component {
@@ -152,6 +156,7 @@ export default class LogsListing extends React.Component {
           currentPage={currentPage}
           load={this.queryLogs}
         />
+        <FooterBox />
       </div>
     );
   }

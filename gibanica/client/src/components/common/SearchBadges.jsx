@@ -2,7 +2,7 @@ import React from "react";
 
 export default class SearchBadges extends React.Component {
   render() {
-    const { badges, removeBadge } = this.props;
+    const { badges, removeBadge, badgeClick } = this.props;
 
     return (
       <div className="row">
@@ -15,7 +15,11 @@ export default class SearchBadges extends React.Component {
         >
           {badges.map((badge, i) => {
             return (
-              <span className="tag label label-default" key={i}>
+              <span
+                className="tag label label-default"
+                key={i}
+                onClick={() => badgeClick(badge)}
+              >
                 <span>
                   {badge.filter}: {badge.search}
                 </span>
