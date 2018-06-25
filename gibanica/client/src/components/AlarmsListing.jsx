@@ -2,18 +2,14 @@ import React from "react";
 
 import { getAlarmsPerPage } from "../util/AlarmsApi";
 
-import Box from "grommet/components/Box";
-import Paragraph from "grommet/components/Paragraph";
-import Title from "grommet/components/Title";
 import CarouselGraph from "./CarouselGraph";
-import Footer from "grommet/components/Footer";
+import FooterBox from "./common/FooterBox";
 
 import Pages from "./Pages";
 
 import AlarmBox from "./common/AlarmBox";
 import AlarmRuleForm from "./common/AlarmRuleForm";
 import NavBar from "./navbar/NavBar";
-import logo from "../assets/images/logo.png";
 
 export default class AlarmsListing extends React.Component {
   constructor(props) {
@@ -54,7 +50,7 @@ export default class AlarmsListing extends React.Component {
         if (res.status === 200) {
           this.setState({
             currentPage: res.data.page,
-            pagesCount: Math.ceil(res.data.count / 20),
+            pagesCount: Math.ceil(res.data.count / 6),
             alarms: res.data.alarms.map(
               e =>
                 (e = {
@@ -117,14 +113,7 @@ export default class AlarmsListing extends React.Component {
         <br />
         <br />
         <div>
-          <Footer justify="between" size="small">
-            <Title>
-              <img src={logo} alt="" width={80} height={45} />
-            </Title>
-            <Box direction="row" align="center" pad={{ between: "medium" }}>
-              <Paragraph margin="none">© 2018 Gibanica Security</Paragraph>
-            </Box>
-          </Footer>
+          <FooterBox />
         </div>
       </div>
     );

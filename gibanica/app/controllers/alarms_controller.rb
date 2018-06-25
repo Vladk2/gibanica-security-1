@@ -28,7 +28,7 @@ class AlarmsController < ApplicationController
     page = params[:page].nil? ? 1 : params[:page]
 
     @alarms = {
-      alarms: Alarm.ascending(:created_at).page(page),
+      alarms: Alarm.ascending(:created_at).page(page).per(6),
       count: Alarm.count,
       page: page
     }
