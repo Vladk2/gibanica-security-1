@@ -37,14 +37,25 @@ class AlarmRule
                 }
               ]
             },
-            hostSet: {
-              "$addToSet": '$process'
+            process_set: {
+              "$addToSet": {
+                id: '$_id',
+                host: '$host',
+                severity: '$severity'
+              }
             },
             count: {
               "$sum": 1
             }
           }
-        }
+        },
+        # {
+        #   "$project": {
+        #     count: {
+        #       "$size": '$hostSet'
+        #     }
+        #   }
+        # }
       ]
     )
   end
