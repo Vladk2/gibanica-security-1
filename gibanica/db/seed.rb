@@ -45,7 +45,7 @@ for i in 1..400 do
     logged_date: Date.today - 45.days,
     logged_time: Time.now,
     severity: (i.odd? ? 'INFO' : 'WARNING'),
-    host: (i.odd? ? 'stefan-notebook' : 'stefan-pc'),
+    host: (i.odd? ? 'awd' : 'dwa'),
     process: i,
     message: (i.odd? ? 'CPU is burning... NOT' : 'Something is happening. I warn you it`s bad')
   ).save!

@@ -112,10 +112,10 @@ class Log
             logged_date: {
               "$gte": Date.today - 30.days, "$lte": Date.today
             }
-          },
+          }
         },
         {
-          "$group":{
+          "$group": {
             _id: '$logged_date',
             count: {
               "$sum": 1

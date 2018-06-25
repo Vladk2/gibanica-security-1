@@ -5,12 +5,13 @@ import _ from "lodash";
 import Animate from "grommet/components/Animate";
 import Select from "grommet/components/Select";
 import TextInput from "grommet/components/TextInput";
-import AddIcon from "grommet/components/icons/base/Add";
+import SaveIcon from "grommet/components/icons/base/Save";
 import DownIcon from "grommet/components/icons/base/Down";
 import UpIcon from "grommet/components/icons/base/Up";
 import Button from "grommet/components/Button";
 import DateTime from "grommet/components/DateTime";
 import FormField from "grommet/components/FormField";
+import NumberInput from "grommet/components/NumberInput";
 
 import SearchBadges from "./SearchBadges";
 
@@ -25,7 +26,11 @@ export default class AlarmRuleForm extends React.Component {
       rule: "",
       match: undefined,
       title: "",
-      message: ""
+      message: "",
+      dateStart: undefined,
+      dateEnd: undefined,
+      count: undefined,
+      interval: undefined
     };
   }
 
@@ -85,7 +90,11 @@ export default class AlarmRuleForm extends React.Component {
       title,
       message,
       rule,
-      match
+      match,
+      dateStart,
+      dateEnd,
+      count,
+      interval
     } = this.state;
 
     if (!isAdmin) {
@@ -119,45 +128,26 @@ export default class AlarmRuleForm extends React.Component {
           keep={false}
         >
           <div className="row">
-            <div className="col-md-3">
-              <FormField>
-                <TextInput
-                  value={title}
-                  onDOMChange={e => this.setState({ title: e.target.value })}
-                  style={{ width: "100%" }}
-                  name="title"
-                  placeHolder="Title"
-                />
-              </FormField>
-            </div>
-            <div className="col-md-6">
-              <FormField>
-                <TextInput
-                  value={message}
-                  onDOMChange={e => this.setState({ message: e.target.value })}
-                  style={{ width: "100%" }}
-                  name="message"
-                  placeHolder="Message"
-                />
-              </FormField>
-            </div>
-            <div className="col-md-3">
+            <div className="col-md-9" />
+            <div className="col-md-3" style={{ textAlign: "right" }}>
               <Button
                 style={{
                   borderColor: "#33aca8"
                 }}
-                fill
                 plain
                 label="Save"
                 type="submit"
-                icon={<AddIcon />}
+                icon={<SaveIcon />}
               />
             </div>
           </div>
           <br />
           <div className="row">
             <div className="col-md-3">
-              <FormField label="Match By">
+              <FormField
+                label="Match By"
+                error={match && badges.length > 0 ? "" : "*"}
+              >
                 <Select
                   onChange={o => this.handleSelect(o.value)}
                   inline={false}
@@ -167,7 +157,7 @@ export default class AlarmRuleForm extends React.Component {
                 />
               </FormField>
             </div>
-            <div className="col-md-9">
+            <div className="col-md-5">
               <FormField label="Rule goes here">
                 <TextInput
                   value={rule}
@@ -177,27 +167,50 @@ export default class AlarmRuleForm extends React.Component {
                 />
               </FormField>
             </div>
+            <div className="col-md-4">
+              <FormField label="Message" error={message ? "" : "*"}>
+                <TextInput
+                  value={message}
+                  onDOMChange={e => this.setState({ message: e.target.value })}
+                  style={{ width: "100%" }}
+                  name="message"
+                  placeHolder="Your message goes here ..."
+                />
+              </FormField>
+            </div>
           </div>
           <br />
-          <div className="row">
+          <div className="row" style={{ display: "flex" }}>
             <div className="col-md-3">
-              <FormField label="Start Date">
-                <DateTime format="D/M/YYYY H:mm:ss" />
+              <FormField label="Start Date" style={{ height: "100%" }}>
+                <DateTime
+                  format="D/M/YYYY H:mm:ss"
+                  value={dateStart}
+                  onChange={d => this.setState({ dateStart: new Date(d) })}
+                />
               </FormField>
             </div>
             <div className="col-md-3">
-              <FormField label="End Date">
-                <DateTime format="D/M/YYYY H:mm:ss" />
+              <FormField label="End Date" style={{ height: "100%" }}>
+                <DateTime format="D/M/YYYY H:mm:ss" value={dateEnd} />
               </FormField>
             </div>
             <div className="col-md-3">
-              <FormField label="Count (Optional)">
-                <TextInput />
+              <FormField label="Count" style={{ height: "100%" }}>
+                <NumberInput
+                  value={count}
+                  name="count"
+                  onChange={e => this.setState({ count: e.target.value })}
+                />
               </FormField>
             </div>
             <div className="col-md-3">
-              <FormField label="Time Interval">
-                <TextInput />
+              <FormField label="Time Interval" style={{ height: "100%" }}>
+                <DateTime
+                  format="H:mm:ss"
+                  value={interval}
+                  onChange={t => this.setState({ interval: t })}
+                />
               </FormField>
             </div>
           </div>

@@ -21,7 +21,7 @@ export default class SearchBadges extends React.Component {
                 onClick={() => badgeClick(badge)}
               >
                 <span>
-                  {badge.filter}: {badge.search}
+                  {badge.filter} : {badge.search}
                 </span>
                 <a onClick={() => removeBadge(i)}>
                   <i className="remove glyphicon glyphicon-remove-sign glyphicon-white" />
