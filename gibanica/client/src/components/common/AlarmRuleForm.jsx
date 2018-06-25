@@ -65,7 +65,10 @@ export default class AlarmRuleForm extends React.Component {
   };
 
   handleBadgeClick = badge => {
-    this.setState({ rule: badge.search, match: badge.filter });
+    this.setState({
+      rule: badge.search === "=" ? "" : badge.search,
+      match: badge.filter
+    });
   };
 
   removeBadge = badge_index => {
