@@ -1,6 +1,10 @@
 import React from "react";
 
-import { getAlarmsPerPage } from "../util/AlarmsApi";
+import {
+  getAlarmsPerPage,
+  getAlarmsCount,
+  getAlarmsCountPerHost
+} from "../util/AlarmsApi";
 
 import Box from "grommet/components/Box";
 import Paragraph from "grommet/components/Paragraph";
@@ -20,7 +24,9 @@ export default class AlarmsListing extends React.Component {
     super(props);
 
     this.state = {
-      alarms: []
+      system_count: undefined,
+      host_count: undefined,
+      alarms: undefined
     };
   }
 
@@ -28,16 +34,26 @@ export default class AlarmsListing extends React.Component {
     getAlarmsPerPage(1)
       .then(res => {
         if (res.status === 200) {
-          this.setState({
-            alarms: res.data.map(
-              e =>
-                (e = {
-                  name: e.name,
-                  message: e.message,
-                  created_at: e.created_at,
-                  collapsed: false
-                })
-            )
+          getAlarmsCount().then(res_sys_count => {
+            if (res_sys_count.status === 200) {
+              getAlarmsCountPerHost().then(res_host_count => {
+                if (res_host_count.status === 200) {
+                  this.setState({
+                    system_count: res_sys_count,
+                    host_count: res_host_count,
+                    alarms: res.data.map(
+                      e =>
+                        (e = {
+                          host: e.host,
+                          message: e.message,
+                          created_at: e.created_at,
+                          collapsed: false
+                        })
+                    )
+                  });
+                }
+              });
+            }
           });
         }
       })
@@ -53,7 +69,11 @@ export default class AlarmsListing extends React.Component {
   };
 
   render() {
-    const { alarms } = this.state;
+    const { alarms, system_count, host_count } = this.state;
+
+    if (!alarms || !system_count || !host_count) {
+      return null;
+    }
 
     return (
       <div
@@ -68,8 +88,8 @@ export default class AlarmsListing extends React.Component {
         <br />
         <div>
           <Carousel style={{ height: window.innerHeight / 4 }}>
-            <Graph type="alarms_host" data={[]} />
-            <Graph type="alarms_system" data={[]} />
+            <Graph type="alarms_host" data={host_count} />
+            <Graph type="alarms_system" data={system_count} />
           </Carousel>
         </div>
         <br />

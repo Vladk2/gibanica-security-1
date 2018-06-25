@@ -56,7 +56,7 @@ export default class AlarmBox extends React.Component {
                 }}
               >
                 <Heading tag="h3" align="center">
-                  {alarm.name}
+                  {alarm.host}
                 </Heading>
                 <p style={{ color: "gray" }}>{alarm.message}</p>
               </div>

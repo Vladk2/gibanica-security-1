@@ -84,17 +84,18 @@ export default class Graph extends React.Component {
       this.setState({ loaded: true });
     } else if (type === "alarms_host") {
       this.data = {
+        labels: [],
         datasets: [
           {
             label: "Number of Alarms Per Machine",
             backgroundColor: "#33aca8",
             borderColor: "#ffffff",
-            data: [this.props.data.data]
+            data: []
           }
         ]
       };
 
-      this.setState({ loaded: true });
+      this.parseGraphDataPerHost(this.props.data.data);
     }
   }
 

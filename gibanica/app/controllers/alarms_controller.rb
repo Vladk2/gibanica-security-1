@@ -1,6 +1,4 @@
 class AlarmsController < ApplicationController
-  before_action :set_alarm, only: [:show]
-
   # GET /alarms
   def index
     authorize! :read, Alarm
@@ -10,15 +8,17 @@ class AlarmsController < ApplicationController
     render json: @alarms
   end
 
-  # GET /alarms/1
-  def show
-    render json: @alarm
+  # GET /alarms/host_status
+  def host_status
+    authorize! :read, Alarm
+
+    render json: Alarm.count_per_host, status: :ok
   end
 
-  private
+  # GET /alarms/system_status
+  def system_status
+    authorize! :read, Alarm
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_alarm
-    @alarm = Alarm.find(params[:id])
+    render json: Alarm.count, status: :ok
   end
 end

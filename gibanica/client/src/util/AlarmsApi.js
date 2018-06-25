@@ -7,8 +7,12 @@ axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(
   "token"
 )}`;
 
-function getHello() {
-  return axios.get("https://localhost:8000/hello");
+function getAlarmsCount() {
+  return axios.get(`${ALARMS_API_URL}/system_status`);
+}
+
+function getAlarmsCountPerHost() {
+  return axios.get(`${ALARMS_API_URL}/host_status`);
 }
 
 function getAlarmsPerPage(page) {
@@ -21,4 +25,4 @@ function getAlarmsPerPage(page) {
     .catch(err => console.log(err));
 }
 
-export { getAlarmsPerPage, getHello };
+export { getAlarmsPerPage, getAlarmsCount, getAlarmsCountPerHost };

@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Collapse } from "react-collapse";
-
 import Animate from "grommet/components/Animate";
 import Select from "grommet/components/Select";
 import TextInput from "grommet/components/TextInput";
