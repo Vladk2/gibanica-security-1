@@ -1,15 +1,11 @@
 import React from "react";
 
-import {
-  getAlarmsPerPage,
-  getAlarmsCount,
-  getAlarmsCountPerHost
-} from "../util/AlarmsApi";
+import { getAlarmsPerPage } from "../util/AlarmsApi";
 
 import Box from "grommet/components/Box";
 import Paragraph from "grommet/components/Paragraph";
 import Title from "grommet/components/Title";
-import Carousel from "grommet/components/Carousel";
+import CarouselGraph from "./CarouselGraph";
 import Footer from "grommet/components/Footer";
 
 import AlarmBox from "./common/AlarmBox";
@@ -17,15 +13,11 @@ import AlarmRuleForm from "./common/AlarmRuleForm";
 import NavBar from "./navbar/NavBar";
 import logo from "../assets/images/logo.png";
 
-import Graph from "./Graph";
-
 export default class AlarmsListing extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      system_count: undefined,
-      host_count: undefined,
       alarms: undefined
     };
   }
@@ -34,26 +26,16 @@ export default class AlarmsListing extends React.Component {
     getAlarmsPerPage(1)
       .then(res => {
         if (res.status === 200) {
-          getAlarmsCount().then(res_sys_count => {
-            if (res_sys_count.status === 200) {
-              getAlarmsCountPerHost().then(res_host_count => {
-                if (res_host_count.status === 200) {
-                  this.setState({
-                    system_count: res_sys_count,
-                    host_count: res_host_count,
-                    alarms: res.data.map(
-                      e =>
-                        (e = {
-                          host: e.host,
-                          message: e.message,
-                          created_at: e.created_at,
-                          collapsed: false
-                        })
-                    )
-                  });
-                }
-              });
-            }
+          this.setState({
+            alarms: res.data.map(
+              e =>
+                (e = {
+                  host: e.host,
+                  message: e.message,
+                  created_at: e.created_at,
+                  collapsed: false
+                })
+            )
           });
         }
       })
@@ -69,9 +51,9 @@ export default class AlarmsListing extends React.Component {
   };
 
   render() {
-    const { alarms, system_count, host_count } = this.state;
+    const { alarms } = this.state;
 
-    if (!alarms || !system_count || !host_count) {
+    if (!alarms) {
       return null;
     }
 
@@ -87,10 +69,7 @@ export default class AlarmsListing extends React.Component {
         <AlarmRuleForm />
         <br />
         <div>
-          <Carousel style={{ height: window.innerHeight / 4 }}>
-            <Graph type="alarms_host" data={host_count} />
-            <Graph type="alarms_system" data={system_count} />
-          </Carousel>
+          <CarouselGraph type="alarms" />
         </div>
         <br />
         <br />

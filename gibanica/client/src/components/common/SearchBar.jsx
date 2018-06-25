@@ -7,6 +7,7 @@ import {
 } from "react-bootstrap";
 import SearchBadges from "./SearchBadges";
 import DatePicker from "react-date-picker";
+
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);

@@ -15,12 +15,21 @@ export default class AlarmRuleForm extends React.Component {
     super(props);
 
     this.state = {
-      formVisible: false
+      formVisible: false,
+      isAdmin: false
     };
   }
 
+  componentWillMount() {
+    this.setState({ isAdmin: localStorage.getItem("role") });
+  }
+
   render() {
-    const { formVisible } = this.state;
+    const { formVisible, isAdmin } = this.state;
+
+    if (!isAdmin) {
+      return null;
+    }
 
     return (
       <div>
@@ -94,14 +103,9 @@ export default class AlarmRuleForm extends React.Component {
                 />
               </FormField>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-9">
               <FormField label="Rule goes here">
                 <TextInput style={{ width: "100%" }} id="item1" name="item-1" />
-              </FormField>
-            </div>
-            <div className="col-md-3">
-              <FormField label="Count (Optional)">
-                <TextInput />
               </FormField>
             </div>
           </div>
@@ -109,22 +113,22 @@ export default class AlarmRuleForm extends React.Component {
           <div className="row">
             <div className="col-md-3">
               <FormField label="Start Date">
-                <DateTime format="D/M/YYYY" />
+                <DateTime format="D/M/YYYY H:mm:ss" />
               </FormField>
             </div>
             <div className="col-md-3">
               <FormField label="End Date">
-                <DateTime format="D/M/YYYY" />
+                <DateTime format="D/M/YYYY H:mm:ss" />
               </FormField>
             </div>
             <div className="col-md-3">
-              <FormField label="Start Time">
-                <DateTime name="name" format="H:mm:ss" />
+              <FormField label="Count (Optional)">
+                <TextInput />
               </FormField>
             </div>
             <div className="col-md-3">
-              <FormField label="End Time">
-                <DateTime name="name" format="H:mm:ss" />
+              <FormField label="Time Interval">
+                <TextInput />
               </FormField>
             </div>
           </div>

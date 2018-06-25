@@ -118,7 +118,7 @@ export default class LogsListing extends React.Component {
         />
         <br />
 
-        <CarouselGraph />
+        <CarouselGraph type="logs" />
         <div
           className="row"
           style={{
