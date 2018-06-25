@@ -46,7 +46,7 @@ export default class SearchBar extends React.Component {
   search = () => {
     const { dateStart, dateEnd } = this.state;
 
-    if (!this.state.badges || !dateStart || !dateEnd) {
+    if (!this.state.badges) {
       return;
     }
 

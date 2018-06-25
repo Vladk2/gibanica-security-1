@@ -16,17 +16,8 @@ export default class Pages extends React.Component {
     return pages;
   };
 
-  queryLogs = page => {
-    const { query, searchPerPage, loadLogs } = this.props;
-    if (query) {
-      searchPerPage(query, page);
-    } else {
-      loadLogs(page);
-    }
-  };
-
   render() {
-    const { pagesCount, currentPage } = this.props;
+    const { pagesCount, currentPage, load } = this.props;
 
     return (
       <nav aria-label="Page navigation example">
@@ -36,7 +27,7 @@ export default class Pages extends React.Component {
               cursor: "pointer"
             }}
             className="page-item"
-            onClick={() => this.queryLogs(parseInt(currentPage, 10) - 1)}
+            onClick={() => load(parseInt(currentPage, 10) - 1)}
           >
             <a className="page-link" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
@@ -56,7 +47,7 @@ export default class Pages extends React.Component {
                 }}
                 className="page-item"
                 key={k}
-                onClick={() => this.queryLogs(parseInt(i, 10))}
+                onClick={() => load(parseInt(i, 10))}
               >
                 <a className="page-link">{i}</a>
               </li>
@@ -67,7 +58,7 @@ export default class Pages extends React.Component {
               cursor: "pointer"
             }}
             className="page-item"
-            onClick={() => this.queryLogs(parseInt(currentPage, 10) + 1)}
+            onClick={() => load(parseInt(currentPage, 10) + 1)}
           >
             <a className="page-link" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
@@ -83,7 +74,5 @@ export default class Pages extends React.Component {
 Pages.propTypes = {
   pagesCount: PropTypes.number.isRequired,
   currentPage: PropTypes.any.isRequired, // bug if set to number|string
-  loadLogs: PropTypes.func.isRequired,
-  searchPerPage: PropTypes.func.isRequired,
-  query: PropTypes.string.isRequired
+  load: PropTypes.func.isRequired
 };

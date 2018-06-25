@@ -87,15 +87,18 @@ export default class LogsListing extends React.Component {
 
   searchWithExistingQuery = () => {};
 
+  queryLogs = page => {
+    const { search_query } = this.state;
+
+    if (search_query) {
+      this.searchPerPage(search_query, page);
+    } else {
+      this.fetchLogs(page);
+    }
+  };
+
   render() {
-    const {
-      logs,
-      pagesCount,
-      currentPage,
-      tableView,
-      userLogged,
-      search_query
-    } = this.state;
+    const { logs, pagesCount, currentPage, tableView, userLogged } = this.state;
 
     if (!userLogged) {
       return null;
@@ -145,11 +148,9 @@ export default class LogsListing extends React.Component {
           )}
         </div>
         <Pages
-          query={search_query}
-          searchPerPage={this.searchPerPage}
           pagesCount={pagesCount}
           currentPage={currentPage}
-          loadLogs={this.fetchLogs}
+          load={this.queryLogs}
         />
       </div>
     );

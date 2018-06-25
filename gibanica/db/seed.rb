@@ -36,6 +36,10 @@ Agent.new(
   agent: agent
 ).save!
 
+for i in 1..100 do
+  Alarm.new(host: "pc-#{i}", message: "message - #{i}").save!
+end
+
 for i in 1..400 do
   Log.new(
     logged_date: Date.today - 45.days,

@@ -17,7 +17,7 @@ function getAlarmsCountPerHost() {
 
 function getAlarmsPerPage(page) {
   return axios
-    .get(`${ALARMS_API_URL}`, {
+    .get(`${ALARMS_API_URL}?page=${page}`, {
       headers: {
         Accept: "application/json"
       }
