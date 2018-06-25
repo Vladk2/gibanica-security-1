@@ -6,6 +6,10 @@ import sys
 
 import json,requests
 
+import log_agent as agent 
+# To start agent, uncomment line bellow:
+# agent.run()
+
 app = Flask(__name__)
 
 data = json.load(open('log-agent2.conf'))
