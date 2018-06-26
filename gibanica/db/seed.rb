@@ -5,7 +5,7 @@ user.save!
 Role.new(name: 'operater').save!
 Role.new(name: 'admin').save!
 
-u = User.where(email: 'g@g.com').first
+u = User.where(email: 'riggy.ruter@gmail.com').first
 u.roles << Role.where(name: 'admin')
 u.save!
 
@@ -45,7 +45,7 @@ for i in 1..400 do
     logged_date: Date.today - 45.days,
     logged_time: Time.now,
     severity: (i.odd? ? 'INFO' : 'WARNING'),
-    host: (i.odd? ? 'awd' : 'dwa'),
+    host: (i.odd? ? 'nemanja' : 'sibalica'),
     process: i,
     message: (i.odd? ? 'CPU is burning... NOT' : 'Something is happening. I warn you it`s bad')
   ).save!
