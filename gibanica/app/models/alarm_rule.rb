@@ -12,6 +12,17 @@ class AlarmRule
   has_many :logs
 
   def fire_rule
+    batches = get_interval_batches
+    distinct_of_batches = []
+
+    batches.each do |b|
+      distinct_of_batches.push(b.uniq {|e| e[:attribute] })
+    end
+  end
+
+  private
+
+  def get_interval_batches
     Log.collection.aggregate(
       [
         find_match,
@@ -25,8 +36,6 @@ class AlarmRule
       ]
     )
   end
-
-  private
 
   def find_match
     process_match = rule_criteria.find {|c| c[:attribute] == 'process' }
