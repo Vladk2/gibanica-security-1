@@ -16,10 +16,7 @@ if platform.system() == 'Windows':  # only for Windows users
 	import win32evtlogutil
 
 
-logs = []
-start_time = dt.now()
-time_limit = 0
-log_files, batch_size, max_time, event_logs, log_formats = readConf()
+
 
 def run():
 
@@ -78,14 +75,14 @@ def sendLogs(logs):
 
 	url = "https://localhost:3000/logs"
 	headers = {'Content-type': 'application/json', 'Connection': 'close'}
-
+'''
 	r = requests.post(url, json={"logs": logs},
 					  headers=headers, verify='../gibanica/cert.pem')
 
 	if r.status_code == 200:
 		print('Logs have been sent successfully')
 		# r.connection.close()
-
+'''
 
 class WinEventLogReader(threading.Thread):
 
@@ -157,10 +154,12 @@ def readLogFiles():
 		w2.start()
 
 
-def readLogFile(log_file_conf):
+''' 
+	def readLogFile(log_file_conf):
 	global time_limit
 	while True:
 		for log in Pygtail(log_file_conf["path"]):
+			print(log)
 			log = checkLog(log, log_file_conf)
 			if(log != None):
 				logs.append(log)
@@ -169,6 +168,20 @@ def readLogFile(log_file_conf):
 					time_limit = now + max_time
 					sendLogs(logs)
 					logs.clear()
+'''
+def readLogFile(log_file_conf):
+	global time_limit
+	logfile = open(log_file_conf["path"],"r")
+	loglines = follow(logfile)
+	for log in loglines:
+		log = checkLog(log, log_file_conf)
+		if(log != None):
+			logs.append(log)
+			if(len(logs) >= batch_size or time.time() > time_limit):
+				now = time.time()
+				time_limit = now + max_time
+				sendLogs(logs)
+				logs.clear()
 
 
 def checkLog(log, log_file_conf):
@@ -202,9 +215,6 @@ def parseLog(log, log_format):
 			message = parse(log_byte)
 			splited_msg = message.message.decode('utf-8').split("]:", 1)
 
-			if(start_time > message.timestamp):
-				return None
-
 			datetime = message.timestamp
 			log_json = {}
 			log_json["logged_date"] = datetime.strftime('%Y-%m-%d')
@@ -227,34 +237,30 @@ def parseLog(log, log_format):
 		print("Bad or no logging format provided.")
 		return None
 
-		if(match == None):
-			print("Bad configuration(log format regex) - No match")
-			print(log)
-			return None
-		else:
-			log_json = {}
-			# time = match.group("time").split(",")[0]
-			if("date" in pattern.groupindex and "time" in pattern.groupindex):
-				datetime = match.group("date") + " " + match.group("time")
-				date = parser.parse(datetime)
+	if(match == None):
+		print("Bad configuration(log format regex) - No match")
+		print(log)
+		return None
+	else:
+		log_json = {}
+		# time = match.group("time").split(",")[0]
+		if("date" in pattern.groupindex and "time" in pattern.groupindex):
+			datetime = match.group("date") + " " + match.group("time")
+			date = parser.parse(datetime)
+			datetime_formated = date.strftime('%d-%m-%Y %H:%M:%S')
+			date_formated = date.strftime('%d-%m-%Y')
+			log_json["logged_date"] = date_formated
+			log_json["logged_time"] = datetime_formated
+		if("host" in pattern.groupindex):
+			log_json["host"] = match.group("host")
+		if("process" in pattern.groupindex):
+			log_json["process"] = match.group("process")
+		if("severity" in pattern.groupindex):
+			log_json["severity"] = match.group("severity")
+		if("message" in pattern.groupindex):
+			log_json["message"] = match.group("message")
 
-				if(start_time > date):
-					return None
-
-				datetime_formated = date.strftime('%d-%m-%Y %H:%M:%S')
-				date_formated = date.strftime('%d-%m-%Y')
-				log_json["logged_date"] = date_formated
-				log_json["logged_time"] = datetime_formated
-			if("host" in pattern.groupindex):
-				log_json["host"] = match.group("host")
-			if("process" in pattern.groupindex):
-				log_json["process"] = match.group("process")
-			if("severity" in pattern.groupindex):
-				log_json["severity"] = match.group("severity")
-			if("message" in pattern.groupindex):
-				log_json["message"] = match.group("message")
-
-			return log_json
+		return log_json
 
 
 def readWinEventLogs():
@@ -275,4 +281,17 @@ def readWinEventLogs():
 	else:
 		print("Cannot read event logs. Possible reason: Bad configuration.")
 
+def follow(thefile):
+	thefile.seek(0,2)
+	while True:
+		line = thefile.readline()
+		if not line:
+			time.sleep(0.1)
+			continue
+		yield line
+
+
+logs = []
+time_limit = 0
+log_files, batch_size, max_time, event_logs, log_formats = readConf()
 
