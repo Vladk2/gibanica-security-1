@@ -12,6 +12,7 @@ import Button from "grommet/components/Button";
 import DateTime from "grommet/components/DateTime";
 import FormField from "grommet/components/FormField";
 import NumberInput from "grommet/components/NumberInput";
+import Toast from "grommet/components/Toast";
 
 import SearchBadges from "./SearchBadges";
 
@@ -23,6 +24,7 @@ export default class AlarmRuleForm extends React.Component {
 
     this.state = {
       badges: [],
+      toast: false,
       formVisible: false,
       isAdmin: false,
       rule: "",
@@ -103,12 +105,29 @@ export default class AlarmRuleForm extends React.Component {
     };
 
     createAlarmRule(rule).then(res => {
+      if (res.data) {
+        if (res.status === 201) {
+          this.setState({
+            formVisible: false,
+            toast: true,
+            rule: "",
+            match: undefined,
+            count: undefined,
+            dateStart: undefined,
+            dateEnd: undefined,
+            interval: undefined,
+            message: "",
+            badges: []
+          });
+        }
+      }
       console.log(res);
     });
   };
 
   render() {
     const {
+      toast,
       formVisible,
       isAdmin,
       badges,
@@ -127,6 +146,11 @@ export default class AlarmRuleForm extends React.Component {
 
     return (
       <div>
+        {toast ? (
+          <Toast status="ok" onClose={() => this.setState({ toast: false })}>
+            New rule created
+          </Toast>
+        ) : null}
         <div className="row">
           <div className="col-md-2">
             <Button

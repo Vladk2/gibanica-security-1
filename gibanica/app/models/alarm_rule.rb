@@ -15,7 +15,13 @@ class AlarmRule
     Log.collection.aggregate(
       [
         find_match,
-        find_interval
+        find_interval,
+        # "$project": {
+        #   logs: '$distinct_set',
+        #   count: '$count' #{
+        #   #  "$size": '$distinct_set'
+        #   #}
+        # }
       ]
     )
   end
@@ -70,11 +76,11 @@ class AlarmRule
             }
           ]
         },
-        distinct_set: {
-          "$addToSet": {
-            id: '$_id',
-            host: '$host',
-            "#{distinct_field[:attribute]}": "$#{distinct_field[:attribute]}"
+        set: {
+          "$push": {
+            id: '$id',
+            attribute: "$#{distinct_field[:attribute]}",
+            host: '$host'
           }
         },
         count: {
