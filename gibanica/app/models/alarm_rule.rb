@@ -35,9 +35,9 @@ class AlarmRule
     {
       "$match": {
         # logged_time: {},
-        severity: /#{severity_match[:value] == '=' ? "" : severity_match[:value]}/i,
-        host: /#{host_match[:value] == '=' ? "" : host_match[:value]}/i,
-        process: /#{process_match[:value] == '=' ? "" : process_match[:value]}/i
+        severity: /#{severity_match[:value] == '=' ? "" : fix_regex(severity_match[:value])}/i,
+        host: /#{host_match[:value] == '=' ? "" : fix_regex(host_match[:value])}/i,
+        process: /#{process_match[:value] == '=' ? "" : fix_regex(process_match[:value])}/i
       }
     }
   end
@@ -82,5 +82,10 @@ class AlarmRule
         }
       }
     }
+  end
+
+  def fix_regex(pattern)
+    return '.*' if %w(. * ?).include? pattern
+    pattern
   end
 end
