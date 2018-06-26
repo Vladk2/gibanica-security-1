@@ -15,6 +15,8 @@ import NumberInput from "grommet/components/NumberInput";
 
 import SearchBadges from "./SearchBadges";
 
+import { createAlarmRule } from "../../util/AlarmRulesApi";
+
 export default class AlarmRuleForm extends React.Component {
   constructor(props) {
     super(props);
@@ -25,7 +27,6 @@ export default class AlarmRuleForm extends React.Component {
       isAdmin: false,
       rule: "",
       match: undefined,
-      title: "",
       message: "",
       dateStart: undefined,
       dateEnd: undefined,
@@ -69,6 +70,11 @@ export default class AlarmRuleForm extends React.Component {
     this.setState({ badges, rule: text });
   };
 
+  handleNumberClick = number => {
+    const value = parseInt(number, 10);
+    this.setState({ count: value < 1 ? undefined : value });
+  };
+
   handleBadgeClick = badge => {
     this.setState({
       rule: badge.search === "=" ? "" : badge.search,
@@ -82,12 +88,30 @@ export default class AlarmRuleForm extends React.Component {
     this.setState({ badges: badges_copy });
   };
 
+  handleSave = () => {
+    const { badges, message, dateStart, dateEnd, count, interval } = this.state;
+
+    const rule = {
+      message,
+      count,
+      start_date: dateStart,
+      end_date: dateEnd,
+      interval,
+      rule_criteria: _.map(badges, b => {
+        return { attribute: b.filter, value: b.search };
+      })
+    };
+
+    createAlarmRule(rule).then(res => {
+      console.log(res);
+    });
+  };
+
   render() {
     const {
       formVisible,
       isAdmin,
       badges,
-      title,
       message,
       rule,
       match,
@@ -137,6 +161,7 @@ export default class AlarmRuleForm extends React.Component {
                 plain
                 label="Save"
                 type="submit"
+                onClick={this.handleSave}
                 icon={<SaveIcon />}
               />
             </div>
@@ -184,9 +209,9 @@ export default class AlarmRuleForm extends React.Component {
             <div className="col-md-3">
               <FormField label="Start Date" style={{ height: "100%" }}>
                 <DateTime
-                  format="D/M/YYYY H:mm:ss"
+                  format="YYYY-M-D H:mm:ss"
                   value={dateStart}
-                  onChange={d => this.setState({ dateStart: new Date(d) })}
+                  onChange={d => this.setState({ dateStart: d })}
                 />
               </FormField>
             </div>
@@ -198,9 +223,9 @@ export default class AlarmRuleForm extends React.Component {
             <div className="col-md-3">
               <FormField label="Count" style={{ height: "100%" }}>
                 <NumberInput
-                  value={count}
+                  value={count ? count : ""}
                   name="count"
-                  onChange={e => this.setState({ count: e.target.value })}
+                  onChange={e => this.handleNumberClick(e.target.value)}
                 />
               </FormField>
             </div>
