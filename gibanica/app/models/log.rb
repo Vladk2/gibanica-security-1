@@ -29,7 +29,10 @@ class Log
     batch = []
 
     logs.each do |log|
-      batch.push(Log.new(log).attributes)
+      l = Log.new(log)
+      l.updated_at = Time.now
+      l.created_at = Time.now
+      batch.push(l.attributes)
     end
 
     Log.collection.insert_many(batch)

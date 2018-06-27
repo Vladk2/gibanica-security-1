@@ -40,13 +40,27 @@ for i in 1..100 do
   Alarm.new(host: "pc-#{i}", message: "message - #{i}").save!
 end
 
+logs = []
+
 for i in 1..10000 do
-  Log.new(
-    logged_date: Date.today - 11.days,
-    logged_time: Time.now,
-    severity: (i.odd? ? 'WARNING' : 'INFO'),
-    host: (i.odd? ? 'sibalica2' : 'jasta2'),
-    process: i,
-    message: (i.odd? ? 'CPU is burning... NOT' : 'Something is happening. I warn you it`s bad')
-  ).save!
+  logs.push(
+    Log.new(
+      created_at: Time.now,
+      updated_at: Time.now,
+      logged_date: Date.today - 11.days,
+      logged_time: Time.now,
+      severity: (i.odd? ? 'ALERT' : 'ERROR'),
+      host: (i.odd? ? 'stefan-pc' : 'notebook'),
+      process: i,
+      message: (i.odd? ? 'CPU is burning... NOT' : 'Something is happening. I warn you it`s bad')
+    )
+  )
 end
+
+batch = []
+
+logs.each do |log|
+  batch.push(log.attributes)
+end
+
+Log.collection.insert_many(batch)
