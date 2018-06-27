@@ -2,19 +2,19 @@ import React from "react";
 import PropTypes from "prop-types";
 
 export default class Pages extends React.Component {
-  pageNumbers = pagesCount => {
-    let pages = [];
+  // pageNumbers = pagesCount => {
+  //   let pages = [];
 
-    for (let i = 1; i++; i < pagesCount) {
-      pages.push(
-        <li className="page-item">
-          <a className="page-link">{i}</a>
-        </li>
-      );
-    }
+  //   for (let i = 1; i++; i < pagesCount) {
+  //     pages.push(
+  //       <li className="page-item">
+  //         <a className="page-link">{i}</a>
+  //       </li>
+  //     );
+  //   }
 
-    return pages;
-  };
+  //   return pages;
+  // };
 
   render() {
     const { pagesCount, currentPage, load } = this.props;
@@ -36,7 +36,7 @@ export default class Pages extends React.Component {
           </li>
           {Array.from(
             {
-              length: pagesCount
+              length: pagesCount >= 19 ? 19 : pagesCount
             },
             (v, k) => k + 1
           ).map((i, k) => {

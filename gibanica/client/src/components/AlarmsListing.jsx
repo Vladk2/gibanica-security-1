@@ -18,7 +18,8 @@ export default class AlarmsListing extends React.Component {
     this.state = {
       pagesCount: 0,
       currentPage: 1,
-      alarms: undefined
+      alarms: undefined,
+      logsCount: 0
     };
   }
 
@@ -49,17 +50,19 @@ export default class AlarmsListing extends React.Component {
       .then(res => {
         if (res.status === 200) {
           this.setState({
-            currentPage: res.data.page,
-            pagesCount: Math.ceil(res.data.count / 6),
-            alarms: res.data.alarms.map(
+            currentPage: res.data.data.page,
+            pagesCount: Math.ceil(res.data.data.count / 6),
+            alarms: res.data.data.alarms.map(
               e =>
                 (e = {
                   host: e.host,
                   message: e.message,
                   created_at: e.created_at,
+                  logsCount: e.logs_count,
                   collapsed: false
                 })
-            )
+            ),
+            logsCount: res.data.logs_count
           });
         }
       })
@@ -67,7 +70,7 @@ export default class AlarmsListing extends React.Component {
   };
 
   render() {
-    const { alarms, pagesCount, currentPage } = this.state;
+    const { alarms, pagesCount, currentPage, logsCount } = this.state;
 
     if (!alarms) {
       return null;
@@ -98,6 +101,7 @@ export default class AlarmsListing extends React.Component {
                 key={i}
                 index={i}
                 alarm={a}
+                logsCount={logsCount}
                 toggleExpandAlarm={this.toggleExpandAlarm}
               />
             ))}

@@ -5,7 +5,7 @@ class AlarmsController < ApplicationController
   def index
     authorize! :read, Alarm
 
-    render json: @alarms
+    render json: {data: @alarms, logs_count: Log.count}, status: :ok
   end
 
   # GET /alarms/host_status

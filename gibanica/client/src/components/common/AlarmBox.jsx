@@ -1,7 +1,5 @@
 import React from "react";
 
-import CaretDownIcon from "grommet/components/icons/base/CaretDown";
-import CaretUpIcon from "grommet/components/icons/base/CaretUp";
 import AlertIcon from "grommet/components/icons/base/Alert";
 import Carousel from "grommet/components/Carousel";
 import Meter from "grommet/components/Meter";
@@ -15,7 +13,7 @@ import { Collapse } from "react-collapse";
 
 export default class AlarmBox extends React.Component {
   render() {
-    const { alarm, index, toggleExpandAlarm } = this.props;
+    const { alarm, logsCount } = this.props;
     return (
       <div
         className="row"
@@ -87,14 +85,14 @@ export default class AlarmBox extends React.Component {
                     <Meter
                       label={
                         <div>
-                          <Value value={40} />
+                          <Value value={alarm.logsCount} />
                           <p>Logs</p>
                         </div>
                       }
                       size="xsmall"
                       type="circle"
-                      max={1000}
-                      value={40}
+                      max={logsCount}
+                      value={alarm.logsCount}
                     />
                     <Box
                       direction="row"
@@ -104,22 +102,9 @@ export default class AlarmBox extends React.Component {
                       responsive={false}
                     >
                       <Label size="small">0</Label>
-                      <Label size="small">1000</Label>
+                      <Label size="small">{logsCount}</Label>
                     </Box>
                   </Box>
-                </div>
-                <div style={{ paddingTop: 10 }}>
-                  {alarm.collapsed ? (
-                    <CaretUpIcon
-                      onClick={() => toggleExpandAlarm(index)}
-                      colorIndex="neutral-4"
-                    />
-                  ) : (
-                    <CaretDownIcon
-                      onClick={() => toggleExpandAlarm(index)}
-                      colorIndex="neutral-4"
-                    />
-                  )}
                 </div>
               </div>
             </div>

@@ -40,12 +40,12 @@ for i in 1..100 do
   Alarm.new(host: "pc-#{i}", message: "message - #{i}").save!
 end
 
-for i in 1..400 do
+for i in 1..10000 do
   Log.new(
-    logged_date: Date.today - 45.days,
+    logged_date: Date.today - 11.days,
     logged_time: Time.now,
-    severity: (i.odd? ? 'INFO' : 'WARNING'),
-    host: (i.odd? ? 'nemanja' : 'sibalica'),
+    severity: (i.odd? ? 'WARNING' : 'INFO'),
+    host: (i.odd? ? 'sibalica2' : 'jasta2'),
     process: i,
     message: (i.odd? ? 'CPU is burning... NOT' : 'Something is happening. I warn you it`s bad')
   ).save!

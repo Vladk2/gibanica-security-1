@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "192.168.0.15";
+const host = "192.168.0.13";
 const LOGS_API_URL = `https://${host}/logs`;
 
 axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(

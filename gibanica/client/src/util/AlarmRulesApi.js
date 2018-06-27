@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "192.168.0.15";
+const host = "192.168.0.13";
 const ALARM_RULES_API_URL = `https://${host}/alarm_rules`;
 
 axios.defaults.headers.common["Authorization"] = `${localStorage.getItem(

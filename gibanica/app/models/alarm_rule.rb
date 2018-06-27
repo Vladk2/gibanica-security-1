@@ -8,35 +8,17 @@ class AlarmRule
   field :start_date, type: Time
   field :end_date, type: Time
   field :interval, type: Time
-
-  has_many :logs
+  field :cycles, type: Integer, default: 0
+  field :cycle_finish_time, type: Time
 
   def fire_rule
-    # batches = get_interval_batches
-    # distinct_of_batches = []
+    return [] unless Log.count.positive?
 
-    # batches.each do |b|
-    #   distinct_of_batches.push(b.uniq {|e| e[:attribute] })
-    # end
-    Log.collection.aggregate(
-      [
-        find_match,
-        find_interval,
-        # "$project": {
-        #   logs: '$distinct_set',
-        #   count: '$count' #{
-        #   #  "$size": '$distinct_set'
-        #   #}
-        # }
-      ]
-    )
+    return Log.collection.aggregate([find_match, find_interval]) unless interval.nil?
+    Log.collection.aggregate([find_match])
   end
 
   private
-
-  def get_interval_batches
-    
-  end
 
   def find_match
     process_match = rule_criteria.find {|c| c[:attribute] == 'process' }
@@ -50,7 +32,13 @@ class AlarmRule
 
     {
       "$match": {
-        # logged_time: {},
+        created_at: {
+          "$gte": cycle_finish_time.nil? ? Log.first.created_at : updated_at
+        },
+        logged_time: {
+          "$gte": start_date.nil? ? Log.first.logged_time : start_date,
+          "$lte": end_date.nil? ? Log.last.logged_time : end_date
+        },
         severity: /#{severity_match[:value] == '=' ? "" : fix_regex(severity_match[:value])}/i,
         host: /#{host_match[:value] == '=' ? "" : fix_regex(host_match[:value])}/i,
         process: /#{process_match[:value] == '=' ? "" : fix_regex(process_match[:value])}/i
@@ -59,7 +47,7 @@ class AlarmRule
   end
 
   def find_interval
-    distinct_field = rule_criteria.find {|c| c[:value] == '=' }
+    # distinct_field = rule_criteria.find {|c| c[:value] == '=' }
 
     {
       "$group": {
@@ -81,16 +69,18 @@ class AlarmRule
                 },
                 # interval is stored as Time object. Date doesn't matter for now.
                 # argument is in milliseconds, so seconds x 1000
-                1000 * Time.parse(interval.strftime('%H:%M:%S')).seconds_since_midnight.to_i
+                1000 * Time.parse(self.interval.strftime('%H:%M:%S')).seconds_since_midnight.to_i
               ]
             }
           ]
         },
         set: {
           "$push": {
-            id: '$id',
-            attribute: "$#{distinct_field[:attribute]}",
-            host: '$host'
+            id: '$_id',
+            host: '$host',
+            severity: '$severity',
+            process: '$process',
+            #message: '$message'
           }
         },
         count: {
