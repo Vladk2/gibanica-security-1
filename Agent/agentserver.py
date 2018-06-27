@@ -5,7 +5,6 @@ import ssl
 import sys
 
 import json,requests
-
 import log_agent as agent 
 # To start agent, uncomment line bellow:
 # agent.run()
@@ -27,19 +26,36 @@ def startup():
 	url = "https://%s/agents" % data['siem_ip']
 	headers = {'Content-type': 'application/json', 'Connection': 'close'}
 
+	agentId = None
+	if "id" in data:
+		agentId = data["id"]
+
+	if agentId == None:
+		json_ = {'type': data['type'], 'address': '%s:%d' % (data['address'], data['port']), 'host': data['host'], 'name': data['name'], 'paths': data['paths']}
+	else:
+		json_ = {'type': data['type'], 'address': '%s:%d' % (data['address'], data['port']), 'id': agentId, 'host': data['host'], 'name': data['name'], 'paths': data['paths']}
+	
 	r = requests.post(
 		url,
 		# returns 401 if this agent has super agent
-		json={'id': '5b27fd9c0bd44e1afc82a84e', 'logs': [{'host': 'sibalica'}]}, # send agent data from .conf file
-		cert=('../certs/client.crt', '../certs/client.key'), # returns 406 without cert
+		json=json_, # send agent data from .conf file
+		cert=(API_CRT, API_KEY), # returns 406 without cert
 		headers=headers,
 		verify=API_CA_T
 	)
 
-	print(r.status_code)
+	if agentId == None:
+		rJson = json.loads(r.text)
+		data["id"] = rJson["_id"]["$oid"]
+		with open('log-agent2.conf','w') as file:
+			file.write(json.dumps(data, indent=4, sort_keys=True))
 
-	if r.status_code == 200 or r.status_code == 201:
-		print(r)
+	if(r.status_code == 200 or r.status_code == 201):
+		agent.run()
+		serving.run_simple(
+					API_HOST, API_PORT, app, ssl_context=context)
+	
+		
 
 @app.route("/update_supervisor", methods = ["PATCH"])
 def update_supervisor():
@@ -82,7 +98,6 @@ if __name__ == "__main__":
 							"Missing cert or key. Details: {}"
 							.format(e))
 	# if startup(): app.run ... - send request to siem and update conf, then run server
-	# startup()
-	serving.run_simple(
-			API_HOST, API_PORT, app, ssl_context=context)
+	startup()
+	
 

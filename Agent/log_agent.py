@@ -15,7 +15,10 @@ if platform.system() == 'Windows':  # only for Windows users
 	from win32event import *
 	import win32evtlogutil
 
-
+data = json.load(open('log-agent2.conf'))
+API_CRT = data['cert_path']
+API_KEY = data['cert_key_path']
+API_CA_T = data['ca_cert_path']
 
 
 def run():
@@ -24,6 +27,7 @@ def run():
 		readWinEventLogs()
 	if log_files:
 		readLogFiles()
+		print("\nAGENT STARTED\n")
 
 
 def readConf():
@@ -64,8 +68,8 @@ def readConf():
 	max_time: Max. number of seconds that Agent can store logs before sending them to the SIEM.
 	'''
 
-	data = json.load(open('log-agent.conf'))
-	return data['log_files'], data['batch_size'], data['max_time'], data['win_event_logs'], data['log_formats']
+	data = json.load(open('log-agent2.conf'))
+	return data['paths'], data['batch_size'], data['max_time'], data['win_event_logs'], data['log_formats']
 
 
 def sendLogs(logs):
@@ -73,16 +77,22 @@ def sendLogs(logs):
 	print(logs)
 	print("\n")
 
-	url = "https://localhost:3000/logs"
+	url = "https://192.168.0.15/logs"
 	headers = {'Content-type': 'application/json', 'Connection': 'close'}
-'''
-	r = requests.post(url, json={"logs": logs},
-					  headers=headers, verify='../gibanica/cert.pem')
+
+	r = requests.post(
+		url,
+		# returns 401 if this agent has super agent
+		json={'id': data['id'], 'logs': logs}, # send agent data from .conf file
+		cert=(API_CRT, API_KEY), # returns 406 without cert
+		headers=headers,
+		verify=API_CA_T
+	)
 
 	if r.status_code == 200:
 		print('Logs have been sent successfully')
 		# r.connection.close()
-'''
+
 
 class WinEventLogReader(threading.Thread):
 
@@ -191,7 +201,7 @@ def checkLog(log, log_file_conf):
 	# log: May 24 18:50:48 notebook sudo[1144]:   stefan : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/pacman -Ss syslog ng
 	# regex: (?P<date>[a-zA-Z]+\s+[0-9]+)\s+(?P<time>[0-9]+:[0-9]+:[0-9]+)\s+(?P<host>.*?)\s+(?P<process>.*?)\s+(?P<message>.*)
 
-	parsed_log = parseLog(log, log_file_conf["log_format"])
+	parsed_log = parseLog(log, log_file_conf["format"])
 	if(parsed_log == None):
 		return None
 	else:
