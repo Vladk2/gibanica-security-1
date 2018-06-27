@@ -15,61 +15,38 @@ if platform.system() == 'Windows':  # only for Windows users
 	from win32event import *
 	import win32evtlogutil
 
-data = json.load(open('log-agent2.conf'))
-API_CRT = data['cert_path']
-API_KEY = data['cert_key_path']
-API_CA_T = data['ca_cert_path']
 
+API_CRT = ""
+API_KEY = ""
+API_CA_T = ""
+SIEM_IP = ""
 
-def run():
+def run(api_crt, api_key, api_ca_t, siem_ip):
 
-	if(platform.system() == "Windows" and event_logs["read_event_logs"]):
+	global API_CRT
+	global API_KEY
+	global API_CA_T
+	global SIEM_IP
+	API_CRT, API_KEY, API_CA_T, SIEM_IP = api_crt, api_key, api_ca_t, siem_ip
+
+	if(platform.system() == "Windows" and event_logs != {}):
 		readWinEventLogs()
 	if log_files:
 		readLogFiles()
-		print("\nAGENT STARTED\n")
-
+		print("\nAGENT STARTED...\n")
 
 def readConf():
-	'''
-	CONF.JSON SPEC:
+	
 
-	CONFIGURATION FILE EXAMPLE:
-	{
-	"log_formats": [
-					  {"sample_format": <regex>},
-					   {"pacman_format": <regex>}
-					  ],
-	"log_files": [
-					{ "path": PATH_TO_LOGFILE,"log_format": "sample_format",
-									 "filter_by": "ERROR|WARNING"} ,
-					{ "path": PATH_TO_OTHER_LOGFILE,
-					 "log_format": "pacman_format", "filter_by": "2018-06-03"}
-				   ],
-	"win_event_logs": {"read_event_logs": boolean, "log_type(s)": "system | application"}
-	"batch_size" : NUMBER,
-	"max_time" : NUMBER_OF_SECONDS
-	}
+	data = json.load(open('log-agent.conf'))
 
-	EXPLANATION AND USAGE:
-	log_formats: Contains a list of log formats. Every format has its name as key, and a regular expression of log format as value.
-																									 If you're defining a new format, make sure that you escape all special characters in regex (for example, replace "\" with "\\").
-																									 Also make sure that you give provided names for groups in regex. Only groups with provided names can be parsed. Provided names so far are: date, time, host, process, severity and message.
-																									 Example of one log format: {"example_format": "(?P<date>[a-zA-Z0-9]+)\\s+(?P<host>\w*)}"
-	log_files: Contains a list of log files with its configuration.
-																	path: Path to the logfile that you want to read from.
-																	log_format: Format of your logs that you're reading - must be one from list in "log_formats"(object key is the name of the format).
-																	filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file.
-	win_event_logs: This field is only for Windows users.
-																	read_event_logs: Boolean value. Agent will read system event logs only if it's True.
-																	log_type(s): Choose what kind of system logs You want to read (system or application). If you leave an empty string, then it will read them both.
-																	filter by: Read only logs that matches with this regular expression. If you leave an empty string, then it will read all logs from the file.
-	batch_size: Max. number of logs that Agent can store before sending them to the SIEM.
-	max_time: Max. number of seconds that Agent can store logs before sending them to the SIEM.
-	'''
+	event_logs = {}
+	for path in data['paths']:
+		if path['format'] == "win_event_logs":
+			event_logs = path
+			data['paths'].remove(path)
 
-	data = json.load(open('log-agent2.conf'))
-	return data['paths'], data['batch_size'], data['max_time'], data['win_event_logs'], data['log_formats']
+	return data['paths'], data['batch_size'], data['max_time'], data['log_formats'], event_logs
 
 
 def sendLogs(logs):
@@ -77,7 +54,7 @@ def sendLogs(logs):
 	print(logs)
 	print("\n")
 
-	url = "https://192.168.0.15/logs"
+	url = SIEM_IP
 	headers = {'Content-type': 'application/json', 'Connection': 'close'}
 
 	r = requests.post(
@@ -137,7 +114,7 @@ class WinEventLogReader(threading.Thread):
 						evJson["host"] + " " + evJson["severity"] + \
 						" " + evJson["message"]
 
-					filter_pattern = re.compile(log_file_conf["filter_by"])
+					filter_pattern = re.compile(event_logs["filter_by"])
 					if(event_logs["filter_by"] == "" or filter_pattern.search(ev)):
 						logs.append(evJson)
 						if(len(logs) >= batch_size or time.time() > time_limit):
@@ -276,11 +253,11 @@ def parseLog(log, log_format):
 def readWinEventLogs():
 
 	log_type = None
-	if(event_logs["log_type(s)"] == "system"):
+	if(event_logs["path"] == "system"):
 		log_type = "System"
-	elif(event_logs["log_type(s)"] == "application"):
+	elif(event_logs["path"] == "application"):
 		log_type = "Application"
-	if(event_logs["log_type(s)"] == ""):
+	if(event_logs["path"] == ""):
 		systemEventViewer1 = WinEventLogReader('localhost', "System")
 		systemEventViewer2 = WinEventLogReader('localhost', "Application")
 		systemEventViewer1.start()
@@ -303,5 +280,4 @@ def follow(thefile):
 
 logs = []
 time_limit = 0
-log_files, batch_size, max_time, event_logs, log_formats = readConf()
-
+log_files, batch_size, max_time, log_formats, event_logs = readConf()

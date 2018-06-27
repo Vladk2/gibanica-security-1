@@ -11,7 +11,7 @@ import log_agent as agent
 
 app = Flask(__name__)
 
-data = json.load(open('log-agent2.conf'))
+data = json.load(open('log-agent.conf'))
 
 HTTPS_ENABLED = True
 VERIFY_USER = True
@@ -21,6 +21,8 @@ API_PORT = data['port']
 API_CRT = data['cert_path']
 API_KEY = data['cert_key_path']
 API_CA_T = data['ca_cert_path']
+
+agent_wait = False
 
 def startup():
 	url = "https://%s/agents" % data['siem_ip']
@@ -47,11 +49,11 @@ def startup():
 	if agentId == None:
 		rJson = json.loads(r.text)
 		data["id"] = rJson["_id"]["$oid"]
-		with open('log-agent2.conf','w') as file:
+		with open('log-agent.conf','w') as file:
 			file.write(json.dumps(data, indent=4, sort_keys=True))
 
 	if(r.status_code == 200 or r.status_code == 201):
-		agent.run()
+		agent.run(API_CRT, API_KEY, API_CA_T, data['siem_ip'])
 		serving.run_simple(
 					API_HOST, API_PORT, app, ssl_context=context)
 	
@@ -59,28 +61,30 @@ def startup():
 
 @app.route("/update_supervisor", methods = ["PATCH"])
 def update_supervisor():
+	global agent_wait
 	content = request.get_json(silent=True)
 	print(content)
 
 	data['super'] = {}
 	data['super']['id'] = content['super']['id']['$oid'] if content['super']['id'] != None else None
 	data['super']['address'] = content['super']['address']
-
+	agent_wait = True
 	with open('log-agent2.conf','w') as file:
 		file.write(json.dumps(data, indent=4, sort_keys=True))
-
+	agent_wait = False
 	return "ok"
 
 @app.route("/update", methods = ['PATCH'])
 def update():
+	global agent_wait
 	content = request.get_json(silent=True)
 
 	data["log_files"] = content["paths"]
 	data["name"] = content["name"]
-
+	agent_wait = True
 	with open('log-agent2.conf','w') as file:
 		file.write(json.dumps(data, indent=4, sort_keys=True))
-
+	agent_wait = False
 	return jsonify(content)
 
 if __name__ == "__main__":
@@ -100,4 +104,8 @@ if __name__ == "__main__":
 	# if startup(): app.run ... - send request to siem and update conf, then run server
 	startup()
 	
+
+
+import threading
+import time
 
