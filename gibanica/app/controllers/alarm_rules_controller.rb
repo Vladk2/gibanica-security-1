@@ -15,9 +15,11 @@ class AlarmRulesController < ApplicationController
 
   # POST /alarm_rules
   def create
+    # authorize
     @alarm_rule = AlarmRule.new(alarm_rule_params)
 
     if @alarm_rule.save
+      FireRuleJob.perform_later(@alarm_rule.to_json)
       render json: @alarm_rule, status: :created, location: @alarm_rule
     else
       render json: @alarm_rule.errors, status: :unprocessable_entity
@@ -47,6 +49,13 @@ class AlarmRulesController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def alarm_rule_params
-    params.fetch(:alarm_rule, {})
+    params.require(:alarm_rule).permit(
+      :message,
+      :start_date,
+      :end_date,
+      :count,
+      :interval,
+      rule_criteria: %i[attribute value]
+    )
   end
 end

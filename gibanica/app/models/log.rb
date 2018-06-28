@@ -1,5 +1,6 @@
 class Log
   include Mongoid::Document
+  include Mongoid::Timestamps
 
   field :logged_date, type: Date
   field :logged_time, type: Time
@@ -28,7 +29,10 @@ class Log
     batch = []
 
     logs.each do |log|
-      batch.push(Log.new(log).attributes)
+      l = Log.new(log)
+      l.updated_at = Time.now
+      l.created_at = Time.now
+      batch.push(l.attributes)
     end
 
     Log.collection.insert_many(batch)
@@ -112,10 +116,10 @@ class Log
             logged_date: {
               "$gte": Date.today - 30.days, "$lte": Date.today
             }
-          },
+          }
         },
         {
-          "$group":{
+          "$group": {
             _id: '$logged_date',
             count: {
               "$sum": 1

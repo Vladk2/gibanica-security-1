@@ -2,9 +2,22 @@ class Alarm
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  field :name, type: String
+  field :host, type: String
   field :message, type: String
-  
-  has_many :logs
+  field :logs_count, type: Integer
 
+  def self.count_per_host
+    Alarm.collection.aggregate(
+      [
+        {
+          "$group": {
+            _id: '$host',
+            count: {
+              "$sum": 1
+            }
+          }
+        }
+      ]
+    )
+  end
 end

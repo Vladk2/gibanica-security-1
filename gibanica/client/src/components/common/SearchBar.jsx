@@ -7,6 +7,7 @@ import {
 } from "react-bootstrap";
 import SearchBadges from "./SearchBadges";
 import DatePicker from "react-date-picker";
+
 export default class SearchBar extends React.Component {
   constructor(props) {
     super(props);
@@ -45,7 +46,7 @@ export default class SearchBar extends React.Component {
   search = () => {
     const { dateStart, dateEnd } = this.state;
 
-    if (!this.state.badges || !dateStart || !dateEnd) {
+    if (!this.state.badges) {
       return;
     }
 

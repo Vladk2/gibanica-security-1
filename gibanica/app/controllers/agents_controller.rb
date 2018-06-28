@@ -17,18 +17,18 @@ class AgentsController < ApplicationController
     if agent_params[:id].nil?
       agent = Agent.new(agent_params)
 
-      #if @agent.save
+      if agent.save
       render json: agent, status: :created
-      #else
-      #  render json: agent.errors, status: :unprocessable_entity
-      #end
+      else
+        render json: agent.errors, status: :unprocessable_entity
+      end
     else
       agent = Agent.find(agent_params[:id])
-
+      
       if agent.update(agent_params)
-        render json: @agent, status: :ok
+        render json: agent, status: :ok
       else
-        render json: @agent.errors, status: :unprocessable_entity
+        render json: agent.errors, status: :unprocessable_entity
       end
     end
   end
@@ -66,7 +66,7 @@ class AgentsController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def agent_params
-    params.require(:agent).permit(:id, :name, :type, :address, :host, :super, paths: %i[path format])
+    params.permit(:id, :name, :type, :address, :host, :super, paths: %i[path format filter_by])
   end
 
   def agents_hierarchy_params

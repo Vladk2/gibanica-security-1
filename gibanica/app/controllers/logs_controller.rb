@@ -4,8 +4,6 @@ class LogsController < ApplicationController
   before_action :verify_client_cert, only: [:create]
   before_action :set_agent, only: [:create]
   before_action :verify_agent_authority, only: [:create]
-  before_action :accept_json_only, only: [:index]
-  before_action :content_type_json_only, only: [:create]
   before_action :set_logs, only: [:index]
 
   # GET /logs
@@ -53,14 +51,6 @@ class LogsController < ApplicationController
 
   def verify_agent_authority
     head :unauthorized unless @agent.agent.nil?
-  end
-
-  def accept_json_only
-    head :not_acceptable unless request.headers['Accept'] == 'application/json'
-  end
-
-  def content_type_json_only
-    head :not_acceptable unless request.headers['Content-Type'] == 'application/json'
   end
 
   def set_agent
