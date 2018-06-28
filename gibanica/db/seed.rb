@@ -42,7 +42,7 @@ end
 
 logs = []
 
-for i in 1..10000 do
+for i in 1..10001 do
   logs.push(
     Log.new(
       created_at: Time.now,

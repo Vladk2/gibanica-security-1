@@ -12,7 +12,7 @@ class AlarmRule
   field :cycle_finish_time, type: Time
 
   def fire_rule
-    return [] unless Log.count.positive?
+    #return [] unless Log.count.positive?
 
     return Log.collection.aggregate([find_match, find_interval]) unless interval.nil?
     Log.collection.aggregate([find_match])
@@ -76,10 +76,11 @@ class AlarmRule
         },
         set: {
           "$push": {
-            id: '$_id',
+            #id: '$_id',
             host: '$host',
-            severity: '$severity',
-            process: '$process',
+            created_at: '$created_at'
+            #severity: '$severity',
+            #process: '$process',
             #message: '$message'
           }
         },

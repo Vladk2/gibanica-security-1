@@ -241,7 +241,11 @@ export default class AlarmRuleForm extends React.Component {
             </div>
             <div className="col-md-3">
               <FormField label="End Date" style={{ height: "100%" }}>
-                <DateTime format="D/M/YYYY H:mm:ss" value={dateEnd} />
+                <DateTime
+                  format="D/M/YYYY H:mm:ss"
+                  value={dateEnd}
+                  onChange={d => this.setState({ dateEnd: d })}
+                />
               </FormField>
             </div>
             <div className="col-md-3">
