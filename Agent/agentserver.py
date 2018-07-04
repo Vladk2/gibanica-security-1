@@ -57,7 +57,24 @@ def startup():
 		serving.run_simple(
 					API_HOST, API_PORT, app, ssl_context=context)
 	
-		
+
+@app.route("/logs", methods = ["POST"])
+def accept_logs():
+	content = request.get_json(silent=True)
+	headers = {'Content-type': 'application/json', 'Connection': 'close'}
+	url = 'https://' + data['siem_ip'] + '/logs'
+	if "super" in data:
+		if "address" in data["super"]:
+			url = 'https://' + data['super']['address'] + '/logs'
+	r = requests.post(
+		url,
+		# returns 401 if this agent has super agent
+		json={'id': data['id'], 'logs': content['logs']}, # send agent data from .conf file
+		cert=(API_CRT, API_KEY), # returns 406 without cert
+		headers=headers,
+		verify=API_CA_T
+	)
+	return "ok"
 
 @app.route("/update_supervisor", methods = ["PATCH"])
 def update_supervisor():
@@ -66,10 +83,11 @@ def update_supervisor():
 	print(content)
 
 	data['super'] = {}
-	data['super']['id'] = content['super']['id']['$oid'] if content['super']['id'] != None else None
-	data['super']['address'] = content['super']['address']
+	if content['super']['id'] != None:
+		data['super']['id'] = content['super']['id']['$oid']
+		data['super']['address'] = content['super']['address']
 	agent_wait = True
-	with open('log-agent2.conf','w') as file:
+	with open('log-agent.conf','w') as file:
 		file.write(json.dumps(data, indent=4, sort_keys=True))
 	agent_wait = False
 	return "ok"

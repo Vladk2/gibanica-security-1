@@ -54,9 +54,15 @@ def sendLogs(logs):
 	print(logs)
 	print("\n")
 
-	url = SIEM_IP
-	headers = {'Content-type': 'application/json', 'Connection': 'close'}
+	data = json.load(open('log-agent.conf'))
 
+	url = 'https://' + SIEM_IP + '/logs'
+	superurl = ""
+	if "super" in data:
+		if "address" in data["super"]:
+			superurl = 'https://' + data['super']['address'] + '/logs'
+	headers = {'Content-type': 'application/json', 'Connection': 'close'}
+	
 	r = requests.post(
 		url,
 		# returns 401 if this agent has super agent
@@ -69,6 +75,15 @@ def sendLogs(logs):
 	if r.status_code == 200:
 		print('Logs have been sent successfully')
 		# r.connection.close()
+	elif r.status_code == 401:
+		print("Sending logs to parent ...")
+		r = requests.post(
+			superurl,
+			json={'id': data['id'], 'logs': logs},
+			cert=(API_CRT, API_KEY),
+			headers=headers,
+			verify=API_CA_T
+		)
 
 
 class WinEventLogReader(threading.Thread):
@@ -214,6 +229,7 @@ def parseLog(log, log_format):
 			else:
 				log_json["severity"] = message.severity.name.upper()
 			log_json["message"] = splited_msg[1].strip()
+			print(log_json)
 			return log_json
 		# <30>Jun  5 02:36:06 stefan-pc systemd: Started Syslog service for accepting logs from journald.
 	if(format_found):
