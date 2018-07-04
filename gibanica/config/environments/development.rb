@@ -6,11 +6,15 @@ Rails.application.configure do
   # since you don't have to restart the web server when you make code changes.
   config.cache_classes = false
 
+  config.force_ssl = false
+
   # Do not eager load code on boot.
   config.eager_load = false
 
   # Show full error reports.
   config.consider_all_requests_local = true
+
+  config.web_console.whitelisted_ips = '192.168.0.13'
 
   # Enable/disable caching. By default caching is disabled.
   if Rails.root.join('tmp/caching-dev.txt').exist?
@@ -23,11 +27,25 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
 
-    config.cache_store = :null_store
+    config.cache_store = :redis_store
   end
 
+  config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'gibanica-security.com',
+    user_name:            ENV['MAIL_USERNAME'],
+    password:             ENV['MAIL_PASSWORD'],
+    authentication:       'plain',
+    enable_starttls_auto: true
+  }
+
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.raise_delivery_errors = true
+
+  #config.action_mailer.perform_deliveries = true
 
   config.action_mailer.perform_caching = false
 
